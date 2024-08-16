@@ -3,7 +3,12 @@ package com.east2west.models.DTO;
 import java.math.BigDecimal;
 import java.util.List;
 
+
 import com.east2west.models.Entity.*;
+
+import com.east2west.models.Entity.*;
+import com.east2west.models.Entity.CategoryTour;
+
 
 
     

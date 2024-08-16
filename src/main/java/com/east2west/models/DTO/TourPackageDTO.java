@@ -1,6 +1,7 @@
 package com.east2west.models.DTO;
 
 import java.math.BigDecimal;
+
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -14,7 +15,6 @@ public class TourPackageDTO {
     private String deposit;
     private String bookinghold;
     private String bookingchange;
-
     private List<Integer> categoryTourId;
     private List<Integer> themeTourId;
     private List<Integer> suitableTourId;
@@ -115,4 +115,5 @@ public class TourPackageDTO {
     public void setBookingchange(String bookingchange) {
         this.bookingchange = bookingchange;
     }
+
 }
