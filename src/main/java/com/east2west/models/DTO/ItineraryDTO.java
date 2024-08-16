@@ -5,23 +5,15 @@ import java.util.List;
 
 public class ItineraryDTO {
 
-    
     private int itineraryId;
-    private List<ActivityDTO> activities;
+    private int tourPackageId;
+    private List<Integer> accommodationIds;
+    private List<Integer> mealIds;
+    private List<Integer> placeIds;
     private Timestamp day;
-   
 
-    public List<ActivityDTO> getActivities() {
-        return this.activities;
-    }
+    // Getters and Setters
 
-    public void setActivities(List<ActivityDTO> activities) {
-        this.activities = activities;
-    }
-
-   
-
-    // Getters and setters
     public int getItineraryId() {
         return itineraryId;
     }
@@ -30,7 +22,38 @@ public class ItineraryDTO {
         this.itineraryId = itineraryId;
     }
 
-  
+    public int getTourPackageId() {
+        return tourPackageId;
+    }
+
+    public void setTourPackageId(int tourPackageId) {
+        this.tourPackageId = tourPackageId;
+    }
+
+    public List<Integer> getAccommodationIds() {
+        return accommodationIds;
+    }
+
+    public void setAccommodationIds(List<Integer> accommodationIds) {
+        this.accommodationIds = accommodationIds;
+    }
+
+    public List<Integer> getMealIds() {
+        return mealIds;
+    }
+
+    public void setMealIds(List<Integer> mealIds) {
+        this.mealIds = mealIds;
+    }
+
+    public List<Integer> getPlaceIds() {
+        return placeIds;
+    }
+
+    public void setPlaceIds(List<Integer> placeIds) {
+        this.placeIds = placeIds;
+    }
+
     public Timestamp getDay() {
         return day;
     }
@@ -38,4 +61,6 @@ public class ItineraryDTO {
     public void setDay(Timestamp day) {
         this.day = day;
     }
+
 }
+

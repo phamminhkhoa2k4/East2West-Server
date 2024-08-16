@@ -100,9 +100,5 @@ public class Rental {
         this.totalAmount = totalAmount;
     }
 
-    // Constructors, getters, setters, etc.
-
-    @Repository
-    public static interface ActivityRepository extends JpaRepository<Activity, Integer> {
-    }
+   
 }

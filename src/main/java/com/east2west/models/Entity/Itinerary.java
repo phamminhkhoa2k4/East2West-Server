@@ -10,7 +10,6 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "itinerary")
 public class Itinerary {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "itineraryid")
@@ -21,15 +20,52 @@ public class Itinerary {
     @JsonIgnore
     private TourPackage tourPackage;
 
-    @OneToMany(mappedBy = "itinerary", fetch = FetchType.LAZY)
-    private List<Activity> activities;
+    @ManyToMany
+    @JoinTable(
+        name = "itineraryaccommodation",
+        joinColumns = @JoinColumn(name = "itineraryid"),
+        inverseJoinColumns = @JoinColumn(name = "accommodationid")
+    )
+    private List<Accommodation> accommodations;
 
-    public List<Activity> getActivities() {
-        return this.activities;
+    public List<Accommodation> getAccommodations() {
+        return this.accommodations;
     }
 
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
+    public void setAccommodations(List<Accommodation> accommodations) {
+        this.accommodations = accommodations;
+    }
+
+    @ManyToMany
+    @JoinTable(
+        name = "itinerarymeals",
+        joinColumns = @JoinColumn(name = "itineraryid"),
+        inverseJoinColumns = @JoinColumn(name = "mealid")
+    )
+    private List<Meal> meals;
+
+    public List<Meal> getMeals() {
+        return this.meals;
+    }
+
+    public void setMeals(List<Meal> meals) {
+        this.meals = meals;
+    }
+
+    @ManyToMany
+    @JoinTable(
+        name = "itineraryplaces",
+        joinColumns = @JoinColumn(name = "itineraryid"),
+        inverseJoinColumns = @JoinColumn(name = "placeid")
+    )
+    private List<Place> places;
+
+    public List<Place> getPlaces() {
+        return this.places;
+    }
+
+    public void setPlaces(List<Place> places) {
+        this.places = places;
     }
 
     @Column(name = "day")
