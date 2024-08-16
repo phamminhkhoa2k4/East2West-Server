@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public class ItineraryDTO {
+
     private int itineraryId;
     private int tourPackageId;
     private List<Integer> accommodationIds;
@@ -12,6 +13,7 @@ public class ItineraryDTO {
     private Timestamp day;
 
     // Getters and Setters
+
     public int getItineraryId() {
         return itineraryId;
     }
@@ -59,4 +61,6 @@ public class ItineraryDTO {
     public void setDay(Timestamp day) {
         this.day = day;
     }
+
 }
+

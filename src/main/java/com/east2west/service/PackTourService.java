@@ -40,7 +40,8 @@ import com.east2west.repository.TourDepartureDateRepository;
 import com.east2west.repository.TourPackageRepository;
 import com.east2west.repository.TourSuitableTourRepository;
 import com.east2west.repository.TourThemeTourRepository;
-
+import com.east2west.repository.TourCategoryTourRepository;
+import com.east2west.repository.TourPackageRepository;
 
 @Service
 public class PackTourService {
@@ -99,6 +100,7 @@ public class PackTourService {
         return tourSuitableTourRepository.findAll();
     }
 
+
     public List<TourPackage> getToursBySuitableName(String suitableName) {
         return tourPackageRepository.findBySuitableName(suitableName);
     }
@@ -106,6 +108,7 @@ public class PackTourService {
     public TourPackageDetailDTO getTourDetailByPackageid(int packageid) {
         TourPackage tourPackage = tourPackageRepository.findByPackageid(packageid);
         List<Itinerary> itineraries = tourPackage.getItineraries();
+
 
         TourPackageDetailDTO dto = new TourPackageDetailDTO();
         dto.setPackageid(tourPackage.getPackageid());
@@ -129,9 +132,11 @@ public class PackTourService {
         return tourPackageRepository.findByPackageid(id);
     }
 
+
     // Create a new tour
     public TourPackage createTour(TourPackageDTO tourPackageDTO) {
         TourPackage tourPackage = new TourPackage();
+
         // Map basic fields
         tourPackage.setTitle(tourPackageDTO.getTitle());
         tourPackage.setThumbnail(tourPackageDTO.getThumbnail());
@@ -141,6 +146,7 @@ public class PackTourService {
         tourPackage.setDeposit(tourPackageDTO.getDeposit());
         tourPackage.setBookinghold(tourPackageDTO.getBookinghold());
         tourPackage.setBookingchange(tourPackageDTO.getBookingchange());
+
 
         List<CategoryTour> categoryTours = categoryTourRepository.findAllById(tourPackageDTO.getCategoryTourId());
         tourPackage.setCategoryTours(categoryTours);
@@ -174,6 +180,7 @@ public class PackTourService {
         Optional<TourPackage> existingTourOpt = tourPackageRepository.findById(id);
         if (existingTourOpt.isPresent()) {
             TourPackage tourPackage = existingTourOpt.get();
+
             tourPackage.setTitle(tourPackageDTO.getTitle());
             tourPackage.setThumbnail(tourPackageDTO.getThumbnail());
             tourPackage.setPrice(tourPackageDTO.getPrice());
@@ -182,6 +189,7 @@ public class PackTourService {
             tourPackage.setDeposit(tourPackageDTO.getDeposit());
             tourPackage.setBookinghold(tourPackageDTO.getBookinghold());
             tourPackage.setBookingchange(tourPackageDTO.getBookingchange());
+
             List<CategoryTour> categoryTours = categoryTourRepository.findAllById(tourPackageDTO.getCategoryTourId());
             tourPackage.setCategoryTours(categoryTours);
             // Convert themeTourNames to ThemeTour entities
@@ -223,3 +231,4 @@ public class PackTourService {
         }
     }
 }
+
