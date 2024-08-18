@@ -35,15 +35,13 @@ public class RentalCarService {
         return rentalCarRepository.save(bookingCar);
     }
     public Rental saveRental(RentalDTO rentalDTO) {
-        User user = userRepository.findById(rentalDTO.getUserId())
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
         Car car = carRepository.findById(rentalDTO.getCarId())
             .orElseThrow(() -> new IllegalArgumentException("Car not found"));
         Payment payment = paymentRepository.findById(rentalDTO.getPaymentId())
             .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
 
         Rental rental = new Rental();
-        rental.setUser(user);
+        rental.setUserid(rentalDTO.getUserId());
         rental.setCar(car);
         rental.setPayment(payment);
         rental.setRentalDate(rentalDTO.getRentalDate());
@@ -52,7 +50,7 @@ public class RentalCarService {
 
         return rentalCarRepository.save(rental);
     }
-    // public void deleteBooking(Long id) {
-    //     rentalCarRepository.deleteById(id);
-    // }
+    public List<Rental> getRentalsByUserId(int userId) {
+        return rentalCarRepository.findByUserid(userId);
+    }
 }
