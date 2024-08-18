@@ -25,7 +25,7 @@ import com.east2west.service.PackTourService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/admin/tours")
+@RequestMapping("/api/tours/admin")
 public class AdminPackTourController {
 
     @Autowired
@@ -45,19 +45,30 @@ public class AdminPackTourController {
     }
 
 
-//    @PostMapping
-//     public ResponseEntity<TourPackage> createTour(@RequestBody TourPackageDTO tourPackageDTO) {
-//         TourPackage createdTour = packTourService.createTour(tourPackageDTO);
-//         return new ResponseEntity<>(createdTour, HttpStatus.CREATED);
-//     }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<TourPackage> updateTour(@PathVariable int id, @RequestBody TourPackageDTO tourPackageDTO) {
-        TourPackage updatedTour = packTourService.updateTour(id, tourPackageDTO);
-        return updatedTour != null ? new ResponseEntity<>(updatedTour, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+   @PostMapping
+    public ResponseEntity<TourPackage> createTour(@RequestBody TourPackageDTO tourPackageDTO) {
+        TourPackage createdTour = packTourService.createOrUpdateTour(tourPackageDTO);
+        return new ResponseEntity<>(createdTour, HttpStatus.CREATED);
     }
-
-   
+    // {
+    //     "id":null,
+    //     "title": "Adventure in the Mountainssss",
+    //     "thumbnail": "https://example.com/images/mountain-adventure.jpg",
+    //     "price": 1999.99,
+    //     "pricereduce": 1799.99,
+    //     "groupsize": "10",
+    //     "deposit": "500",
+    //     "bookinghold": "48 hours",
+    //     "bookingchange": "No fee up to 7 days before departure",
+    //     "categoryTourId": [1, 2],
+    //     "themeTourId": [1, 3],
+    //     "suitableTourId": [2],
+    //     "departureDateDate": [
+    //         "2024-09-01T08:00:00Z",
+    //         "2024-09-15T08:00:00Z",
+    //         "2024-10-01T08:00:00Z"
+    //     ]
+    // }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTour(@PathVariable int id) {
         boolean isDeleted = packTourService.deleteTour(id);

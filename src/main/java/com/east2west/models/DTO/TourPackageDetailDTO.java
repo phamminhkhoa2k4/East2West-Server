@@ -143,9 +143,5 @@ import com.east2west.models.Entity.CategoryTour;
     
         public void setItineraries(List<Itinerary> itineraries) {
             this.itineraries = itineraries;
-        }
-    
-        
-
-       
+        } 
     }

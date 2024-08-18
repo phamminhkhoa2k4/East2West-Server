@@ -12,8 +12,6 @@ public class ItineraryDTO {
     private List<Integer> placeIds;
     private Timestamp day;
 
-    // Getters and Setters
-
     public int getItineraryId() {
         return itineraryId;
     }

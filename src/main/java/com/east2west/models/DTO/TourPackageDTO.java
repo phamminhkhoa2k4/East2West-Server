@@ -6,6 +6,15 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public class TourPackageDTO {
+    private int id;
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     private String title;
     private String thumbnail;

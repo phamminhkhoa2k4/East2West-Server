@@ -31,17 +31,29 @@ public class Rental {
         this.rentalid = rentalid;
     }
 
-     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "userid", referencedColumnName = "userid")
-    private User user;
+    //  @ManyToOne(fetch = FetchType.EAGER)
+    // @JoinColumn(name = "userid", referencedColumnName = "userid")
+    // private User user;
 
-    public User getUser() {
-        return this.user;
+    // public User getUser() {
+    //     return this.user;
+    // }
+
+    // public void setUser(User user) {
+    //     this.user = user;
+    // }
+    @Column(name = "userid")
+    private int userid;
+
+    public int getUserid() {
+        return this.userid;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserid(int userid) {
+        this.userid = userid;
     }
+
+   
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "carid", referencedColumnName = "carid")
