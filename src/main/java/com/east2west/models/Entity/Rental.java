@@ -8,8 +8,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+
 
 import java.sql.Date;
 
@@ -31,17 +30,29 @@ public class Rental {
         this.rentalid = rentalid;
     }
 
-     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "userid", referencedColumnName = "userid")
-    private User user;
+    //  @ManyToOne(fetch = FetchType.EAGER)
+    // @JoinColumn(name = "userid", referencedColumnName = "userid")
+    // private User user;
 
-    public User getUser() {
-        return this.user;
+    // public User getUser() {
+    //     return this.user;
+    // }
+
+    // public void setUser(User user) {
+    //     this.user = user;
+    // }
+    @Column(name = "userid")
+    private int userid;
+
+    public int getUserid() {
+        return this.userid;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserid(int userid) {
+        this.userid = userid;
     }
+
+   
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "carid", referencedColumnName = "carid")
@@ -100,9 +111,5 @@ public class Rental {
         this.totalAmount = totalAmount;
     }
 
-    // Constructors, getters, setters, etc.
-
-    @Repository
-    public static interface ActivityRepository extends JpaRepository<Activity, Integer> {
-    }
+   
 }

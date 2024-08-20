@@ -2,8 +2,14 @@ services:
   postgres:
     image: 'postgres:latest'
     environment:
+<<<<<<< HEAD
+      - 'POSTGRES_DB=travelminhpart'
+      - 'POSTGRES_PASSWORD=sa'
+      - 'POSTGRES_USER=postgres'
+=======
       - 'POSTGRES_DB=mydatabase'
       - 'POSTGRES_PASSWORD=secret'
       - 'POSTGRES_USER=myuser'
+>>>>>>> 1e5df9f18e4d8239a3f75b6b7e0d00e276e36424
     ports:
       - '5432'

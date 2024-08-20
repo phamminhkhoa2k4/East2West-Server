@@ -10,7 +10,6 @@ import com.east2west.models.DTO.ApiResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseEntity<ApiResponse<String>> handleException(Exception ex) {
@@ -18,5 +17,4 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // You can add more handlers for specific exceptions
 }

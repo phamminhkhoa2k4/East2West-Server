@@ -1,9 +1,20 @@
 package com.east2west.models.DTO;
 
 import java.math.BigDecimal;
+
+import java.sql.Timestamp;
 import java.util.List;
 
 public class TourPackageDTO {
+    private int id;
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     private String title;
     private String thumbnail;
@@ -13,11 +24,42 @@ public class TourPackageDTO {
     private String deposit;
     private String bookinghold;
     private String bookingchange;
+    private List<Integer> categoryTourId;
+    private List<Integer> themeTourId;
+    private List<Integer> suitableTourId;
+    private List<Timestamp> departureDateDate;
 
-    private List<String> categoryTourNames;
-    private List<String> themeTourNames;
-    private List<String> suitableTourNames;
-    private List<String> departureDateNames;
+    public List<Integer> getCategoryTourId() {
+        return this.categoryTourId;
+    }
+
+    public void setCategoryTourId(List<Integer> categoryTourId) {
+        this.categoryTourId = categoryTourId;
+    }
+
+    public List<Integer> getThemeTourId() {
+        return this.themeTourId;
+    }
+
+    public void setThemeTourId(List<Integer> themeTourId) {
+        this.themeTourId = themeTourId;
+    }
+
+    public List<Integer> getSuitableTourId() {
+        return this.suitableTourId;
+    }
+
+    public void setSuitableTourId(List<Integer> suitableTourId) {
+        this.suitableTourId = suitableTourId;
+    }
+
+    public List<Timestamp> getDepartureDateDate() {
+        return this.departureDateDate;
+    }
+
+    public void setDepartureDateDate(List<Timestamp> departureDateDate) {
+        this.departureDateDate = departureDateDate;
+    }
 
     public String getTitle() {
         return this.title;
@@ -83,38 +125,4 @@ public class TourPackageDTO {
         this.bookingchange = bookingchange;
     }
 
-    public List<String> getCategoryTourNames() {
-        return this.categoryTourNames;
-    }
-
-    public void setCategoryTourNames(List<String> categoryTourNames) {
-        this.categoryTourNames = categoryTourNames;
-    }
-
-    public List<String> getThemeTourNames() {
-        return this.themeTourNames;
-    }
-
-    public void setThemeTourNames(List<String> themeTourNames) {
-        this.themeTourNames = themeTourNames;
-    }
-
-    public List<String> getSuitableTourNames() {
-        return this.suitableTourNames;
-    }
-
-    public void setSuitableTourNames(List<String> suitableTourNames) {
-        this.suitableTourNames = suitableTourNames;
-    }
-
-    public List<String> getDepartureDateNames() {
-        return this.departureDateNames;
-    }
-
-    public void setDepartureDateNames(List<String> departureDateNames) {
-        this.departureDateNames = departureDateNames;
-    }
-
-    // Getters and Setters
-    // ...
 }
