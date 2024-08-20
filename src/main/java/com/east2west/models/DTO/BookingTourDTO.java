@@ -120,4 +120,5 @@ public class BookingTourDTO {
         this.depositRefund = depositRefund;
     }
 
+    // Getters and Setters
 }
