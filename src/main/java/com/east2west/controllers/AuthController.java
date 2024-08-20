@@ -36,7 +36,7 @@ import com.east2west.security.services.UserDetailsImpl;
 
 //for Angular Client (withCredentials)
 //@CrossOrigin(origins = "http://localhost:8081", maxAge = 3600, allowCredentials="true")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:3000/signin", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -107,11 +107,9 @@ public class AuthController {
         Role role;
 
         if (strRoles == null || strRoles.isEmpty()) {
-            // Nếu không có vai trò, gán vai trò người dùng mặc định
             role = roleRepository.findByRoleName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
         } else {
-            // Gán vai trò dựa trên yêu cầu
             switch (strRoles.iterator().next()) { // Lấy phần tử đầu tiên của Set
                 case "business":
                     role = roleRepository.findByRoleName(ERole.ROLE_BUSINESS)

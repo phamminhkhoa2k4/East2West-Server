@@ -8,8 +8,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
-import java.util.Set;
+
 
 @Entity
 @Table(name = "users")

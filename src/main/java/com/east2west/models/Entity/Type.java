@@ -5,8 +5,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
-import java.util.Set;
+
 
 @Entity
 @Table(name = "Types")
