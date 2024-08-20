@@ -1,9 +1,9 @@
 package com.east2west.models.Entity;
-
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-
 import jakarta.persistence.*;
+
+
 
 @Entity
 @Table(name = "bookingtour")
@@ -136,10 +136,6 @@ public class BookingTour {
         this.depositrefund = depositrefund;
     }
 
-  
-
-
-
     public User getUser() {
         return user;
     }
@@ -166,7 +162,6 @@ public class BookingTour {
     }
 
 
-
     public String getReason() {
         return reason;
     }
@@ -174,6 +169,5 @@ public class BookingTour {
     public void setReason(String reason) {
         this.reason = reason;
     }
-
 
 }

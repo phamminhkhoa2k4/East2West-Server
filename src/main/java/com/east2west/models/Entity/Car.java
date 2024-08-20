@@ -129,5 +129,75 @@ public class Car {
         this.status = status;
     }
 
-    // Constructors, getters, setters, etc.
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "locationtypeid", referencedColumnName = "locationtypeid")
+    private LocationType locationtype;
+
+    public LocationType getLocationtype() {
+        return this.locationtype;
+    }
+
+    public void setLocationtype(LocationType locationtype) {
+        this.locationtype = locationtype;
+    }
+
+   
+
+
+    @Column(name="cargearbox")
+    private String cargearbox;
+
+    public String getCargearbox() {
+        return this.cargearbox;
+    }
+
+    public void setCargearbox(String cargearbox) {
+        this.cargearbox = cargearbox;
+    }
+
+    @Column(name="miles")
+    private String miles;
+
+    public String getMiles() {
+        return this.miles;
+    }
+
+    public void setMiles(String miles) {
+        this.miles = miles;
+    }
+
+    @Column(name="fueltankcapcity")
+    private String fueltankcapacity;
+
+    public String getFueltankcapacity() {
+        return this.fueltankcapacity;
+    }
+
+    public void setFueltankcapacity(String fueltankcapacity) {
+        this.fueltankcapacity = fueltankcapacity;
+    }
+
+    @Column(name="fuel")
+    private String fuel;
+
+    public String getFuel() {
+        return this.fuel;
+    }
+
+    public void setFuel(String fuel) {
+        this.fuel = fuel;
+    }
+
+    @Column(name="location")
+    private String location;
+
+    public String getLocation() {
+        return this.location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
 }

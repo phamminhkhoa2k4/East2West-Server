@@ -1,6 +1,6 @@
 package com.east2west.models.DTO;
 
-import com.east2west.models.Entity.CategoryTour;
+
 
 public class CategoryTourDTO {
     private int categoryTourId;

@@ -67,11 +67,20 @@ public class Itinerary {
     public void setPlaces(List<Place> places) {
         this.places = places;
     }
+    @ManyToMany
+    @JoinTable(
+        name = "itinerarytransfer",
+        joinColumns = @JoinColumn(name = "itineraryid"),
+        inverseJoinColumns = @JoinColumn(name = "transferid")
+    )
+    private List<Transfer> location;
+
+   
 
     @Column(name = "day")
     private Timestamp day;
 
-    // Getters and setters
+  
     public int getItineraryId() {
         return itineraryId;
     }

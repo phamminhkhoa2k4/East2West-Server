@@ -8,7 +8,7 @@ import com.east2west.models.Entity.Car;
 import com.east2west.models.Entity.Make;
 import com.east2west.models.Entity.Model;
 import com.east2west.models.Entity.Type;
-
+import java.util.Optional;
 import java.util.List;
 
 @Service
@@ -24,54 +24,38 @@ public class CarService {
 
     @Autowired
     private TypeRepository typeRepository;
+    @Autowired
+    private LocationTypeRepository locationTypeRepository;
 
-    public Car saveCar(CarDTO carDTO) {
-        Model model = modelRepository.findByModelName(carDTO.getModelName())
-            .orElseThrow(() -> new IllegalArgumentException("Model not found"));
-        Make make = makeRepository.findByMakeName(carDTO.getMakeName())
-            .orElseThrow(() -> new IllegalArgumentException("Make not found"));
-        Type type = typeRepository.findByTypeName(carDTO.getTypeName())
-            .orElseThrow(() -> new IllegalArgumentException("Type not found"));
+    public Car createOrUpdateCar(CarDTO carDTO) {
+        Car car;
 
-        Car car = new Car();
+        if (carDTO.getCarId() != 0) {
+            Optional<Car> optionalCar = carRepository.findById(carDTO.getCarId());
+            car = optionalCar.orElse(new Car());
+        } else {
+            car = new Car();
+        }
+
         car.setCarName(carDTO.getCarName());
-        car.setModel(model);
-        car.setMake(make);
-        car.setType(type);
         car.setYear(carDTO.getYear());
         car.setSeatCapacity(carDTO.getSeatCapacity());
         car.setAirConditioned(carDTO.isAirConditioned());
         car.setPricePerDay(carDTO.getPricePerDay());
         car.setStatus(carDTO.getStatus());
+        car.setCargearbox(carDTO.getCargearbox());
+        car.setMiles(carDTO.getMiles());
+        car.setFueltankcapacity(carDTO.getFueltankcapacity());
+        car.setFuel(carDTO.getFuel());
+        car.setLocation(carDTO.getLocation());
+        modelRepository.findById(carDTO.getModelId()).ifPresent(car::setModel);
+        makeRepository.findById(carDTO.getMakeId()).ifPresent(car::setMake);
+        typeRepository.findById(carDTO.getTypeId()).ifPresent(car::setType);
+        locationTypeRepository.findById(carDTO.getLocationTypeId()).ifPresent(car::setLocationtype);
+
         return carRepository.save(car);
     }
-    public Car updateCar(CarDTO carDTO) {
-        // Fetch the existing car by ID
-        Car existingCar = carRepository.findById(carDTO.getCarId())
-            .orElseThrow(() -> new IllegalArgumentException("Car not found"));
-    
-        // Fetch related entities
-        Model model = modelRepository.findByModelName(carDTO.getModelName())
-            .orElseThrow(() -> new IllegalArgumentException("Model not found"));
-        Make make = makeRepository.findByMakeName(carDTO.getMakeName())
-            .orElseThrow(() -> new IllegalArgumentException("Make not found"));
-        Type type = typeRepository.findByTypeName(carDTO.getTypeName())
-            .orElseThrow(() -> new IllegalArgumentException("Type not found"));
-    
-        // Update existing car's properties
-        existingCar.setCarName(carDTO.getCarName());
-        existingCar.setModel(model);
-        existingCar.setMake(make);
-        existingCar.setType(type);
-        existingCar.setYear(carDTO.getYear());
-        existingCar.setSeatCapacity(carDTO.getSeatCapacity());
-        existingCar.setAirConditioned(carDTO.isAirConditioned());
-        existingCar.setPricePerDay(carDTO.getPricePerDay());
-        existingCar.setStatus(carDTO.getStatus());
-    
-        // Save the updated car
-        return carRepository.save(existingCar);
-    }
+
     public boolean deleteCar(int carId) {
         if (carRepository.existsById(carId)) {
             carRepository.deleteById(carId);
@@ -80,15 +64,19 @@ public class CarService {
             return false;
         }
     }
+
     public List<Model> getAllModel() {
         return modelRepository.findAll();
     }
+
     public List<Make> getAllMake() {
         return makeRepository.findAll();
     }
+
     public List<Type> getAllType() {
         return typeRepository.findAll();
     }
+
     public List<Car> getAllCars() {
         return carRepository.findAll();
     }
@@ -97,19 +85,16 @@ public class CarService {
         return carRepository.findById(id).orElse(null);
     }
 
-    public Car saveCar(Car car) {
-        return carRepository.save(car);
-    }
-    public Model saveModel(Model model){
+
+    public Model saveModel(Model model) {
         return modelRepository.save(model);
     }
-    public Make saveMake(Make make){
+
+    public Make saveMake(Make make) {
         return makeRepository.save(make);
     }
-    public Type saveType(Type type){
+
+    public Type saveType(Type type) {
         return typeRepository.save(type);
     }
-    // public void deleteCar(Long id) {
-    //     carRepository.deleteById(id);
-    // }
 }

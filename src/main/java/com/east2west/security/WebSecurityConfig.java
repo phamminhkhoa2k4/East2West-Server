@@ -66,6 +66,8 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
           auth.requestMatchers("/api/auth/**").permitAll()
               .requestMatchers("/api/tours/**").permitAll()
               .requestMatchers("/api/itineraries/**").permitAll()
+              .requestMatchers("/api/cars/**").permitAll()
+              .requestMatchers("/api/bookings/**").permitAll()
               .anyRequest().authenticated()
         );
     http.authenticationProvider(authenticationProvider());
