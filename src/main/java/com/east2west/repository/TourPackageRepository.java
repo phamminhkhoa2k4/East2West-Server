@@ -20,5 +20,6 @@ List<TourPackage> findByCategoryTourName(@Param("categoryTourName") String categ
 List<TourPackage> findByThemeTourName(@Param("themeTourName") String themeTourName);
 
 @Query("SELECT tp FROM TourPackage tp JOIN tp.suitableTours st WHERE st.suitableName = :suitableName")
-List<TourPackage> findBySuitableName(@Param("suitableName") String suitableName);;
+List<TourPackage> findBySuitableName(@Param("suitableName") String suitableName);
+
 }

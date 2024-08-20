@@ -31,6 +31,15 @@ public class ItineraryController {
         Itinerary itinerary = itineraryService.createOrUpdateItinerary(itineraryDTO);
         return ResponseEntity.ok(itinerary);
     }   
+    // {
+    //     "itineraryId": null,  // Optional, use if updating
+    //     "name": "Northern Lights Tour",
+    //     "description": "A 5-day tour to explore the Northern Lights",
+    //     "accommodationIds": [1, 2],  // List of accommodation IDs
+    //     "mealIds": [1, 3],  // List of meal IDs
+    //     "placeIds": [4, 5]  // List of place IDs
+    // }
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteItinerary(@PathVariable int id) {
         itineraryService.deleteItinerary(id);

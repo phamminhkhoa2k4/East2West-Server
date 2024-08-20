@@ -1,11 +1,9 @@
 package com.east2west.controllers;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.east2west.models.DTO.BookingTourDTO;
 import com.east2west.models.DTO.TourPackageDetailDTO;
 import com.east2west.models.Entity.BookingTour;
@@ -58,14 +55,16 @@ public class PackTourController {
     public List<TourPackage> getToursBySuitableName(@RequestParam String suitableName) {
         return packTourService.getToursBySuitableName(suitableName);
     }
-   @PostMapping("/booking")
-    public ResponseEntity<BookingTour> createBookingTour(@RequestBody BookingTourDTO bookingTourDTO) {
-        BookingTour newBooking = packTourService.createBookingTour(bookingTourDTO);
-        return new ResponseEntity<>(newBooking, HttpStatus.CREATED);
+   
+    @GetMapping("/top10")
+    public List<TourPackage> getTop10Tours() {
+        return packTourService.findTop10ByOrderByTotalBookingsDesc();
     }
-    @PostMapping("/cancel/{bookingTourId}")
-    public ResponseEntity<BookingTour> cancelBooking(@PathVariable int bookingTourId) {
-        BookingTour cancelledBooking = packTourService.cancelBooking(bookingTourId);
-        return new ResponseEntity<>(cancelledBooking, HttpStatus.OK);
-    }
+
+    // Endpoint to get the top tours for the current month based on bookings
+    // @GetMapping("/top-by-month")
+    // public ResponseEntity<List<TourPackage>> getTopToursByCurrentMonth() {
+    //     List<TourPackage> topTours = packTourService.getTopToursByCurrentMonth();
+    //     return ResponseEntity.ok(topTours);
+    // }
 }
