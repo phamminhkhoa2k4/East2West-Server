@@ -2,10 +2,8 @@ package com.east2west.controllers;
 
 import com.east2west.models.Entity.Make;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.east2west.models.DTO.CarDTO;
 import com.east2west.models.Entity.Car;
 import com.east2west.models.Entity.Model;
@@ -13,7 +11,7 @@ import com.east2west.models.Entity.Type;
 import com.east2west.service.*;
 import java.util.List;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+// @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/cars")
 public class CarController {
@@ -31,8 +29,15 @@ public class CarController {
     }
 
     @PostMapping
-    public Car saveCar(@RequestBody CarDTO carDTO) {
-        return carService.saveCar(carDTO);
+    public ResponseEntity<Car> createOrUpdateCar(@RequestBody CarDTO carDTO) {
+        Car car = carService.createOrUpdateCar(carDTO);
+        return ResponseEntity.ok(car);
+    }
+
+    @DeleteMapping("/{carId}")
+    public ResponseEntity<Void> deleteCar(@PathVariable int carId) {
+        carService.deleteCar(carId);
+        return ResponseEntity.noContent().build();
     }
     // {
     //     "carName": "Accordcc",
@@ -50,16 +55,7 @@ public class CarController {
     //     carService.;
     // }
      
-  @PutMapping
-public ResponseEntity<Car> edit(@RequestBody CarDTO carDTO) {
-    Car updatedCar = carService.updateCar(carDTO);
-    return updatedCar != null ? new ResponseEntity<>(updatedCar, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-}
-@DeleteMapping("/{carId}")
-public ResponseEntity<Void> deleteCar(@PathVariable int carId) {
-    boolean isDeleted = carService.deleteCar(carId);
-    return isDeleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-}
+
     @GetMapping("/model")
     public List<Model> getCarModel() {
         return carService.getAllModel();

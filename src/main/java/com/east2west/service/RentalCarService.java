@@ -7,7 +7,7 @@ import com.east2west.models.DTO.RentalDTO;
 import com.east2west.models.Entity.Car;
 import com.east2west.models.Entity.Payment;
 import com.east2west.models.Entity.Rental;
-import com.east2west.models.Entity.User;
+
 
 import java.util.List;
 
@@ -19,8 +19,8 @@ public class RentalCarService {
     public List<Rental> getAllBookings() {
         return rentalCarRepository.findAll();
     }
-    @Autowired
-    private UserRepository userRepository;
+    // @Autowired
+    // private UserRepository userRepository;
 
     @Autowired
     private CarRepository carRepository;

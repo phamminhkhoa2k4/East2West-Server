@@ -1,19 +1,30 @@
 package com.east2west.models.DTO;
 
-
 public class CarDTO {
     private int carId;
-
-   
     private String carName;
-    private String modelName;
-    private String makeName;
-    private String typeName;
+    private int modelId;
+    private int makeId;
+    private int typeId;
     private int year;
     private int seatCapacity;
     private boolean airConditioned;
     private double pricePerDay;
     private String status;
+    private int locationTypeId;
+    private String cargearbox;
+    private String miles;
+    private String fueltankcapacity;
+    private String fuel;
+    private String location;
+
+    public int getCarId() {
+        return this.carId;
+    }
+
+    public void setCarId(int carId) {
+        this.carId = carId;
+    }
 
     public String getCarName() {
         return this.carName;
@@ -23,28 +34,28 @@ public class CarDTO {
         this.carName = carName;
     }
 
-    public String getModelName() {
-        return this.modelName;
+    public int getModelId() {
+        return this.modelId;
     }
 
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
+    public void setModelId(int modelId) {
+        this.modelId = modelId;
     }
 
-    public String getMakeName() {
-        return this.makeName;
+    public int getMakeId() {
+        return this.makeId;
     }
 
-    public void setMakeName(String makeName) {
-        this.makeName = makeName;
+    public void setMakeId(int makeId) {
+        this.makeId = makeId;
     }
 
-    public String getTypeName() {
-        return this.typeName;
+    public int getTypeId() {
+        return this.typeId;
     }
 
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
     }
 
     public int getYear() {
@@ -86,13 +97,54 @@ public class CarDTO {
     public void setStatus(String status) {
         this.status = status;
     }
-    public int getCarId() {
-        return this.carId;
+
+    public int getLocationTypeId() {
+        return this.locationTypeId;
     }
 
-    public void setCarId(int carId) {
-        this.carId = carId;
+    public void setLocationTypeId(int locationTypeId) {
+        this.locationTypeId = locationTypeId;
     }
 
- 
+    public String getCargearbox() {
+        return this.cargearbox;
+    }
+
+    public void setCargearbox(String cargearbox) {
+        this.cargearbox = cargearbox;
+    }
+
+    public String getMiles() {
+        return this.miles;
+    }
+
+    public void setMiles(String miles) {
+        this.miles = miles;
+    }
+
+    public String getFueltankcapacity() {
+        return this.fueltankcapacity;
+    }
+
+    public void setFueltankcapacity(String fueltankcapacity) {
+        this.fueltankcapacity = fueltankcapacity;
+    }
+
+    public String getFuel() {
+        return this.fuel;
+    }
+
+    public void setFuel(String fuel) {
+        this.fuel = fuel;
+    }
+
+    public String getLocation() {
+        return this.location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+
 }
