@@ -52,6 +52,9 @@ public class PackTourService {
 
     @Autowired
     private TourCategoryTourRepository tourCategoryTourRepository;
+     
+    @Autowired
+    private ThemeTourRepository ThemeTourRepository;
 
     @Autowired
     private TourThemeTourRepository tourThemeTourRepository;
@@ -87,16 +90,16 @@ public class PackTourService {
         return tourPackageRepository.findAll();
     }
 
-    public List<TourCategoryTour> getAllTourPackagesCategory() {
-        return tourCategoryTourRepository.findAll();
+    public List<CategoryTour> getAllTourPackagesCategory() {
+        return categoryTourRepository.findAll();
     }
 
     public List<TourPackage> getAllTourPackagesByCategory(String cat) {
         return tourPackageRepository.findByCategoryTourName(cat);
     }
 
-    public List<TourThemeTour> getAllTourPackagesTheme() {
-        return tourThemeTourRepository.findAll();
+    public List<ThemeTour> getAllTourPackagesTheme() {
+        return ThemeTourRepository.findAll();
     }
 
     public List<TourPackage> getToursByThemeTourName(String themeTourName) {
@@ -107,14 +110,16 @@ public class PackTourService {
         return tourDepartureDateRepository.findAll();
     }
 
-    public List<TourSuitableTour> getAllTourPackagesSuitable() {
-        return tourSuitableTourRepository.findAll();
+    public List<SuitableTour> getAllTourPackagesSuitable() {
+        return suitableTourRepository.findAll();
     }
 
     public List<TourPackage> getToursBySuitableName(String suitableName) {
         return tourPackageRepository.findBySuitableName(suitableName);
     }
-
+    public List<DepartureDate> getAllDepartureDate(){
+        return departureDateRepository.findAll();
+    }
     public TourPackageDetailDTO getTourDetailByPackageid(int packageid) {
         TourPackage tourPackage = tourPackageRepository.findByPackageid(packageid);
         List<Itinerary> itineraries = tourPackage.getItineraries();
