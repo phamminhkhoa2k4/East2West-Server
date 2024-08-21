@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.east2west.models.DTO.CarDTO;
 import com.east2west.models.Entity.Car;
+import com.east2west.models.Entity.LocationType;
 import com.east2west.models.Entity.Model;
 import com.east2west.models.Entity.Type;
 import com.east2west.service.*;
@@ -79,5 +80,9 @@ public class CarController {
     @PostMapping("/type")
     public Type addCarType(@RequestBody Type  type) {
         return carService.saveType(type);
+    }
+    @GetMapping("/locationtypes")
+    public List<LocationType> getLocationType() {
+        return carService.getAllLocationType();
     }
 }

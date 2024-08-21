@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.east2west.repository.*;
 import com.east2west.models.DTO.CarDTO;
 import com.east2west.models.Entity.Car;
+import com.east2west.models.Entity.LocationType;
 import com.east2west.models.Entity.Make;
 import com.east2west.models.Entity.Model;
 import com.east2west.models.Entity.Type;
@@ -96,5 +97,8 @@ public class CarService {
 
     public Type saveType(Type type) {
         return typeRepository.save(type);
+    }
+    public List<LocationType> getAllLocationType(){
+        return locationTypeRepository.findAll();
     }
 }
