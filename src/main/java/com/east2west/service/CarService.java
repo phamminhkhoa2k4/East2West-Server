@@ -25,6 +25,7 @@ public class CarService {
 
     @Autowired
     private TypeRepository typeRepository;
+
     @Autowired
     private LocationTypeRepository locationTypeRepository;
 
@@ -53,7 +54,6 @@ public class CarService {
         makeRepository.findById(carDTO.getMakeId()).ifPresent(car::setMake);
         typeRepository.findById(carDTO.getTypeId()).ifPresent(car::setType);
         locationTypeRepository.findById(carDTO.getLocationTypeId()).ifPresent(car::setLocationtype);
-
         return carRepository.save(car);
     }
 
@@ -97,6 +97,9 @@ public class CarService {
 
     public Type saveType(Type type) {
         return typeRepository.save(type);
+    }
+    public LocationType saveLocationType(LocationType locationType) {
+        return locationTypeRepository.save(locationType);
     }
     public List<LocationType> getAllLocationType(){
         return locationTypeRepository.findAll();

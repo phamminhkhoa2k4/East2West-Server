@@ -85,4 +85,8 @@ public class CarController {
     public List<LocationType> getLocationType() {
         return carService.getAllLocationType();
     }
+    @PostMapping("/locationtypes")
+    public LocationType setLocationType(@RequestBody LocationType  locationtypeType) {
+        return carService.saveLocationType(locationtypeType);
+    }
 }
