@@ -60,9 +60,7 @@ import com.east2west.models.Entity.CategoryTour;
         this.themeTours = themeTours;
     }
 
-   
 
-    
     
         // Getters and setters
         public int getPackageid() {

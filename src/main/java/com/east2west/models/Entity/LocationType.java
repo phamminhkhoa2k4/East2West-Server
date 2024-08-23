@@ -3,12 +3,12 @@ package com.east2west.models.Entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "LocationType")
+@Table(name = "locationtype")
 public class LocationType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "locationTypeid")
+    @Column(name = "locationtypeid")
     private int locationtypeid;
 
     public int getLocationtypeid() {
