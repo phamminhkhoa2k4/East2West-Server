@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.east2west.repository.*;
 import com.east2west.models.DTO.CarDTO;
 import com.east2west.models.Entity.Car;
+import com.east2west.models.Entity.LocationType;
 import com.east2west.models.Entity.Make;
 import com.east2west.models.Entity.Model;
 import com.east2west.models.Entity.Type;
@@ -24,6 +25,7 @@ public class CarService {
 
     @Autowired
     private TypeRepository typeRepository;
+
     @Autowired
     private LocationTypeRepository locationTypeRepository;
 
@@ -52,7 +54,6 @@ public class CarService {
         makeRepository.findById(carDTO.getMakeId()).ifPresent(car::setMake);
         typeRepository.findById(carDTO.getTypeId()).ifPresent(car::setType);
         locationTypeRepository.findById(carDTO.getLocationTypeId()).ifPresent(car::setLocationtype);
-
         return carRepository.save(car);
     }
 
@@ -96,5 +97,11 @@ public class CarService {
 
     public Type saveType(Type type) {
         return typeRepository.save(type);
+    }
+    public LocationType saveLocationType(LocationType locationType) {
+        return locationTypeRepository.save(locationType);
+    }
+    public List<LocationType> getAllLocationType(){
+        return locationTypeRepository.findAll();
     }
 }

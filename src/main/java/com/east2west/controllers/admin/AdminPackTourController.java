@@ -18,7 +18,7 @@ import com.east2west.models.DTO.TourPackageDTO;
 import com.east2west.models.Entity.TourPackage;
 import com.east2west.service.PackTourService;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+
 @RestController
 @RequestMapping("/api/tours/admin")
 public class AdminPackTourController {
@@ -69,6 +69,5 @@ public class AdminPackTourController {
         boolean isDeleted = packTourService.deleteTour(id);
         return isDeleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    //?rang chủ search 10_top_booking,top_booking by month,các điểm đến ưa thích xuất hiện nhiều->chi tiết trang tìm kiếm,
-    //?trang search slider trong khoảng bao nhiêu ngày,slider giá trên đầu người,lọc theo tỉnh/thành phố,chủ đề,loại và qq gì đó
-}   //?car 
+    
+}   
