@@ -1,12 +1,16 @@
 package com.east2west.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.east2west.models.DTO.AccommodationDTO;
@@ -33,6 +37,7 @@ public class ItineraryController {
     }   
     // {
     //     "itineraryId": null,  // Optional, use if updating
+    //tourPackageId
     //     "name": "Northern Lights Tour",
     //     "description": "A 5-day tour to explore the Northern Lights",
     //     "accommodationIds": [1, 2],  // List of accommodation IDs
@@ -77,5 +82,20 @@ public class ItineraryController {
     public ResponseEntity<Void> deleteMeal(@PathVariable int id) {
         itineraryService.deleteMeal(id);
         return ResponseEntity.noContent().build();
+    }
+     @GetMapping("/accommodations/search")
+    public ResponseEntity<List<Accommodation>> searchAccommodations(@RequestParam String search) {
+        List<Accommodation> accommodations = itineraryService.searchAccommodationsByName(search);
+        return ResponseEntity.ok(accommodations);
+    }
+    @GetMapping("/places/search")
+    public ResponseEntity<List<Place>> searchPlaces(@RequestParam String search) {
+        List<Place> places = itineraryService.searchPlacesByName(search);
+        return ResponseEntity.ok(places);
+    }
+    @GetMapping("/meals/search")
+    public ResponseEntity<List<Meal>> searchMeals(@RequestParam String search) {
+        List<Meal> meals = itineraryService.searchMealsByName(search);
+        return ResponseEntity.ok(meals);
     }
 }

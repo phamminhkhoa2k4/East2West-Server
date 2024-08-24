@@ -1,21 +1,11 @@
 package com.east2west.models.DTO;
 
 import java.math.BigDecimal;
-
 import java.sql.Timestamp;
 import java.util.List;
 
 public class TourPackageDTO {
     private int id;
-
-    public int getId() {
-        return this.id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     private String title;
     private String thumbnail;
     private BigDecimal price;
@@ -27,7 +17,36 @@ public class TourPackageDTO {
     private List<Integer> categoryTourId;
     private List<Integer> themeTourId;
     private List<Integer> suitableTourId;
-    private List<Timestamp> departureDateDate;
+    public static class DepartureDateDTO {
+        private String id;
+        private String dateTime;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getDateTime() {
+            return dateTime;
+        }
+
+        public void setDateTime(String dateTime) {
+            this.dateTime = dateTime;
+        }
+    }
+
+    private List<DepartureDateDTO> departureDates;
+
+    public List<DepartureDateDTO> getDepartureDates() {
+        return this.departureDates;
+    }
+
+    public void setDepartureDates(List<DepartureDateDTO> departureDates) {
+        this.departureDates = departureDates;
+    }
 
     public List<Integer> getCategoryTourId() {
         return this.categoryTourId;
@@ -53,13 +72,6 @@ public class TourPackageDTO {
         this.suitableTourId = suitableTourId;
     }
 
-    public List<Timestamp> getDepartureDateDate() {
-        return this.departureDateDate;
-    }
-
-    public void setDepartureDateDate(List<Timestamp> departureDateDate) {
-        this.departureDateDate = departureDateDate;
-    }
 
     public String getTitle() {
         return this.title;
@@ -125,4 +137,11 @@ public class TourPackageDTO {
         this.bookingchange = bookingchange;
     }
 
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

@@ -3,7 +3,6 @@ package com.east2west.service;
 import java.util.List;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
-import java.util.stream.Collectors;
 import com.east2west.exception.ResourceNotFoundException;
 import com.east2west.models.DTO.HomestayDTO;
 import com.east2west.models.Entity.HomeType;

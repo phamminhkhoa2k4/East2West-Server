@@ -8,6 +8,5 @@ import com.east2west.models.Entity.Make;
 
 
 public interface MakeRepository extends JpaRepository<Make, Integer>{
-    Optional<Make> findByMakeName(String makeName);
-    
+    // Optional<Make> findByMakeName(String makeName);
 } 
