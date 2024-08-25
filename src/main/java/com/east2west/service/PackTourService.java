@@ -1,7 +1,6 @@
 package com.east2west.service;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -10,45 +9,33 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.ParseException;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
-
 import com.east2west.exception.ResourceNotFoundException;
 import com.east2west.models.DTO.BookingTourDTO;
 import com.east2west.models.DTO.TourPackageDTO;
 import com.east2west.models.DTO.TourPackageDTO.DepartureDateDTO;
 import com.east2west.models.DTO.TourPackageDetailDTO;
-import com.east2west.models.Entity.Accommodation;
+import com.east2west.models.DTO.TourPackageFilterDTO;
 import com.east2west.models.Entity.BookingTour;
 import com.east2west.models.Entity.CategoryTour;
 import com.east2west.models.Entity.DepartureDate;
 import com.east2west.models.Entity.Itinerary;
-import com.east2west.models.Entity.Meal;
 import com.east2west.models.Entity.Payment;
-import com.east2west.models.Entity.Place;
 import com.east2west.models.Entity.SuitableTour;
 import com.east2west.models.Entity.ThemeTour;
-import com.east2west.models.Entity.TourCategoryTour;
 import com.east2west.models.Entity.TourDepartureDate;
 import com.east2west.models.Entity.TourPackage;
-import com.east2west.models.Entity.TourSuitableTour;
-import com.east2west.models.Entity.TourThemeTour;
 import com.east2west.models.Entity.User;
-import com.east2west.repository.AccommodationRepository;
 import com.east2west.repository.BookingTourRepository;
 import com.east2west.repository.CategoryTourRepository;
 import com.east2west.repository.DepartureDateRepository;
 import com.east2west.repository.PaymentRepository;
 import com.east2west.repository.SuitableTourRepository;
 import com.east2west.repository.ThemeTourRepository;
-import com.east2west.repository.TourCategoryTourRepository;
 import com.east2west.repository.TourDepartureDateRepository;
 import com.east2west.repository.TourPackageRepository;
-import com.east2west.repository.TourSuitableTourRepository;
-import com.east2west.repository.TourThemeTourRepository;
 import com.east2west.repository.UserRepository;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -62,20 +49,17 @@ public class PackTourService {
     @Autowired
     private TourPackageRepository tourPackageRepository;
 
-    @Autowired
-    private TourCategoryTourRepository tourCategoryTourRepository;
+    
      
     @Autowired
     private ThemeTourRepository ThemeTourRepository;
 
-    @Autowired
-    private TourThemeTourRepository tourThemeTourRepository;
+   
 
     @Autowired
     private TourDepartureDateRepository tourDepartureDateRepository;
 
-    @Autowired
-    private TourSuitableTourRepository tourSuitableTourRepository;
+
 
     @Autowired
     private CategoryTourRepository categoryTourRepository;
@@ -326,13 +310,59 @@ public class PackTourService {
 
         return top10Tours;
     }
-   
-    // Method to get top tours based on the number of bookings in the current month
-    // public List<TourPackage> getTopToursByCurrentMonth() {
-    // LocalDate firstDayOfMonth = LocalDate.now().withDayOfMonth(1);
-    // LocalDate lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
+    public CategoryTour createCategoryTour(CategoryTour categoryTour) {
+        return categoryTourRepository.save(categoryTour);
+    }
+    
+    public ThemeTour createThemeTour(ThemeTour themeTour) {
+        return themeTourRepository.save(themeTour);
+    }
+    
+    public SuitableTour createSuitableTour(SuitableTour suitableTour) {
+        return suitableTourRepository.save(suitableTour);
+    }
 
-    // return bookingTourRepository.findTopToursByBookingDateRange(firstDayOfMonth,
-    // lastDayOfMonth);
-    // }
+    public Optional<SuitableTour> findSuitableById(int id) {
+        return suitableTourRepository.findById(id);
+    }
+
+    public SuitableTour updateSuitableTour(int id, String suitableTourName) {
+        Optional<SuitableTour> suitableTourOptional = suitableTourRepository.findById(id);
+
+        if (suitableTourOptional.isPresent()) {
+            SuitableTour suitableTour = suitableTourOptional.get();
+            suitableTour.setSuitableName(suitableTourName);
+            return suitableTourRepository.save(suitableTour);
+        }
+
+        return null;
+    }
+    public Optional<CategoryTour> findCategoryById(int id) {
+        return categoryTourRepository.findById(id);
+    }
+    public CategoryTour saveCategory(CategoryTour categoryTour) {
+        return categoryTourRepository.save(categoryTour);
+    }
+    public Optional<ThemeTour> findThemeById(int id) {
+        return themeTourRepository.findById(id);
+    }
+
+    public ThemeTour saveTheme(ThemeTour themeTour) {
+        return themeTourRepository.save(themeTour);
+    }
+    public List<TourPackage> filterTourPackages(TourPackageFilterDTO filterDTO) {
+        List<TourPackage> allTourPackages = tourPackageRepository.findAll();
+        BigDecimal budget = filterDTO.getBudget() != null && !filterDTO.getBudget().isEmpty() 
+            ? new BigDecimal(filterDTO.getBudget()) 
+            : null;
+        return allTourPackages.stream()
+            .filter(pkg -> filterDTO.getCategoryTourId() == null || filterDTO.getCategoryTourId().isEmpty() ||
+                pkg.getCategoryTours().stream().anyMatch(c -> filterDTO.getCategoryTourId().contains(c.getCategoryTourId())))
+            .filter(pkg -> filterDTO.getThemeTourId() == null || filterDTO.getThemeTourId().isEmpty() ||
+                pkg.getThemeTours().stream().anyMatch(t -> filterDTO.getThemeTourId().contains(t.getThemeTourId())))
+            .filter(pkg -> filterDTO.getSuitableTourId() == null || filterDTO.getSuitableTourId().isEmpty() ||
+                pkg.getSuitableTours().stream().anyMatch(s -> filterDTO.getSuitableTourId().contains(s.getSuitableTourId())))
+            .filter(pkg -> budget == null || pkg.getPrice().compareTo(budget) <= 0)
+            .collect(Collectors.toList());
+    }
 }
