@@ -104,4 +104,5 @@ public class CarService {
     public List<LocationType> getAllLocationType(){
         return locationTypeRepository.findAll();
     }
+    
 }
