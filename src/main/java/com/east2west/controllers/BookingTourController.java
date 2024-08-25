@@ -1,11 +1,9 @@
 package com.east2west.controllers;
 
 import com.east2west.models.DTO.BookingTourDTO;
-import com.east2west.models.Entity.BookingTour;
 import com.east2west.service.PackTourService;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

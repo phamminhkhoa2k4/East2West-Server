@@ -73,7 +73,18 @@ public class Itinerary {
         joinColumns = @JoinColumn(name = "itineraryid"),
         inverseJoinColumns = @JoinColumn(name = "transferid")
     )
-    private List<Transfer> location;
+    private List<Transfer> transfers;
+
+    public List<Transfer> getTransfers() {
+        return this.transfers;
+    }
+
+    public void setTransfers(List<Transfer> transfers) {
+        this.transfers = transfers;
+    }
+
+    
+    
 
    
 

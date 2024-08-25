@@ -1,7 +1,8 @@
 package com.east2west.controllers;
 
-
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,7 +18,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,31 +63,39 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
+        // Authenticate user
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
                         loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        // Get user details
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
+        // Generate JWT Cookie
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
+        // Extract user roles
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
+        // Create response body
+        UserInfoResponse userInfoResponse = new UserInfoResponse(
+                userDetails.getUserId(),
+                userDetails.getUsername(),
+                userDetails.getFirstname(),
+                userDetails.getLastname(),
+                userDetails.getEmail(),
+                userDetails.getPhone(),
+                userDetails.getAddress(),
+                roles);
+
+        // Return response with Set-Cookie header
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new UserInfoResponse(
-                        userDetails.getUserId(),
-                        userDetails.getUsername(),
-                        userDetails.getFirstname(),
-                        userDetails.getLastname(),
-                        userDetails.getEmail(),
-                        userDetails.getPhone(),
-                        userDetails.getAddress(),
-                        roles));
+                .body(userInfoResponse);
     }
 
     @PostMapping("/signup")
@@ -110,7 +123,7 @@ public class AuthController {
             role = roleRepository.findByRoleName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
         } else {
-            switch (strRoles.iterator().next()) { // Lấy phần tử đầu tiên của Set
+            switch (strRoles.iterator().next()) {
                 case "business":
                     role = roleRepository.findByRoleName(ERole.ROLE_BUSINESS)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -133,6 +146,18 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+    // Exception handler for validation errors
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/signout")
