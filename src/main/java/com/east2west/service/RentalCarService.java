@@ -45,10 +45,10 @@ public class RentalCarService {
         rental.setUserid(rentalDTO.getUserId());
         rental.setCar(car);
         rental.setPayment(payment);
+        rental.setStatus("Waiting");
         rental.setRentalDate(rentalDTO.getRentalDate());
         rental.setReturnDate(rentalDTO.getReturnDate());
         rental.setTotalAmount(rentalDTO.getTotalAmount());
-
         return rentalCarRepository.save(rental);
     }
     public List<Rental> getRentalsByUserId(int userId) {

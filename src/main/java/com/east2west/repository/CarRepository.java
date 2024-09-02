@@ -13,4 +13,5 @@ public interface CarRepository extends JpaRepository<Car, Integer> {
     Optional<Car> findById(@Param("id") int id);
     //  @Query("SELECT r.car FROM Rental r WHERE r.user.id = :userId")
     // List<Car> findCarsByUserId(@Param("userId") int userId);
+    boolean existsByCarName(String carName);
 }

@@ -8,7 +8,16 @@ public class BookingTourDTO {
     private Timestamp bookingDate;
     private Timestamp tourDate;
     private int numberOfPeople;
-    private BigDecimal tourPrice;
+    private BigDecimal totalPrice;
+
+    public BigDecimal getTotalPrice() {
+        return this.totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
     private BigDecimal depositAmount;
     private String status;
     private BigDecimal refundAmount;
@@ -64,13 +73,7 @@ public class BookingTourDTO {
         this.numberOfPeople = numberOfPeople;
     }
 
-    public BigDecimal getTourPrice() {
-        return this.tourPrice;
-    }
-
-    public void setTourPrice(BigDecimal tourPrice) {
-        this.tourPrice = tourPrice;
-    }
+   
 
     public BigDecimal getDepositAmount() {
         return this.depositAmount;
