@@ -22,9 +22,16 @@ public class BookingTour {
         this.bookingtourid = bookingtourid;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "userid", referencedColumnName = "userid")
-    private User user;
+    @Column(name = "userid")
+    private int userid;
+
+    public int getUserid() {
+        return this.userid;
+    }
+
+    public void setUserid(int userid) {
+        this.userid = userid;
+    }
 
     @ManyToOne
     @JoinColumn(name = "paymentid", referencedColumnName = "paymentid")
@@ -75,16 +82,17 @@ public class BookingTour {
         this.numberofpeople = numberofpeople;
     }
 
-    @Column(name = "tourprice")
-    private BigDecimal tourprice;
+    @Column(name = "totalprice")
+    private BigDecimal totalprice;
 
-    public BigDecimal getTourprice() {
-        return this.tourprice;
+    public BigDecimal getTotalprice() {
+        return this.totalprice;
     }
 
-    public void setTourprice(BigDecimal tourprice) {
-        this.tourprice = tourprice;
+    public void setTotalprice(BigDecimal totalprice) {
+        this.totalprice = totalprice;
     }
+
 
     @Column(name = "depositamount")
     private BigDecimal depositamount;
@@ -136,13 +144,7 @@ public class BookingTour {
         this.depositrefund = depositrefund;
     }
 
-    public User getUser() {
-        return user;
-    }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public Payment getPayment() {
         return payment;

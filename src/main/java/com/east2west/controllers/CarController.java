@@ -3,6 +3,8 @@ package com.east2west.controllers;
 import com.east2west.models.Entity.Make;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.east2west.models.DTO.CarDTO;
@@ -11,6 +13,9 @@ import com.east2west.models.Entity.LocationType;
 import com.east2west.models.Entity.Model;
 import com.east2west.models.Entity.Type;
 import com.east2west.service.*;
+
+import jakarta.validation.Valid;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -33,15 +38,23 @@ public class CarController {
     }
 
     @PostMapping
-    public ResponseEntity<Car> createOrUpdateCar(@RequestBody CarDTO carDTO) {
-        Car car = carService.createOrUpdateCar(carDTO);
-        return ResponseEntity.ok(car);
+    public ResponseEntity<?> createOrUpdateCar(@Valid @RequestBody CarDTO carDTO) {
+        carService.createOrUpdateCar(carDTO);
+        return ResponseEntity.ok().body("Car created successfully");
     }
 
     @DeleteMapping("/{carId}")
-    public ResponseEntity<Void> deleteCar(@PathVariable int carId) {
-        carService.deleteCar(carId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deleteCar(@PathVariable int carId) {
+        try {
+            carService.deleteCar(carId);
+            return ResponseEntity.noContent().build();
+        } catch (DataIntegrityViolationException ex) {
+            return new ResponseEntity<>("Cannot delete car: This car is referenced by other records. Please handle those dependencies first.", HttpStatus.CONFLICT);
+        }
+    }
+    @GetMapping("/exists")
+    public boolean checkCarNameExists(@RequestParam String carName) {
+        return carService.doesCarNameExist(carName);
     }
     // {
     // "carName": "Accordcc",
@@ -151,6 +164,51 @@ public class CarController {
             return ResponseEntity.ok(updatedMake);
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+    // @DeleteMapping("/{carId}")
+    // public ResponseEntity<Void> deleteCar(@PathVariable int carId) {
+    //     carService.deleteCar(carId);
+    //     return ResponseEntity.noContent().build();
+    // }
+
+    @DeleteMapping("/makes/{id}")
+    public ResponseEntity<String> deleteMake(@PathVariable int id) {
+        try {
+            carService.deleteMake(id);
+            return new ResponseEntity<>("Make deleted successfully.", HttpStatus.OK);
+        } catch (DataIntegrityViolationException ex) {
+            return new ResponseEntity<>("Cannot delete make: This make is referenced by other records. Please handle those dependencies first.", HttpStatus.CONFLICT);
+        }
+    }
+
+    @DeleteMapping("/types/{id}")
+    public ResponseEntity<String> deleteType(@PathVariable int id) {
+        try {
+            carService.deleteType(id);
+            return new ResponseEntity<>("Type deleted successfully.", HttpStatus.OK);
+        } catch (DataIntegrityViolationException ex) {
+            return new ResponseEntity<>("Cannot delete type: This type is referenced by other records. Please handle those dependencies first.", HttpStatus.CONFLICT);
+        }
+    }
+
+    @DeleteMapping("/models/{id}")
+    public ResponseEntity<String> deleteModel(@PathVariable int id) {
+        try {
+            carService.deleteModel(id);
+            return new ResponseEntity<>("Model deleted successfully.", HttpStatus.OK);
+        } catch (DataIntegrityViolationException ex) {
+            return new ResponseEntity<>("Cannot delete model: This model is referenced by other records. Please handle those dependencies first.", HttpStatus.CONFLICT);
+        }
+    }
+
+    @DeleteMapping("/locationtypes/{id}")
+    public ResponseEntity<String> deleteLocationType(@PathVariable int id) {
+        try {
+            carService.deleteLocationType(id);
+            return new ResponseEntity<>("Location type deleted successfully.", HttpStatus.OK);
+        } catch (DataIntegrityViolationException ex) {
+            return new ResponseEntity<>("Cannot delete location type: This location type is referenced by other records. Please handle those dependencies first.", HttpStatus.CONFLICT);
         }
     }
 }
