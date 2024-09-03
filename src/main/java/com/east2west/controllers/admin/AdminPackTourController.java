@@ -38,7 +38,7 @@ public class AdminPackTourController {
 
     @PostMapping
     public ResponseEntity<TourPackage> createTour(@RequestBody TourPackageDTO tourPackageDTO) {
-        TourPackage createdTour = packTourService.createOrUpdateTour(tourPackageDTO);
+        TourPackage createdTour = packTourService.createTour(tourPackageDTO);
         return new ResponseEntity<>(createdTour, HttpStatus.CREATED);
     }
     // {

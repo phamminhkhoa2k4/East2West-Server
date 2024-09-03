@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.east2west.models.DTO.TourPackageDetailDTO;
 import com.east2west.models.DTO.TourPackageFilterDTO;
@@ -152,6 +153,10 @@ public class PackTourController {
     public ResponseEntity<List<TourPackage>> filterTourPackages(@RequestBody TourPackageFilterDTO filterDTO) {
         List<TourPackage> filteredPackages = packTourService.filterTourPackages(filterDTO);
         return ResponseEntity.ok(filteredPackages);
+    }
+    @GetMapping("/search")
+    public List<TourPackage> searchToursByTitle(@RequestParam("title") String title) {
+        return packTourService.findByTitle(title);
     }
     // Endpoint to get the top tours for the current month based on bookings
     // @GetMapping("/top-by-month")

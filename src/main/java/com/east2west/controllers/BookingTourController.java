@@ -23,7 +23,7 @@ public class BookingTourController {
 
     @PostMapping()
     public ResponseEntity<String> createBookingTour(@RequestBody BookingTourDTO bookingTourDTO) {
-        packTourService.createBookingTour(bookingTourDTO);
+        packTourService.saveBookingTour(bookingTourDTO);
         return ResponseEntity.ok("Booking tour created successfully!");
     }
     @PostMapping("/cancel")

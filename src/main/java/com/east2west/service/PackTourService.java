@@ -70,7 +70,6 @@ public class PackTourService {
     @Autowired
     private BookingTourRepository bookingTourRepository;
 
-
     @Autowired
     private PaymentRepository paymentRepository;
 
@@ -136,36 +135,7 @@ public class PackTourService {
         return tourPackageRepository.findByPackageid(id);
     }
 
-    public TourPackage createOrUpdateTour(TourPackageDTO tourPackageDTO) {
-        TourPackage tourPackage;
-        Integer id = tourPackageDTO.getId();
-        if (id == null || id == 0 || !tourPackageRepository.existsById(id)) {
-            tourPackage = new TourPackage();
-            tourPackage.setCategoryTours(new ArrayList<>());
-            tourPackage.setThemeTours(new ArrayList<>());
-            tourPackage.setSuitableTours(new ArrayList<>());
-            tourPackage.setDepartureDate(new ArrayList<>());
-        } else {
-            Optional<TourPackage> existingTourOpt = tourPackageRepository.findById(id);
-            if (existingTourOpt.isPresent()) {
-                tourPackage = existingTourOpt.get();
-                if (tourPackage.getCategoryTours() == null) {
-                    tourPackage.setCategoryTours(new ArrayList<>());
-                }
-                if (tourPackage.getThemeTours() == null) {
-                    tourPackage.setThemeTours(new ArrayList<>());
-                }
-                if (tourPackage.getSuitableTours() == null) {
-                    tourPackage.setSuitableTours(new ArrayList<>());
-                }
-                if (tourPackage.getDepartureDate() == null) {
-                    tourPackage.setDepartureDate(new ArrayList<>());
-                }
-            } else {
-                throw new ResourceNotFoundException("TourPackage not found with id " + id);
-            }
-        }
-
+    private void updateTourPackageFields(TourPackage tourPackage, TourPackageDTO tourPackageDTO) {
         tourPackage.setTitle(tourPackageDTO.getTitle());
         tourPackage.setThumbnail(tourPackageDTO.getThumbnail());
         tourPackage.setPrice(tourPackageDTO.getPrice());
@@ -192,7 +162,6 @@ public class PackTourService {
 
         // Map DepartureDates
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-
         tourPackage.getDepartureDate().clear();
         List<DepartureDate> existingDepartureDates = new ArrayList<>();
 
@@ -216,7 +185,43 @@ public class PackTourService {
         }
 
         tourPackage.setDepartureDate(existingDepartureDates);
+    }
+
+    public TourPackage createTour(TourPackageDTO tourPackageDTO) {
+        TourPackage tourPackage = new TourPackage();
+        tourPackage.setCategoryTours(new ArrayList<>());
+        tourPackage.setThemeTours(new ArrayList<>());
+        tourPackage.setSuitableTours(new ArrayList<>());
+        tourPackage.setDepartureDate(new ArrayList<>());
+
+        updateTourPackageFields(tourPackage, tourPackageDTO);
+
         return tourPackageRepository.save(tourPackage);
+    }
+
+    public TourPackage updateTour(TourPackageDTO tourPackageDTO) {
+        Integer id = tourPackageDTO.getId();
+        if (id == null || !tourPackageRepository.existsById(id)) {
+            throw new ResourceNotFoundException("TourPackage not found with id " + id);
+        }
+
+        Optional<TourPackage> existingTourOpt = tourPackageRepository.findById(id);
+        if (existingTourOpt.isPresent()) {
+            TourPackage tourPackage = existingTourOpt.get();
+
+            if (!tourPackage.getTitle().equals(tourPackageDTO.getTitle())) {
+                // Check for duplicate title
+                boolean exists = tourPackageRepository.existsByTitle(tourPackageDTO.getTitle());
+                if (exists) {
+                    throw new IllegalArgumentException("Title already exists");
+                }
+            }
+
+            updateTourPackageFields(tourPackage, tourPackageDTO);
+            return tourPackageRepository.save(tourPackage);
+        } else {
+            throw new ResourceNotFoundException("TourPackage not found with id " + id);
+        }
     }
 
     public boolean deleteTour(int id) {
@@ -229,28 +234,37 @@ public class PackTourService {
         }
     }
 
-    public BookingTour createBookingTour(BookingTourDTO bookingTourDTO) {
+    public BookingTour saveBookingTour(BookingTourDTO bookingTourDTO) {
         BookingTour bookingTour = new BookingTour();
 
+        // Retrieve TourPackage
         TourPackage tourPackage = tourPackageRepository.findById(bookingTourDTO.getPackageId())
-                .orElseThrow(() -> new RuntimeException("Tour Package not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Tour Package not found with id " + bookingTourDTO.getPackageId()));
 
+        // Retrieve Payment
         Payment payment = paymentRepository.findById(bookingTourDTO.getPaymentId())
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Payment not found with id " + bookingTourDTO.getPaymentId()));
 
+        // Set booking details
         bookingTour.setUserid(bookingTourDTO.getUserId());
         bookingTour.setTourpackage(tourPackage);
         bookingTour.setPayment(payment);
-        bookingTour.setBookingdate(bookingTourDTO.getBookingDate());
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp timestamp = Timestamp.valueOf(now);
+        bookingTour.setBookingdate(timestamp);
         bookingTour.setTourdate(bookingTourDTO.getTourDate());
         bookingTour.setNumberofpeople(bookingTourDTO.getNumberOfPeople());
         bookingTour.setTotalprice(bookingTourDTO.getTotalPrice());
         bookingTour.setDepositamount(bookingTourDTO.getDepositAmount());
         bookingTour.setStatus("Waiting");
-        bookingTour.setRefundamount(bookingTourDTO.getRefundAmount());
-        bookingTour.setRefunddate(bookingTourDTO.getRefundDate());
-        bookingTour.setReason(bookingTourDTO.getReason());
-        bookingTour.setDepositrefund(bookingTourDTO.isDepositRefund());
+        bookingTour.setRefundamount(null);
+        bookingTour.setRefunddate(null);
+        bookingTour.setReason(null);
+        bookingTour.setDepositrefund(false);
+
+        // Save and return booking
         return bookingTourRepository.save(bookingTour);
     }
 
@@ -407,4 +421,49 @@ public class PackTourService {
             return false;
         }
     }
+
+    public String eployeeSaveBookingTour(BookingTourDTO bookingTourDTO) {
+        BookingTour bookingTour = new BookingTour();
+
+        // Retrieve TourPackage
+        TourPackage tourPackage = tourPackageRepository.findById(bookingTourDTO.getPackageId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Tour Package not found with id " + bookingTourDTO.getPackageId()));
+
+        // Retrieve Payment
+        Payment payment = paymentRepository.findById(bookingTourDTO.getPaymentId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Payment not found with id " + bookingTourDTO.getPaymentId()));
+
+        // Set booking details
+        bookingTour.setUserid(bookingTourDTO.getUserId());
+        bookingTour.setTourpackage(tourPackage);
+        bookingTour.setPayment(payment);
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp timestamp = Timestamp.valueOf(now);
+        bookingTour.setBookingdate(timestamp);
+        bookingTour.setTourdate(bookingTourDTO.getTourDate());
+        bookingTour.setNumberofpeople(bookingTourDTO.getNumberOfPeople());
+        bookingTour.setTotalprice(bookingTourDTO.getTotalPrice());
+        bookingTour.setDepositamount(bookingTourDTO.getDepositAmount());
+        bookingTour.setStatus("Waiting");
+        bookingTour.setRefundamount(null);
+        bookingTour.setRefunddate(null);
+        bookingTour.setReason(null);
+        bookingTour.setDepositrefund(false);
+        return "Booking tour successfully";
+    }
+
+    public Optional<BookingTour> getBookingTourById(int bookingTourId) {
+        return bookingTourRepository.findById(bookingTourId);
+    }
+
+    public BookingTour saveBookingTour(BookingTour bookingTour) {
+        return bookingTourRepository.save(bookingTour);
+    }
+
+    public List<TourPackage> findByTitle(String title) {
+        return tourPackageRepository.findByTitleContainingIgnoreCase(title);
+    }
+
 }

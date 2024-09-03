@@ -8,6 +8,7 @@ import com.east2west.models.Entity.Car;
 import com.east2west.models.Entity.LocationType;
 import com.east2west.models.Entity.Make;
 import com.east2west.models.Entity.Model;
+import com.east2west.models.Entity.TourPackage;
 import com.east2west.models.Entity.Type;
 import java.util.Optional;
 import java.util.List;
@@ -125,5 +126,9 @@ public class CarService {
     }
     public boolean doesCarNameExist(String carName) {
         return carRepository.existsByCarName(carName);
+    }
+
+    public List<Car> findByName(String name) {
+        return carRepository.findByTitleContainingIgnoreCase(name);
     }
 }
