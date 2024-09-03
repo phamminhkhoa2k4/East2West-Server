@@ -1,6 +1,7 @@
 package com.east2west.security.jwt;
 
 import java.security.Key;
+import java.time.Duration;
 import java.util.Date;
 
 import jakarta.servlet.http.Cookie;
@@ -31,31 +32,36 @@ public class JwtUtils {
   @Value("${bezkoder.app.jwtCookieName}")
   private String jwtCookie;
 
+  public ResponseCookie generateJwtCookie(UserDetailsImpl userDetails) {
+    String jwt = generateTokenFromUsername(userDetails.getUsername());
+    return ResponseCookie.from(jwtCookie, jwt)
+            .httpOnly(true)
+            .secure(true) // Đặt thành true nếu bạn sử dụng HTTPS
+            .sameSite("None") // Cho phép gửi cookie qua các yêu cầu cross-origin
+            .path("/") // Đảm bảo path chính xác
+            .maxAge(Duration.ofDays(1))
+            .build();
+  }
+
+  public ResponseCookie getCleanJwtCookie() {
+    return ResponseCookie.from(jwtCookie, null)
+            .path("/")
+            .build();
+  }
+
   public String getJwtFromCookies(HttpServletRequest request) {
     Cookie cookie = WebUtils.getCookie(request, jwtCookie);
     if (cookie != null) {
       return cookie.getValue();
-    } else {
-      return null;
     }
-  }
-
-  public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
-    String jwt = generateTokenFromUsername(userPrincipal.getUsername());
-    ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/api").maxAge(24 * 60 * 60).httpOnly(true).build();
-    return cookie;
-  }
-
-  public ResponseCookie getCleanJwtCookie() {
-    ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
-    return cookie;
+    return null;
   }
 
   public String getUserNameFromJwtToken(String token) {
     return Jwts.parserBuilder().setSigningKey(key()).build()
-        .parseClaimsJws(token).getBody().getSubject();
+            .parseClaimsJws(token).getBody().getSubject();
   }
-  
+
   private Key key() {
     return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
   }
@@ -73,16 +79,17 @@ public class JwtUtils {
     } catch (IllegalArgumentException e) {
       logger.error("JWT claims string is empty: {}", e.getMessage());
     }
-
     return false;
   }
-  
-  public String generateTokenFromUsername(String username) {   
+
+  public String generateTokenFromUsername(String username) {
+    Date now = new Date();
+    Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
     return Jwts.builder()
-              .setSubject(username)
-              .setIssuedAt(new Date())
-              .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-              .signWith(key(), SignatureAlgorithm.HS256)
-              .compact();
+            .setSubject(username)
+            .setIssuedAt(now)
+            .setExpiration(expiryDate)
+            .signWith(key(), SignatureAlgorithm.HS256)
+            .compact();
   }
 }

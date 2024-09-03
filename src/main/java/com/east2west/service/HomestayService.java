@@ -123,7 +123,7 @@ public class HomestayService {
         User user = userRepository.findById(bookingDTO.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-    
+
         long daysBetween = java.time.Duration.between(bookingDTO.getCheckin().toLocalDateTime(), bookingDTO.getCheckout().toLocalDateTime()).toDays();
         BigDecimal totalPrice = availability.getPricepernight().multiply(BigDecimal.valueOf(daysBetween));
 

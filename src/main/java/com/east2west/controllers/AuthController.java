@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -73,27 +74,35 @@ public class AuthController {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
+        // Create response body
+        UserInfoResponse userInfoResponse = new UserInfoResponse(
+                userDetails.getUserId(),
+                userDetails.getUsername(),
+                userDetails.getFirstname(),
+                userDetails.getLastname(),
+                userDetails.getEmail(),
+                userDetails.getPhone(),
+                userDetails.getAddress(),
+                roles);
+
+        // Return response with Set-Cookie header
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new UserInfoResponse(
-                        userDetails.getUserId(),
-                        userDetails.getUsername(),
-                        userDetails.getFirstname(),
-                        userDetails.getLastname(),
-                        userDetails.getEmail(),
-                        userDetails.getPhone(),
-                        userDetails.getAddress(),
-                        roles));
+                .body(userInfoResponse);
     }
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+            Map<String, String> errors = new HashMap<>();
+            errors.put("username", "Username is already taken!");
+            return ResponseEntity.badRequest().body(errors);
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+            Map<String, String> errors = new HashMap<>();
+            errors.put("email", "Email is already in use!");
+            return ResponseEntity.badRequest().body(errors);
         }
 
         User user = new User(signUpRequest.getUsername(),
@@ -111,7 +120,7 @@ public class AuthController {
             role = roleRepository.findByRoleName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
         } else {
-            switch (strRoles.iterator().next()) { // Lấy phần tử đầu tiên của Set
+            switch (strRoles.iterator().next()) {
                 case "business":
                     role = roleRepository.findByRoleName(ERole.ROLE_BUSINESS)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -134,6 +143,18 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+    // Exception handler for validation errors
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/signout")
