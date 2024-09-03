@@ -1,182 +1,110 @@
 package com.east2west.models.Entity;
 
+import com.east2west.util.StringListConverter;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.util.List;
 @Entity
 @Table(name = "homestays")
 public class Homestay {
 
+    @Setter
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "homestayid")
     private int homestayid;
 
-    public int getHomestayid() {
-        return this.homestayid;
-    }
 
-    public void setHomestayid(int homestayid) {
-        this.homestayid = homestayid;
-    }
-
+    @Setter
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wardid", referencedColumnName = "wardid")
     private Ward ward;
 
-    public Ward getWard() {
-        return this.ward;
-    }
-
-    public void setWard(Ward ward) {
-        this.ward = ward;
-    }
-
+    // alter small
+    @Setter
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hometypeid", referencedColumnName = "hometypeid")
-    private HomeType hometype;
+    @JoinColumn(name = "structureid", referencedColumnName = "structureid")
+    private Structure structure;
 
-    public HomeType getHometype() {
-        return this.hometype;
-    }
+    @Setter
+    @Getter
+    @Column(name = "type")
+    private String type;
 
-    public void setHometype(HomeType hometype) {
-        this.hometype = hometype;
-    }
 
+    @Setter
+    @Getter
     @Column(name = "userid")
     private int userid;
 
-    public int getUserid() {
-        return this.userid;
-    }
-
-    public void setUserid(int userid) {
-        this.userid = userid;
-    }
-
+    @Setter
+    @Getter
     @Column(name = "longitude")
     private double longitude;
 
-    public double getLongitude() {
-        return this.longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
+    @Setter
+    @Getter
     @Column(name = "latitude")
     private double latitude;
 
-    public double getLatitude() {
-        return this.latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
+    @Setter
+    @Getter
     @Column(name = "title")
     private String title;
 
-    public String getTitle() {
-        return this.title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
+    @Setter
+    @Getter
     @Column(name = "address")
     private String address;
 
-    public String getAddress() {
-        return this.address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
+    @Getter
+    @Setter
     @Column(name = "geom")
     private String geom;
 
-    public String getGeom() {
-        return this.geom;
-    }
 
-    public void setGeom(String geom) {
-        this.geom = geom;
-    }
 
+    @Setter
+    @Getter
     @Column(name = "photos")
-    private String photos;
+    @Convert(converter = StringListConverter.class)
+    private List<String> photos;
 
-    public String getPhotos() {
-        return this.photos;
-    }
-
-    public void setPhotos(String photos) {
-        this.photos = photos;
-    }
-
+    @Setter
+    @Getter
     @Column(name = "description")
     private String description;
 
-    public String getDescription() {
-        return this.description;
-    }
+    @Setter
+    @Getter
+    @Column(name = "extrainfo")
+    private String extrainfo;
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Column(name = "exactinfo")
-    private String exactinfo;
-
-    public String getExactinfo() {
-        return this.exactinfo;
-    }
-
-    public void setExactinfo(String exactinfo) {
-        this.exactinfo = exactinfo;
-    }
-
+    @Setter
+    @Getter
     @Column(name = "cleaningfee")
     private BigDecimal cleaningfee;
 
-    public BigDecimal getCleaningfee() {
-        return this.cleaningfee;
-    }
-
-    public void setCleaningfee(BigDecimal cleaningfee) {
-        this.cleaningfee = cleaningfee;
-    }
-
+    @Setter
+    @Getter
     @Column(name = "isapproved")
     private boolean isapproved;
 
-    public boolean isIsapproved() {
-        return this.isapproved;
-    }
-
-    public void setIsapproved(boolean isapproved) {
-        this.isapproved = isapproved;
-    }
-
+    @Setter
+    @Getter
     @Column(name = "maxguest")
     private int maxguest;
 
-    public int getMaxguest() {
-        return this.maxguest;
-    }
-
-    public void setMaxguest(int maxguest) {
-        this.maxguest = maxguest;
-    }
-
-     @ManyToMany
+    // Getters and Setters
+    @Setter
+    @Getter
+    @ManyToMany
     @JoinTable(
         name = "homestayperks",
         joinColumns = @JoinColumn(name = "homestayid"),
@@ -184,12 +112,8 @@ public class Homestay {
     )
     private List<Perk> perks;
 
-    // Getters and Setters
-    public List<Perk> getPerks() {
-        return this.perks;
-    }
-
-    public void setPerks(List<Perk> perks) {
-        this.perks = perks;
-    }
+    @Setter
+    @Getter
+    @OneToMany(mappedBy = "homestay", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<HomestayAvailability> homestayAvailabilityList;
 }
