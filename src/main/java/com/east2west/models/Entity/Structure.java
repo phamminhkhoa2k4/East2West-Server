@@ -2,24 +2,27 @@ package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
 
+
 @Entity
 @Table(name = "structures")
 public class Structure {
 
     @Id
+ 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "structureid")
-    private Long structureid;
+    private int structureid;
 
-    public Long getStructureid() {
+    public int getStructureid() {
         return this.structureid;
     }
 
-    public void setStructureid(Long structureid) {
+    public void setStructureid(int structureid) {
         this.structureid = structureid;
     }
 
-    @Column(name = "Structurename", nullable = false)
+
+    @Column(name = "structurename")
     private String structurename;
 
     public String getStructurename() {
@@ -30,9 +33,5 @@ public class Structure {
         this.structurename = structurename;
     }
 
-    // Constructors
-    public Structure() {
-    }
 
-   
 }

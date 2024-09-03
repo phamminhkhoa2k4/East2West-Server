@@ -1,11 +1,16 @@
 package com.east2west.models.Entity;
 
+import com.east2west.util.StringListConverter;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.util.List;
 @Entity
 @Table(name = "homestays")
 public class Homestay {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +25,8 @@ public class Homestay {
         this.homestayid = homestayid;
     }
 
+
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wardid", referencedColumnName = "wardid")
     private Ward ward;
@@ -32,18 +39,34 @@ public class Homestay {
         this.ward = ward;
     }
 
+    // alter small
+    
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hometypeid", referencedColumnName = "hometypeid")
-    private HomeType hometype;
+    @JoinColumn(name = "structureid", referencedColumnName = "structureid")
+    private Structure structure;
 
-    public HomeType getHometype() {
-        return this.hometype;
+    public Structure getStructure() {
+        return this.structure;
     }
 
-    public void setHometype(HomeType hometype) {
-        this.hometype = hometype;
+    public void setStructure(Structure structure) {
+        this.structure = structure;
     }
 
+    
+    @Column(name = "type")
+    private String type;
+
+    public String getType() {
+        return this.type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+
+    
     @Column(name = "userid")
     private int userid;
 
@@ -55,6 +78,7 @@ public class Homestay {
         this.userid = userid;
     }
 
+    
     @Column(name = "longitude")
     private double longitude;
 
@@ -66,6 +90,7 @@ public class Homestay {
         this.longitude = longitude;
     }
 
+   
     @Column(name = "latitude")
     private double latitude;
 
@@ -77,6 +102,7 @@ public class Homestay {
         this.latitude = latitude;
     }
 
+    
     @Column(name = "title")
     private String title;
 
@@ -88,6 +114,7 @@ public class Homestay {
         this.title = title;
     }
 
+    
     @Column(name = "address")
     private String address;
 
@@ -99,6 +126,7 @@ public class Homestay {
         this.address = address;
     }
 
+    
     @Column(name = "geom")
     private String geom;
 
@@ -110,17 +138,22 @@ public class Homestay {
         this.geom = geom;
     }
 
-    @Column(name = "photos")
-    private String photos;
 
-    public String getPhotos() {
+
+   
+    @Column(name = "photos")
+    @Convert(converter = StringListConverter.class)
+    private List<String> photos;
+
+    public List<String> getPhotos() {
         return this.photos;
     }
 
-    public void setPhotos(String photos) {
+    public void setPhotos(List<String> photos) {
         this.photos = photos;
     }
 
+    
     @Column(name = "description")
     private String description;
 
@@ -132,17 +165,19 @@ public class Homestay {
         this.description = description;
     }
 
-    @Column(name = "exactinfo")
-    private String exactinfo;
+   
+    @Column(name = "extrainfo")
+    private String extrainfo;
 
-    public String getExactinfo() {
-        return this.exactinfo;
+    public String getExtrainfo() {
+        return this.extrainfo;
     }
 
-    public void setExactinfo(String exactinfo) {
-        this.exactinfo = exactinfo;
+    public void setExtrainfo(String extrainfo) {
+        this.extrainfo = extrainfo;
     }
 
+    
     @Column(name = "cleaningfee")
     private BigDecimal cleaningfee;
 
@@ -154,6 +189,7 @@ public class Homestay {
         this.cleaningfee = cleaningfee;
     }
 
+    
     @Column(name = "isapproved")
     private boolean isapproved;
 
@@ -165,6 +201,7 @@ public class Homestay {
         this.isapproved = isapproved;
     }
 
+    
     @Column(name = "maxguest")
     private int maxguest;
 
@@ -176,7 +213,9 @@ public class Homestay {
         this.maxguest = maxguest;
     }
 
-     @ManyToMany
+    // Getters and Setters
+    
+    @ManyToMany
     @JoinTable(
         name = "homestayperks",
         joinColumns = @JoinColumn(name = "homestayid"),
@@ -184,7 +223,6 @@ public class Homestay {
     )
     private List<Perk> perks;
 
-    // Getters and Setters
     public List<Perk> getPerks() {
         return this.perks;
     }
@@ -192,4 +230,17 @@ public class Homestay {
     public void setPerks(List<Perk> perks) {
         this.perks = perks;
     }
+
+    
+    @OneToMany(mappedBy = "homestay", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<HomestayAvailability> homestayAvailabilityList;
+
+    public List<HomestayAvailability> getHomestayAvailabilityList() {
+        return this.homestayAvailabilityList;
+    }
+
+    public void setHomestayAvailabilityList(List<HomestayAvailability> homestayAvailabilityList) {
+        this.homestayAvailabilityList = homestayAvailabilityList;
+    }
+
 }
