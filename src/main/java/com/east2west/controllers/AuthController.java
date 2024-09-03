@@ -2,9 +2,11 @@ package com.east2west.controllers;
 
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.east2west.service.UserService;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.east2west.models.DTO.LoginRequest;
 import com.east2west.models.DTO.MessageResponse;
@@ -42,6 +40,9 @@ import com.east2west.security.services.UserDetailsImpl;
 public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     UserRepository userRepository;
@@ -140,5 +141,11 @@ public class AuthController {
         ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new MessageResponse("You've been signed out!"));
+    }
+
+    @GetMapping("/{id}")
+    public  ResponseEntity<?> getUserById(@PathVariable int id){
+       Optional<User> user = userService.getUserById(id);
+       return  ResponseEntity.ok(user);
     }
 }
