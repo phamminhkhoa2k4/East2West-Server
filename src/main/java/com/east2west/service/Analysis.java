@@ -5,6 +5,8 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.util.PropertySource.Comparator;
 import org.bouncycastle.util.Integers;
 import org.hibernate.id.IdentifierGeneratorHelper.BigDecimalHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import com.east2west.repository.CarRepository;
 import com.east2west.repository.RentalRepository;
 import com.east2west.repository.TourPackageRepository;
 import java.math.BigDecimal;
+
 @Service
 public class Analysis {
     @Autowired
@@ -28,8 +31,9 @@ public class Analysis {
 
     @Autowired
     private CarRepository carRepository;
-  @Autowired
+    @Autowired
     private TourPackageRepository tourPackageRepository;
+
     public List<TourRevenueDTO> getTopBookedToursByMonth(int year, int month) {
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.with(TemporalAdjusters.lastDayOfMonth());
@@ -54,55 +58,65 @@ public class Analysis {
 
     private List<TourRevenueDTO> findTopBookedTours(LocalDate startDate, LocalDate endDate) {
         List<BookingTour> allBookings = bookingRepository.findAll();
-    
-        // Filter bookings by the specified date range
+
+        // Lọc các booking theo khoảng thời gian được chỉ định
         List<BookingTour> filteredBookings = allBookings.stream()
                 .filter(booking -> !booking.getBookingdate().toLocalDateTime().toLocalDate().isBefore(startDate) &&
-                                   !booking.getBookingdate().toLocalDateTime().toLocalDate().isAfter(endDate))
+                        !booking.getBookingdate().toLocalDateTime().toLocalDate().isAfter(endDate))
                 .collect(Collectors.toList());
-    
-        // Group bookings by tour and count the number of bookings per tour
-        Map<Integer, Long> bookingCountMap = filteredBookings.stream()
-        .collect(Collectors.groupingBy(
-            booking -> booking.getTourpackage().getPackageid(), // Explicit cast to Long
-            Collectors.counting()
-        ));
-    
-        // Sort by the number of bookings and limit to top 10
-        return bookingCountMap.entrySet().stream()
-                .sorted(Map.Entry.<Integer, Long>comparingByValue().reversed())
+
+        // Nhóm các booking theo tour và tính tổng doanh thu và số lượng booking cho mỗi
+        // tour
+        Map<Integer, TourSummary> bookingSummaryMap = filteredBookings.stream()
+                .collect(Collectors.groupingBy(
+                        booking -> booking.getTourpackage().getPackageid(),
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                bookings -> new TourSummary(bookings.size(),
+                                        bookings.stream()
+                                                .map(booking -> booking.getTotalprice() != null
+                                                        ? booking.getTotalprice()
+                                                        : BigDecimal.ZERO)
+                                                .reduce(BigDecimal.ZERO, BigDecimal::add)))));
+
+        // Sắp xếp theo số lượng booking và giới hạn top 10
+        return bookingSummaryMap.entrySet().stream()
+                .sorted((entry1, entry2) -> Long.compare(entry2.getValue().getBookingCount(),
+                        entry1.getValue().getBookingCount()))
                 .limit(10)
                 .map(entry -> {
                     int tourId = entry.getKey();
-                    Long bookingCount = entry.getValue();
+                    TourSummary summary = entry.getValue();
                     String tourTitle = getTourTitleById(tourId);
-                    BigDecimal Revenue =getTourRevenue(tourId,bookingCount);
-                    return new TourRevenueDTO(tourId, tourTitle, bookingCount,Revenue);
+                    return new TourRevenueDTO(tourId, tourTitle, summary.getBookingCount(), summary.getTotalRevenue());
                 })
                 .collect(Collectors.toList());
     }
 
-    // private TourRevenueDTO mapToTourRevenueDTO(Object[] result) {
-    //     TourRevenueDTO dto = new TourRevenueDTO();
-    //     dto.setTourId((Integer) result[0]);
-    //     dto.setTourName((String) result[1]);
-    //     dto.setTotalBookings((Long) result[2]);
-    //     dto.setTotalRevenue((Double) result[3]);
-    //     return dto;
-    // }
+    // Lớp hỗ trợ để lưu trữ tổng doanh thu và số lượng booking cho mỗi tour
+    private static class TourSummary {
+        private final long bookingCount;
+        private final BigDecimal totalRevenue;
 
+        public TourSummary(long bookingCount, BigDecimal totalRevenue) {
+            this.bookingCount = bookingCount;
+            this.totalRevenue = totalRevenue;
+        }
 
+        public long getBookingCount() {
+            return bookingCount;
+        }
 
-    private BigDecimal getTourRevenue(int tourId ,Long bookingCount) {
-        BigDecimal total = tourPackageRepository.findByPackageid(tourId).getPrice()
-        .multiply(BigDecimal.valueOf(bookingCount));
-        return total ; 
+        public BigDecimal getTotalRevenue() {
+            return totalRevenue;
+        }
     }
 
     private String getTourTitleById(int tourId) {
-        // This is a placeholder. Replace with actual logic to fetch the tour title.
-        return tourPackageRepository.findByPackageid(tourId).getTitle(); 
+        // Hàm này lấy tiêu đề của tour theo ID
+        return tourPackageRepository.findByPackageid(tourId).getTitle();
     }
+
     public List<RentalRevenueDTO> getTopRentedCarsByMonth(int year, int month) {
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.with(TemporalAdjusters.lastDayOfMonth());
@@ -123,46 +137,88 @@ public class Analysis {
 
     private List<RentalRevenueDTO> getTopRentedCars(LocalDate startDate, LocalDate endDate) {
         List<Rental> allRentals = rentalRepository.findAll();
-
+    
         // Filter rentals by the specified date range
         List<Rental> filteredRentals = allRentals.stream()
-            .filter(rental -> !rental.getRentalDate().toLocalDate().isBefore(startDate) &&
-                              !rental.getRentalDate().toLocalDate().isAfter(endDate))
-            .collect(Collectors.toList());
-
-        // Group rentals by car and count the number of rentals per car
-        Map<Integer, Long> rentalCountMap = filteredRentals.stream()
-            .collect(Collectors.groupingBy(
-                rental -> rental.getCar().getCarId(),
-                Collectors.counting()
-            ));
-
-        // Sort by the number of rentals and limit to top 10
-        return rentalCountMap.entrySet().stream()
-            .sorted(Map.Entry.<Integer, Long>comparingByValue().reversed())
-            .limit(10)
-            .map(entry -> {
-                int carId = entry.getKey();
-                Long rentalCount = entry.getValue();
-                String carName = getCarNameById(carId);
-                BigDecimal revenue = getCarRevenue(carId, rentalCount);
-                return new RentalRevenueDTO(carId, carName, rentalCount, revenue);
-            })
-            .collect(Collectors.toList());
-    }
-
-    private BigDecimal getCarRevenue(int carId, Long rentalCount) {
-        double pricePerDay = carRepository.findById(carId)
-            .orElseThrow(() -> new RuntimeException("Car not found"))
-            .getPricePerDay();
+                .filter(rental -> {
+                    LocalDate rentalDate = rental.getRentalDate().toLocalDate();
+                    return !rentalDate.isBefore(startDate) && !rentalDate.isAfter(endDate);
+                })
+                .collect(Collectors.toList());
     
-        return BigDecimal.valueOf(pricePerDay)
-            .multiply(BigDecimal.valueOf(rentalCount));
+        // Group rentals by car and calculate the total revenue and rental count for each car
+        Map<Integer, RentalSummary> rentalSummaryMap = filteredRentals.stream()
+            .collect(Collectors.groupingBy(
+                    rental -> rental.getCar().getCarId(),
+                    Collectors.collectingAndThen(
+                            Collectors.toList(),
+                            rentalsList -> new RentalSummary(
+                                    (long) rentalsList.size(), // Cast to long
+                                    rentalsList.stream()
+                                        .map(rental -> {
+                                            // Adjust based on the return type of getTotalAmount()
+                                            if (rental.getTotalAmount() != 0) {
+                                                return BigDecimal.valueOf(rental.getTotalAmount());
+                                            } else {
+                                                return BigDecimal.ZERO;
+                                            }
+                                        })
+                                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+                            )
+                    )
+            ));
+    
+        // Sort by the number of rentals in descending order and limit to top 10
+        return rentalSummaryMap.entrySet().stream()
+                .sorted((entry1, entry2) -> Long.compare(
+                        entry2.getValue().getRentalCount(),
+                        entry1.getValue().getRentalCount()))
+                .limit(10)
+                .map(entry -> {
+                    int carId = entry.getKey();
+                    RentalSummary summary = entry.getValue();
+                    String carName = getCarNameById(carId);
+                    return new RentalRevenueDTO(
+                            carId, 
+                            carName, 
+                            summary.getRentalCount(), 
+                            summary.getTotalRevenue());
+                })
+                .collect(Collectors.toList());
     }
-
+    
+    // Helper class to store total revenue and rental count for each car
+    private static class RentalSummary {
+        private long rentalCount;
+        private BigDecimal totalRevenue;
+    
+        public RentalSummary(long rentalCount, BigDecimal totalRevenue) {
+            this.rentalCount = rentalCount;
+            this.totalRevenue = totalRevenue;
+        }
+    
+        public long getRentalCount() {
+            return rentalCount;
+        }
+    
+        public BigDecimal getTotalRevenue() {
+            return totalRevenue;
+        }
+    
+        // Optional: Setters can be removed if not used elsewhere
+        public void setRentalCount(long rentalCount) {
+            this.rentalCount = rentalCount;
+        }
+    
+        public void setTotalRevenue(BigDecimal totalRevenue) {
+            this.totalRevenue = totalRevenue;
+        }
+    }
+    
     private String getCarNameById(int carId) {
         return carRepository.findById(carId)
-            .orElseThrow(() -> new RuntimeException("Car not found"))
-            .getCarName();
+                .orElseThrow(() -> new RuntimeException("Car not found"))
+                .getCarName();
     }
+    
 }

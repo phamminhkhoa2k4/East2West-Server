@@ -40,11 +40,7 @@ public class RentalCarController {
     public List<Rental> getRentalsByUserId(@PathVariable int userId) {
         return rentalCarService.getRentalsByUserId(userId);
     }
-     @PostMapping("/cancel")
-    public ResponseEntity<String> cancelBooking(@RequestBody CancelDTO cancelDTO) {
-        String response = rentalCarService.cancelRental(cancelDTO);
-        return ResponseEntity.ok(response);
-    }
+    
     @GetMapping("/pdf/{rentalid}")
     public ResponseEntity<?> downloadRentalPDF(@PathVariable int rentalid) {
         Rental rental = rentalCarService.findById(rentalid);
