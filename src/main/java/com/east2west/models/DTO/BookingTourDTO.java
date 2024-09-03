@@ -10,6 +10,13 @@ public class BookingTourDTO {
     private int numberOfPeople;
     private BigDecimal totalPrice;
 
+   
+    private BigDecimal depositAmount;
+    private String status;
+    private BigDecimal refundAmount;
+    private Timestamp refundDate;
+    private String reason;
+    private boolean depositRefund;
     public BigDecimal getTotalPrice() {
         return this.totalPrice;
     }
@@ -17,13 +24,6 @@ public class BookingTourDTO {
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
-
-    private BigDecimal depositAmount;
-    private String status;
-    private BigDecimal refundAmount;
-    private Timestamp refundDate;
-    private String reason;
-    private boolean depositRefund;
 
     public int getUserId() {
         return this.userId;

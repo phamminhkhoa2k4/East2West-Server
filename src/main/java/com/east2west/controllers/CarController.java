@@ -11,6 +11,7 @@ import com.east2west.models.DTO.CarDTO;
 import com.east2west.models.Entity.Car;
 import com.east2west.models.Entity.LocationType;
 import com.east2west.models.Entity.Model;
+import com.east2west.models.Entity.TourPackage;
 import com.east2west.models.Entity.Type;
 import com.east2west.service.*;
 
@@ -210,5 +211,9 @@ public class CarController {
         } catch (DataIntegrityViolationException ex) {
             return new ResponseEntity<>("Cannot delete location type: This location type is referenced by other records. Please handle those dependencies first.", HttpStatus.CONFLICT);
         }
+    }
+    @GetMapping("/search")
+    public List<Car> searchToursByTitle(@RequestParam("name") String name) {
+        return  carService.findByName(name);
     }
 }

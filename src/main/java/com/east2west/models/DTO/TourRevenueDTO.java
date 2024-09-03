@@ -45,8 +45,7 @@ public class TourRevenueDTO {
         this.name = name;
     }
 
- 
-    // Getters and Setters
+
 
     public TourRevenueDTO(int id, String name, Long bookingcount,BigDecimal revenue) {
         this.id = id;
