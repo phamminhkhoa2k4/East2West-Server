@@ -20,11 +20,15 @@ import java.util.List;
 @RequestMapping("/api/rental")
 public class RentalCarController {
 
-    @Autowired
-    private RentalCarService rentalCarService;
+    private final RentalCarService rentalCarService;
+    private final PDFService pdfService;
+
 
     @Autowired
-    private PDFService pdfService;
+    public RentalCarController(RentalCarService rentalCarService, PDFService pdfService) {
+        this.rentalCarService = rentalCarService;
+        this.pdfService = pdfService;
+    }
 
     @GetMapping
     public List<Rental> getAllBookings() {
