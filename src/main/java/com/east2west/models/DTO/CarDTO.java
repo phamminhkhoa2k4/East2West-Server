@@ -1,22 +1,56 @@
 package com.east2west.models.DTO;
 
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
+import jakarta.validation.constraints.NotBlank;
+
 public class CarDTO {
     private int carId;
+
+    @NotBlank(message = "Car Name is required")
     private String carName;
+
+    @NotNull(message = "Model is required")
     private int modelId;
+
+    @NotNull(message = "Make is required")
     private int makeId;
+
+    @NotNull(message = "Type is required")
     private int typeId;
-    private int year;
-    private int seatCapacity;
-    private boolean airConditioned;
-    private double pricePerDay;
-    private String status;
+
+    @Positive(message = "Year must be positive")
+    private Integer year;
+
+    @Positive(message = "Seat Capacity must be positive")
+    private Integer seatCapacity;
+
+    private Boolean airConditioned;
+
+    @Positive(message = "Price Per Day must be positive")
+    private Double pricePerDay;
+
+    @NotNull(message = "Location Type is required")
     private int locationTypeId;
+
+    @NotBlank(message = "Gearbox is required")
     private String cargearbox;
+
+    @NotBlank(message = "Miles is required")
     private String miles;
+
+    @NotBlank(message = "Fuel Tank Capacity is required")
     private String fueltankcapacity;
+
+    @NotBlank(message = "Fuel is required")
     private String fuel;
+
+    @NotBlank(message = "Location is required")
     private String location;
+    @NotBlank(message = "status is required")
+    private String status;
 
     public int getCarId() {
         return this.carId;

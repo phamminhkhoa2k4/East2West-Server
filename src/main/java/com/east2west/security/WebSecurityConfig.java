@@ -63,15 +63,7 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
         .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> 
-          auth.requestMatchers("/api/auth/**").permitAll()
-              .requestMatchers("/api/tours/**").permitAll()
-              .requestMatchers("/api/itineraries/**").permitAll()
-              .requestMatchers("/api/cars/**").permitAll()
-              .requestMatchers("/api/bookings/**").permitAll()
-                  .requestMatchers("/api/homestays/**").permitAll()
-                  .requestMatchers("/api/payment/**").permitAll()
-                  .requestMatchers("/email/**").permitAll()
-              .anyRequest().authenticated()
+          auth.requestMatchers("/api/**").permitAll()
         );
     http.authenticationProvider(authenticationProvider());
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
