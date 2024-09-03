@@ -46,7 +46,6 @@ public class TourRevenueDTO {
     }
 
 
-
     public TourRevenueDTO(int id, String name, Long bookingcount,BigDecimal revenue) {
         this.id = id;
         this.name = name;
