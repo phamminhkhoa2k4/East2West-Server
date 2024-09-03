@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div style="margin: auto;width: 40%">
+    <div style="border-radius: 1rem; border: 1px solid #e2e8f0;">
+        <div>
+            <div style="display: flex;padding: 0 1.75rem;">
+                <div style="height: 5rem; width: 5rem; overflow: hidden; border-radius: 50%; padding: 1rem;">
+                    <img src="https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg" alt="" style="height: 100%; width: 100%; border-radius: 50%; object-fit: cover; object-position: center;" />
+                </div>
+                <div style="margin : auto 0;">
+                    <div style="font-size: 1.125rem; font-weight: 700;margin-bottom: 10px" th:text="${username}">[username]</div>
+                    <span style="border-radius: 9999px; background-color: #dbeafe; padding: 0.2rem 1rem; font-size: 0.875rem; font-weight: 500; color: #1e40af;">User</span>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+                <div style="display: flex; padding: 1rem 2.5rem;">
+                    <div style="width: 2.5rem; white-space: nowrap; font-size: 0.875rem; font-weight: 600; color: #666;">Full Name</div>
+                    <div style="display: flex; margin-left: 80px;">
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 1.25rem; height: 1.25rem;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
+              </svg>
+            </span>
+                        <div style="font-size: 0.875rem; font-weight: 600; color: #222222; text-decoration: none" th:text="${fullname}">[fullname]</div>
+                    </div>
+                </div>
+                <div style="display: flex; padding: 1rem 2.5rem; padding-bottom: 1rem;">
+                    <div style="width: 2.5rem; font-size: 0.875rem; font-weight: 600; color: #666;">Email</div>
+                    <div style="display: flex;margin-left: 80px">
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 1.25rem; height: 1.25rem;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+              </svg>
+            </span>
+                        <div style="font-size: 0.875rem; font-weight: 600; color: #222222; text-decoration: none" th:text="${email}">[email]</div>
+                    </div>
+                </div>
+                <div style="display: flex; padding: 1rem 2.5rem; padding-bottom: 1rem;">
+                    <div style="width: 2.5rem; font-size: 0.875rem; font-weight: 600; color: #666;">Phone</div>
+                    <div style="display: flex;margin-left: 80px">
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 1.25rem; height: 1.25rem;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
+              </svg>
+            </span>
+                        <div style="font-size: 0.875rem; font-weight: 600; color: #222222; text-decoration: none" th:text="${phone}">[phone]</div>
+                    </div>
+                </div>
+                <div style="display: flex; padding: 1rem 2.5rem; padding-bottom: 1rem;">
+                    <div style="width: 2.5rem; font-size: 0.875rem; font-weight: 600; color: #666;">Address</div>
+                    <div style="display: flex;margin-left: 80px">
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 1.5rem; height: 1.5rem;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+              </svg>
+            </span>
+                        <div style="font-size: 0.875rem; font-weight: 600;color: #222222; text-decoration: none" th:text="${address}">[address]</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <table style="width: 100%; padding: 1.5rem 2.5rem; border-collapse: collapse; margin: 0 2rem;">
+                    <tr>
+                        <td style="width: 50%; padding: 20px 0;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #666;">Check In</div>
+                            <div style="font-size: 1rem; font-weight: 600; color: #222;" th:text="${checkin}">[checkin]</div>
+                        </td>
+                        <td style="width: 50%; padding: 20px 0;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #666;">Check Out</div>
+                            <div style="font-size: 1rem; font-weight: 600; color: #222;" th:text="${checkout}">12/12/2334</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 20px 0;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #666;">Number Of Guest</div>
+                            <div style="font-size: 1rem; font-weight: 600; color: #222;" th:text="${numberofguest}">[numberofguest]</div>
+                        </td>
+                        <td style="padding: 20px 0;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #666;">Booking Date</div>
+                            <div style="font-size: 1rem; font-weight: 600; color: #222;">12/12/2334</div>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+            <div style="border-top: 1px solid #e2e8f0;">
+                <div style="padding: 1.25rem 2.5rem; font-size: 1.125rem; font-weight: 700; color: #666;">Information Homestay</div>
+                <div>
+                    <div style="margin-bottom: 2.5rem; display: flex; flex-direction: column; align-items: center; padding: 0 1.75rem;">
+                        <div style="width: 100%; border-radius: 1rem; border: 1px solid #e2e8f0; padding: 1.5rem;">
+                            <div style="margin-bottom: 1.25rem; display: flex; gap: 1rem;">
+                                <div>
+                                    <div style="height: 10rem; width: 15rem; overflow: hidden; border-radius: 0.75rem;margin-right: 20px">
+                                        <img src="https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg" alt="" style="height: 100%; width: 100%; object-fit: cover; object-position: center;" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1rem; font-weight: 600;" th:text="${title}"></div>
+                                    <div th:text="${location}"></div>
+                                </div>
+                            </div>
+                            <div style="border-top: 1px solid #e2e8f0; padding: 0.5rem 1rem; padding-top: 1rem; font-size: 1.25rem; font-weight: 600;">Price details</div>
+                            <div style="display: flex; align-items: flex-start; justify-content: space-between; padding: 0.5rem 1rem;">
+                                <div style="color: #222; text-decoration: underline;margin-right: auto;">$<span th:text="${pricepernight}"></span> x <span th:text="${numberofday}"></span> night</div>
+                                <div style="color: #222;">$ <span th:text="${totalpriceallday}"></span></div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; justify-content: space-between; padding: 0.5rem 1rem;">
+                                <div style="color: #222; text-decoration: underline;margin-right: auto;">Cleaning Fee</div>
+                                <div style="color: #222;">$ <span th:text="${cleaningFee}"></span> </div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; justify-content: space-between; padding: 0.5rem 1rem; padding-bottom: 1.25rem;">
+                                <div style="color: #222; text-decoration: underline;margin-right: auto;">East2West Service Fee</div>
+                                <div style="color: #222;" th:text="${feemount}"></div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; justify-content: space-between; border-top: 1px solid #e2e8f0; padding: 0.5rem 1rem; padding-top: 1.25rem;">
+                                <div style="font-size: 1rem; font-weight: 600;margin-right: auto;">Total</div>
+                                <div style="font-size: 1rem; font-weight: 600;" th:text="${totalprice}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #e2e8f0;">
+                <button style="margin: 0.5rem 1.75rem; display: flex; cursor: pointer; align-items: center; gap: 0.5rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; background-color: #f97316; padding: 0.5rem 2.5rem;">
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 1.5rem; height: 1.5rem; color: white;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+            </svg>
+          </span>
+                    <span style="font-size: 1rem; font-weight: 600; color: white;">Download Receipt</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

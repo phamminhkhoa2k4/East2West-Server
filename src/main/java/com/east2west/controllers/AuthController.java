@@ -1,11 +1,14 @@
 package com.east2west.controllers;
 
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.east2west.service.UserService;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.east2west.models.DTO.LoginRequest;
 import com.east2west.models.DTO.MessageResponse;
@@ -49,6 +47,9 @@ public class AuthController {
     AuthenticationManager authenticationManager;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     UserRepository userRepository;
 
     @Autowired
@@ -63,20 +64,16 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-        // Authenticate user
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
                         loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Get user details
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        // Generate JWT Cookie
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
-        // Extract user roles
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
@@ -169,5 +166,11 @@ public class AuthController {
         ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new MessageResponse("You've been signed out!"));
+    }
+
+    @GetMapping("/{id}")
+    public  ResponseEntity<?> getUserById(@PathVariable int id){
+       Optional<User> user = userService.getUserById(id);
+       return  ResponseEntity.ok(user);
     }
 }

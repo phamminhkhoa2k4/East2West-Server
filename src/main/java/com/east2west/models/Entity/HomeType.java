@@ -2,8 +2,8 @@ package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
 
-@Entity
-@Table(name = "hometypes")
+// @Entity
+// @Table(name = "hometypes")
 public class HomeType {
 
     @Id

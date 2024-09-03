@@ -1,9 +1,14 @@
 package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.sql.Timestamp;
 import java.math.BigDecimal;
-@Entity
+// @Entity
+// @Getter
+// @Setter
 @Table(name = "bookinghomestays")
 public class BookingHomestay {
 
@@ -12,102 +17,115 @@ public class BookingHomestay {
     @Column(name = "bookinghomestayid")
     private int bookinghomestayid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "homestayavailabilityid", referencedColumnName = "homestayavailabilityid")
-    private HomestayAvailability homestayavailability;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userid", referencedColumnName = "userid")
-    private User user;
-
-    @Column(name = "checkin")
-    private Timestamp checkin;
-
-    @Column(name = "checkout")
-    private Timestamp checkout;
-
-    @Column(name = "feeamount")
-    private BigDecimal feeamount;
-
-    @Column(name = "status")
-    private String status;
-
-    @Column(name = "numberofguest")
-    private int numberofguest;
-
-    @Column(name = "totalprice")
-    private BigDecimal totalprice;
-
-    // Getters and Setters
     public int getBookinghomestayid() {
-        return bookinghomestayid;
+        return this.bookinghomestayid;
     }
 
     public void setBookinghomestayid(int bookinghomestayid) {
         this.bookinghomestayid = bookinghomestayid;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "homestayavailabilityid", referencedColumnName = "homestayavailabilityid")
+    private HomestayAvailability homestayavailability;
+
     public HomestayAvailability getHomestayavailability() {
-        return homestayavailability;
+        return this.homestayavailability;
     }
 
     public void setHomestayavailability(HomestayAvailability homestayavailability) {
         this.homestayavailability = homestayavailability;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userid", referencedColumnName = "userid")
+    private User user;
+
     public User getUser() {
-        return user;
+        return this.user;
     }
 
     public void setUser(User user) {
         this.user = user;
     }
 
+    @Column(name = "checkin")
+    private Timestamp checkin;
+
     public Timestamp getCheckin() {
-        return checkin;
+        return this.checkin;
     }
 
     public void setCheckin(Timestamp checkin) {
         this.checkin = checkin;
     }
 
+    @Column(name = "checkout")
+    private Timestamp checkout;
+
     public Timestamp getCheckout() {
-        return checkout;
+        return this.checkout;
     }
 
     public void setCheckout(Timestamp checkout) {
         this.checkout = checkout;
     }
 
+    @Column(name = "bookingdate")
+    private Timestamp bookingdate;
+
+    public Timestamp getBookingdate() {
+        return this.bookingdate;
+    }
+
+    public void setBookingdate(Timestamp bookingdate) {
+        this.bookingdate = bookingdate;
+    }
+
+    @Column(name = "feeamount")
+    private BigDecimal feeamount;
+
     public BigDecimal getFeeamount() {
-        return feeamount;
+        return this.feeamount;
     }
 
     public void setFeeamount(BigDecimal feeamount) {
         this.feeamount = feeamount;
     }
 
+    @Column(name = "status")
+    private String status;
+
     public String getStatus() {
-        return status;
+        return this.status;
     }
 
     public void setStatus(String status) {
         this.status = status;
     }
 
+    @Column(name = "numberofguest")
+    private int numberofguest;
+
     public int getNumberofguest() {
-        return numberofguest;
+        return this.numberofguest;
     }
 
     public void setNumberofguest(int numberofguest) {
         this.numberofguest = numberofguest;
     }
 
+    @Column(name = "totalprice")
+    private BigDecimal totalprice;
+
     public BigDecimal getTotalprice() {
-        return totalprice;
+        return this.totalprice;
     }
 
     public void setTotalprice(BigDecimal totalprice) {
         this.totalprice = totalprice;
     }
+
+    // Getters and Setters
+
 }
