@@ -83,11 +83,6 @@ public class Itinerary {
         this.transfers = transfers;
     }
 
-    
-    
-
-   
-
     @Column(name = "day")
     private Timestamp day;
 

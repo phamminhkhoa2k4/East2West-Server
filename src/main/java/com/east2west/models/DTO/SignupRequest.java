@@ -21,15 +21,19 @@ public class SignupRequest {
     @Size(min = 6, max = 40)
     private String password;
 
+    @NotBlank
     @Size(max = 50)
     private String firstname;
 
+    @NotBlank
     @Size(max = 50)
     private String lastname;
 
+    @NotBlank
     @Size(max = 20)
     private String phone;
 
+    @NotBlank
     @Size(max = 100)
     private String address;
 

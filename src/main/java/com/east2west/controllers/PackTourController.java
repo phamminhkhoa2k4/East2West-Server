@@ -154,6 +154,10 @@ public class PackTourController {
         List<TourPackage> filteredPackages = packTourService.filterTourPackages(filterDTO);
         return ResponseEntity.ok(filteredPackages);
     }
+    @GetMapping("/search")
+    public List<TourPackage> searchToursByTitle(@RequestParam("title") String title) {
+        return packTourService.findByTitle(title);
+    }
     // Endpoint to get the top tours for the current month based on bookings
     // @GetMapping("/top-by-month")
     // public ResponseEntity<List<TourPackage>> getTopToursByCurrentMonth() {
