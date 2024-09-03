@@ -22,6 +22,9 @@ List<TourPackage> findByThemeTourName(@Param("themeTourName") String themeTourNa
 @Query("SELECT tp FROM TourPackage tp JOIN tp.suitableTours st WHERE st.suitableName = :suitableName")
 List<TourPackage> findBySuitableName(@Param("suitableName") String suitableName);
 
+boolean existsByTitle(String title);
 
+@Query("SELECT t FROM TourPackage t WHERE LOWER(t.title) LIKE LOWER(CONCAT('%', :title, '%'))")
+    List<TourPackage> findByTitleContainingIgnoreCase(@Param("title") String title);
 
 }

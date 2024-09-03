@@ -5,16 +5,18 @@ public class BookingTourDTO {
     private int userId;
     private int paymentId;
     private int packageId;
-    private Timestamp bookingDate;
     private Timestamp tourDate;
     private int numberOfPeople;
-    private BigDecimal tourPrice;
+    private BigDecimal totalPrice;
     private BigDecimal depositAmount;
-    private String status;
-    private BigDecimal refundAmount;
-    private Timestamp refundDate;
-    private String reason;
-    private boolean depositRefund;
+    
+    public BigDecimal getTotalPrice() {
+        return this.totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
 
     public int getUserId() {
         return this.userId;
@@ -40,13 +42,7 @@ public class BookingTourDTO {
         this.packageId = packageId;
     }
 
-    public Timestamp getBookingDate() {
-        return this.bookingDate;
-    }
 
-    public void setBookingDate(Timestamp bookingDate) {
-        this.bookingDate = bookingDate;
-    }
 
     public Timestamp getTourDate() {
         return this.tourDate;
@@ -64,14 +60,7 @@ public class BookingTourDTO {
         this.numberOfPeople = numberOfPeople;
     }
 
-    public BigDecimal getTourPrice() {
-        return this.tourPrice;
-    }
-
-    public void setTourPrice(BigDecimal tourPrice) {
-        this.tourPrice = tourPrice;
-    }
-
+   
     public BigDecimal getDepositAmount() {
         return this.depositAmount;
     }
@@ -80,45 +69,5 @@ public class BookingTourDTO {
         this.depositAmount = depositAmount;
     }
 
-    public String getStatus() {
-        return this.status;
-    }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public BigDecimal getRefundAmount() {
-        return this.refundAmount;
-    }
-
-    public void setRefundAmount(BigDecimal refundAmount) {
-        this.refundAmount = refundAmount;
-    }
-
-    public Timestamp getRefundDate() {
-        return this.refundDate;
-    }
-
-    public void setRefundDate(Timestamp refundDate) {
-        this.refundDate = refundDate;
-    }
-
-    public String getReason() {
-        return this.reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
-    public boolean isDepositRefund() {
-        return this.depositRefund;
-    }
-
-    public void setDepositRefund(boolean depositRefund) {
-        this.depositRefund = depositRefund;
-    }
-
-    // Getters and Setters
 }

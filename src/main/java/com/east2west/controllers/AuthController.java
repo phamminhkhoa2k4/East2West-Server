@@ -101,11 +101,15 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+            Map<String, String> errors = new HashMap<>();
+            errors.put("username", "Username is already taken!");
+            return ResponseEntity.badRequest().body(errors);
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+            Map<String, String> errors = new HashMap<>();
+            errors.put("email", "Email is already in use!");
+            return ResponseEntity.badRequest().body(errors);
         }
 
         User user = new User(signUpRequest.getUsername(),

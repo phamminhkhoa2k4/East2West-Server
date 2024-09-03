@@ -8,6 +8,7 @@ import com.east2west.models.Entity.Car;
 import com.east2west.models.Entity.LocationType;
 import com.east2west.models.Entity.Make;
 import com.east2west.models.Entity.Model;
+import com.east2west.models.Entity.TourPackage;
 import com.east2west.models.Entity.Type;
 import java.util.Optional;
 import java.util.List;
@@ -31,14 +32,12 @@ public class CarService {
 
     public Car createOrUpdateCar(CarDTO carDTO) {
         Car car;
-
         if (carDTO.getCarId() != 0) {
             Optional<Car> optionalCar = carRepository.findById(carDTO.getCarId());
             car = optionalCar.orElse(new Car());
         } else {
             car = new Car();
         }
-
         car.setCarName(carDTO.getCarName());
         car.setYear(carDTO.getYear());
         car.setSeatCapacity(carDTO.getSeatCapacity());
@@ -105,4 +104,31 @@ public class CarService {
         return locationTypeRepository.findAll();
     }
     
+
+    // Method to delete a make by ID
+    public void deleteMake(int makeId) {
+        makeRepository.deleteById(makeId);
+    }
+
+    // Method to delete a type by ID
+    public void deleteType(int typeId) {
+        typeRepository.deleteById(typeId);
+    }
+
+    // Method to delete a model by ID
+    public void deleteModel(int modelId) {
+        modelRepository.deleteById(modelId);
+    }
+
+    // Method to delete a location type by ID
+    public void deleteLocationType(int locationTypeId) {
+        locationTypeRepository.deleteById(locationTypeId);
+    }
+    public boolean doesCarNameExist(String carName) {
+        return carRepository.existsByCarName(carName);
+    }
+
+    public List<Car> findByName(String name) {
+        return carRepository.findByTitleContainingIgnoreCase(name);
+    }
 }

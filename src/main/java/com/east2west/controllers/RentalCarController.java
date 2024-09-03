@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.east2west.models.DTO.CancelDTO;
 import com.east2west.models.DTO.RentalDTO;
 import com.east2west.models.Entity.Rental;
 import com.east2west.service.PDFService;
@@ -39,7 +40,7 @@ public class RentalCarController {
     public List<Rental> getRentalsByUserId(@PathVariable int userId) {
         return rentalCarService.getRentalsByUserId(userId);
     }
-
+    
     @GetMapping("/pdf/{rentalid}")
     public ResponseEntity<?> downloadRentalPDF(@PathVariable int rentalid) {
         Rental rental = rentalCarService.findById(rentalid);
