@@ -15,12 +15,16 @@ import com.east2west.models.DTO.HomestaySearchDTO;
 import com.east2west.models.Entity.*;
 import com.east2west.repository.*;
 import com.east2west.util.DateUtil;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
 import com.east2west.exception.ResourceNotFoundException;
 import com.east2west.models.DTO.HomestayDTO;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -94,26 +98,31 @@ public class HomestayService {
     public Homestay createHomestay(HomestayDTO homestayDTO) {
         Homestay homestay = new Homestay();
         populateHomestayFields(homestay, homestayDTO);
-        System.out.println(homestay.getPhotos());
-
-        Homestay savedHomestay = homestayRepository.save(homestay);
 
 
-        LocalDate today = LocalDate.now();
-        LocalDate endDate = today.plusDays(30);
 
-        while (!today.isAfter(endDate)) {
-            HomestayAvailability availability = new HomestayAvailability();
-            availability.setHomestay(savedHomestay);
-            availability.setDate(Timestamp.valueOf(today.atStartOfDay(ZoneId.systemDefault()).toLocalDateTime()));
-            availability.setStatus("available");
-            availability.setPricepernight(homestayDTO.getPricePerNight());
+            Homestay savedHomestay = homestayRepository.save(homestay);
+            LocalDate today = LocalDate.now();
+            LocalDate endDate = today.plusDays(30);
 
-            homestayAvailabilityRepository.save(availability);
-            today = today.plusDays(1);
-        }
+            while (!today.isAfter(endDate)) {
+                HomestayAvailability availability = new HomestayAvailability();
+                availability.setHomestay(savedHomestay);
+                availability.setDate(Timestamp.valueOf(today.atStartOfDay(ZoneId.systemDefault()).toLocalDateTime()));
+                availability.setStatus("available");
+                availability.setPricepernight(homestayDTO.getPricePerNight());
+
+                homestayAvailabilityRepository.save(availability);
+                today = today.plusDays(1);
+
+            }
+
 
         return savedHomestay;
+
+
+
+
     }
 
     public void createBooking(BookingHomestayDTO bookingDTO) {
@@ -162,28 +171,31 @@ public class HomestayService {
         homestay.setLatitude(homestayDTO.getLatitude());
         homestay.setTitle(homestayDTO.getTitle());
         homestay.setAddress(homestayDTO.getAddress());
-        homestay.setGeom(homestayDTO.getGeom());
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Point point = geometryFactory.createPoint(new Coordinate(homestayDTO.getLongitude(), homestayDTO.getLatitude()));
+        homestay.setGeom(point);
         homestay.setPhotos(homestayDTO.getPhotos());
         homestay.setDescription(homestayDTO.getDescription());
         homestay.setExtrainfo(homestayDTO.getExtraInfo());
         homestay.setCleaningfee(homestayDTO.getCleaningFee());
         homestay.setIsapproved(homestayDTO.getIsApproved());
         homestay.setMaxguest(homestayDTO.getMaxGuest());
+        homestay.setType(homestayDTO.getType());
 
 
         CityProvince cityProvince = new CityProvince();
-        cityProvince.setCityname("Default City Name");
+        cityProvince.setCityname(homestayDTO.getCityProvinceName());
         cityProvince = cityProvinceRepository.save(cityProvince);
 
 
         District district = new District();
-        district.setDistrictname("Default District Name");
+        district.setDistrictname(homestayDTO.getDistrictName());
         district.setCityprovince(cityProvince);
         district = districtRepository.save(district);
 
 
         Ward ward = new Ward();
-        ward.setWardname("Default Ward Name");
+        ward.setWardname(homestayDTO.getWardName());
         ward.setDistrict(district);
         ward = wardRepository.save(ward);
 

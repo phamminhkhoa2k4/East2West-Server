@@ -1,14 +1,19 @@
 package com.east2west.models.Entity;
 
 import com.east2west.util.StringListConverter;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
+import org.locationtech.jts.geom.Point;
+
 
 import java.math.BigDecimal;
 import java.util.List;
 @Entity
 @Table(name = "homestays")
+
 public class Homestay {
 
     @Setter
@@ -65,13 +70,14 @@ public class Homestay {
 
     @Getter
     @Setter
-    @Column(name = "geom")
-    private String geom;
+    @Column(columnDefinition = "geometry(Point, 3857)")
+    private Point geom;
 
 
 
     @Setter
     @Getter
+
     @Column(name = "photos")
     @Convert(converter = StringListConverter.class)
     private List<String> photos;
