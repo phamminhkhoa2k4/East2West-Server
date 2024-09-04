@@ -1,7 +1,7 @@
 
 package com.east2west.controllers.admin;
 
-import com.east2west.models.Entity.Perk;
+import com.east2west.models.Entity.Amenities;
 import com.east2west.models.Entity.Structure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -69,25 +69,25 @@ public class HostHomestayController {
 
 
     @PostMapping("/amenities")
-    public ResponseEntity<Perk> createAmenities(@RequestBody Perk amenities) {
-        Perk homestay = homestayService.createAmenities(amenities);
+    public ResponseEntity<Amenities> createAmenities(@RequestBody Amenities amenities) {
+        Amenities homestay = homestayService.createAmenities(amenities);
         return ResponseEntity.ok(homestay);
     }
 
     @GetMapping("/amenities/{id}")
-    public ResponseEntity<Optional<Perk>> getAmenitiesById(@PathVariable int id){
-        Optional<Perk> amenities = homestayService.getByIdAmenities(id);
+    public ResponseEntity<Optional<Amenities>> getAmenitiesById(@PathVariable int id){
+        Optional<Amenities> amenities = homestayService.getByIdAmenities(id);
         return ResponseEntity.ok(amenities);
     }
 
     @GetMapping("/amenitiess")
-    public ResponseEntity<List<Perk>> getAmenitiesByIds(@RequestParam List<Integer> ids) {
-        List<Perk> amenities = homestayService.getByIdsAmenities(ids);
+    public ResponseEntity<List<Amenities>> getAmenitiesByIds(@RequestParam List<Integer> ids) {
+        List<Amenities> amenities = homestayService.getByIdsAmenities(ids);
         return ResponseEntity.ok(amenities);
     }
     @GetMapping("/amenities")
-    public ResponseEntity<List<Perk>> getAllAmenities(){
-        List<Perk> amenities= homestayService.getAmenitiesAll();
+    public ResponseEntity<List<Amenities>> getAllAmenities(){
+        List<Amenities> amenities= homestayService.getAmenitiesAll();
         return ResponseEntity.ok(amenities);
     }
 

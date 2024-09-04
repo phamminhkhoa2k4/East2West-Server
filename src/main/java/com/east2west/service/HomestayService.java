@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import com.east2west.exception.ResourceNotFoundException;
 import com.east2west.models.DTO.HomestayDTO;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,7 +32,7 @@ public class HomestayService {
     private HomestayRepository homestayRepository;
 
     @Autowired
-    private PerkRepository perkRepository;
+    private AmenitiesRepository amenitiesRepository;
 
     @Autowired
     private WardRepository wardRepository;
@@ -63,20 +62,20 @@ public class HomestayService {
 
 
 
-    public Perk createAmenities(Perk amenities) {
-        return perkRepository.save(amenities);
+    public Amenities createAmenities(Amenities amenities) {
+        return amenitiesRepository.save(amenities);
     }
 
-    public Optional<Perk>  getByIdAmenities(int id){
-        return perkRepository.findById(id);
+    public Optional<Amenities>  getByIdAmenities(int id){
+        return amenitiesRepository.findById(id);
     }
 
-    public List<Perk> getAmenitiesAll(){return  perkRepository.findAll();}
+    public List<Amenities> getAmenitiesAll(){return  amenitiesRepository.findAll();}
 
-    public List<Perk> getByIdsAmenities(List<Integer> ids) {
-        return perkRepository.findAllById(ids);
+    public List<Amenities> getByIdsAmenities(List<Integer> ids) {
+        return amenitiesRepository.findAllById(ids);
     }
-    public void deleteAmenities(int id){ perkRepository.deleteById(id);}
+    public void deleteAmenities(int id){ amenitiesRepository.deleteById(id);}
     public Structure createStructure(Structure structure) {
         return structureRepository.save(structure);
     }
@@ -210,10 +209,10 @@ public class HomestayService {
 
 
         if (homestayDTO.getPerkIds() != null && !homestayDTO.getPerkIds().isEmpty()) {
-            List<Perk> perks = perkRepository.findAllById(homestayDTO.getPerkIds());
-            homestay.setPerks(perks);
+            List<Amenities> amenities = amenitiesRepository.findAllById(homestayDTO.getPerkIds());
+            homestay.setAmenities(amenities);
         } else {
-            homestay.setPerks(new ArrayList<>());
+            homestay.setAmenities(new ArrayList<>());
         }
     }
 
@@ -241,7 +240,6 @@ public class HomestayService {
         dto.setLatitude(homestay.getLatitude());
         dto.setTitle(homestay.getTitle());
         dto.setAddress(homestay.getAddress());
-        dto.setGeom(homestay.getGeom());
         dto.setPhotos(homestay.getPhotos());
         dto.setDescription(homestay.getDescription());
         dto.setExtraInfo(homestay.getExtrainfo());
@@ -249,8 +247,8 @@ public class HomestayService {
         dto.setIsApproved(homestay.isIsapproved());
         dto.setMaxGuest(homestay.getMaxguest());
 
-        dto.setPerkIds(homestay.getPerks().stream()
-                .map(Perk::getAmenitiesid)
+        dto.setPerkIds(homestay.getAmenities().stream()
+                .map(Amenities::getAmenitiesid)
                 .collect(Collectors.toList()));
 
         List<HomestayAvailabilityDTO> availabilityDTOs = homestay.getHomestayAvailabilityList().stream()

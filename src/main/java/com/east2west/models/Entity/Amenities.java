@@ -3,22 +3,21 @@ package com.east2west.models.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "perks")
-public class Perk {
+@Table(name = "amenities")
+public class Amenities {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "perkid")
+    @Column(name = "amenitiesid")
     private int amenitiesid;
 
 
-    @Column(name = "perkname")
+    @Column(name = "amenitiesname")
     private String amenitiesname;
 
 
