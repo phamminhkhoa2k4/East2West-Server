@@ -132,9 +132,9 @@ public class Homestay {
     @Getter
     @ManyToMany
     @JoinTable(
-        name = "homestayperks",
+        name = "homestayamenities",
         joinColumns = @JoinColumn(name = "homestayid"),
-        inverseJoinColumns = @JoinColumn(name = "perkid")
+        inverseJoinColumns = @JoinColumn(name = "amenitiesid")
     )
     private List<Amenities> amenities;
 
