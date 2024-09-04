@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.locationtech.jts.geom.Point;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,7 +26,7 @@ public class  HomestayDTO {
     private Double latitude;
     private String title;
     private String address;
-    private String geom;
+    private Point geom;
     private List<String> photos;
     private String description;
     private String extraInfo;
