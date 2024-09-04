@@ -4,25 +4,25 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "homestayperks")
+@Table(name = "homestayamenities")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class HomestayPerk {
+public class HomestayAmenities {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "homestayperkid")
-    private Integer homestayPerkID;
+    @Column(name = "homestayamenitiesid")
+    private Integer homestayAmenitiesID;
 
     @ManyToOne
     @JoinColumn(name = "homestayid", referencedColumnName = "homestayid")
     private Homestay homestay;
 
     @ManyToOne
-    @JoinColumn(name = "perkid", referencedColumnName = "perkid")
-    private Perk perk;
+    @JoinColumn(name = "amenitiesid", referencedColumnName = "amenitiesid")
+    private Amenities amenities;
 }
 

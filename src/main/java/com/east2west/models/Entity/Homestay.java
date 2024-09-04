@@ -5,7 +5,6 @@ import com.east2west.util.StringListConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 import org.locationtech.jts.geom.Point;
 
 
@@ -77,7 +76,6 @@ public class Homestay {
 
     @Setter
     @Getter
-
     @Column(name = "photos")
     @Convert(converter = StringListConverter.class)
     private List<String> photos;
@@ -107,6 +105,28 @@ public class Homestay {
     @Column(name = "maxguest")
     private int maxguest;
 
+
+    @Setter
+    @Getter
+    @Column(name = "instant")
+    private boolean instant;
+
+    @Setter
+    @Getter
+    @Column(name = "bathroom")
+    private int bathroom;
+
+    @Setter
+    @Getter
+    @Column(name = "room")
+    private int room;
+
+    @Setter
+    @Getter
+    @Column(name = "beds")
+    private int beds;
+
+
     // Getters and Setters
     @Setter
     @Getter
@@ -116,7 +136,7 @@ public class Homestay {
         joinColumns = @JoinColumn(name = "homestayid"),
         inverseJoinColumns = @JoinColumn(name = "perkid")
     )
-    private List<Perk> perks;
+    private List<Amenities> amenities;
 
     @Setter
     @Getter
