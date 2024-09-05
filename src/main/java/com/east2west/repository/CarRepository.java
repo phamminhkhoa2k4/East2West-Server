@@ -19,4 +19,8 @@ public interface CarRepository extends JpaRepository<Car, Integer> {
 
     @Query("SELECT t FROM Car t WHERE LOWER(t.carName) LIKE LOWER(CONCAT('%', :name, '%'))")
     List<Car> findByTitleContainingIgnoreCase(@Param("name") String name);
+    
+  
+    Optional<Car> findByCarNameAndCarIdNot(String carName, int carId);
+
 }

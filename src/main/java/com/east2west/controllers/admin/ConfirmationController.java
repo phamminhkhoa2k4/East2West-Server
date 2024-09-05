@@ -25,7 +25,7 @@ public class ConfirmationController {
         if (rental == null) {
             return ResponseEntity.notFound().build();
         }
-        rental.setStatus("Confirmed");
+        rental.setStatus("  ");
         Rental confirmedRental = rentalCarService.saveBooking(rental);
         return ResponseEntity.ok(confirmedRental);
     }

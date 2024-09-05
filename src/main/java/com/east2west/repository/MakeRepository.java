@@ -10,4 +10,5 @@ import com.east2west.models.Entity.Make;
 @Repository
 public interface MakeRepository extends JpaRepository<Make, Integer>{
     // Optional<Make> findByMakeName(String makeName);
+    Optional<Make> findByMakeNameAndMakeIdNot(String makeName, int excludeMakeId);
 } 

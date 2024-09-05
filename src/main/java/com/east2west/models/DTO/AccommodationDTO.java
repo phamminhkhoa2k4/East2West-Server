@@ -1,40 +1,40 @@
 package com.east2west.models.DTO;
 public class AccommodationDTO {
-    private int accommodationId;
-    private String accommodationName;
-    private String durationAccommodation;
-    private String accommodationType;
+    private int accommodationid;
+    private String accommodationname;
+    private String durationaccommodation;
+    private String accommodationtype;
 
-    // Getters and Setters
-    public int getAccommodationId() {
-        return accommodationId;
+    public int getAccommodationid() {
+        return this.accommodationid;
     }
 
-    public void setAccommodationId(int accommodationId) {
-        this.accommodationId = accommodationId;
+    public void setAccommodationid(int accommodationid) {
+        this.accommodationid = accommodationid;
     }
 
-    public String getAccommodationName() {
-        return accommodationName;
+    public String getAccommodationname() {
+        return this.accommodationname;
     }
 
-    public void setAccommodationName(String accommodationName) {
-        this.accommodationName = accommodationName;
+    public void setAccommodationname(String accommodationname) {
+        this.accommodationname = accommodationname;
     }
 
-    public String getDurationAccommodation() {
-        return durationAccommodation;
+    public String getDurationaccommodation() {
+        return this.durationaccommodation;
     }
 
-    public void setDurationAccommodation(String durationAccommodation) {
-        this.durationAccommodation = durationAccommodation;
+    public void setDurationaccommodation(String durationaccommodation) {
+        this.durationaccommodation = durationaccommodation;
     }
 
-    public String getAccommodationType() {
-        return accommodationType;
+    public String getAccommodationtype() {
+        return this.accommodationtype;
     }
 
-    public void setAccommodationType(String accommodationType) {
-        this.accommodationType = accommodationType;
+    public void setAccommodationtype(String accommodationtype) {
+        this.accommodationtype = accommodationtype;
     }
+    
 }
