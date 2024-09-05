@@ -8,5 +8,5 @@ import com.east2west.models.Entity.Accommodation;
 
 public interface AccommodationRepository extends JpaRepository<Accommodation, Integer> {
     List<Accommodation> findByAccommodationnameContainingIgnoreCase(String name);
-
+    boolean existsByAccommodationname(String accommodationname);
 }

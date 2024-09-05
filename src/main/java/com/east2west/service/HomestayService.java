@@ -236,7 +236,6 @@ public class HomestayService {
         dto.setCleaningFee(homestay.getCleaningfee());
         dto.setIsApproved(homestay.isIsapproved());
         dto.setMaxGuest(homestay.getMaxguest());
-
         dto.setPerkIds(homestay.getPerks().stream()
                 .map(Perk::getAmenitiesid)
                 .collect(Collectors.toList()));

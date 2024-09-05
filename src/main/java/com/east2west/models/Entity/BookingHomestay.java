@@ -6,9 +6,9 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.math.BigDecimal;
-// @Entity
-// @Getter
-// @Setter
+@Entity
+@Getter
+@Setter
 @Table(name = "bookinghomestays")
 public class BookingHomestay {
 

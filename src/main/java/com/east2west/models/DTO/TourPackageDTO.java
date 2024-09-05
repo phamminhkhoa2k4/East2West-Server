@@ -2,6 +2,9 @@ package com.east2west.models.DTO;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class TourPackageDTO {
@@ -17,16 +20,16 @@ public class TourPackageDTO {
     private List<Integer> categoryTourId;
     private List<Integer> themeTourId;
     private List<Integer> suitableTourId;
+    private List<DepartureDateDTO> departureDates;
+
+    // Getters and setters for all fields...
+
     public static class DepartureDateDTO {
-        private String id;
         private String dateTime;
 
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
+        // Constructor to handle string deserialization
+        public DepartureDateDTO(String dateTime) {
+            this.dateTime = dateTime;
         }
 
         public String getDateTime() {
@@ -36,12 +39,17 @@ public class TourPackageDTO {
         public void setDateTime(String dateTime) {
             this.dateTime = dateTime;
         }
+
+        public Timestamp toTimestamp() {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+            LocalDateTime localDateTime = LocalDateTime.parse(this.dateTime, formatter);
+            return Timestamp.from(localDateTime.toInstant(ZoneOffset.UTC));
+        }
     }
 
-    private List<DepartureDateDTO> departureDates;
-
+    // Getters and Setters for departureDates and other fields...
     public List<DepartureDateDTO> getDepartureDates() {
-        return this.departureDates;
+        return departureDates;
     }
 
     public void setDepartureDates(List<DepartureDateDTO> departureDates) {
