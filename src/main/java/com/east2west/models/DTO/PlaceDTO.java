@@ -1,49 +1,50 @@
 package com.east2west.models.DTO;
 public class PlaceDTO {
-    private int placeId;
-    private String placeName;
-    private String placeThumbnail;
+    private int placeid;
+    private String placename;
+    private String placethumbnail;
     private String description;
-    private String placeDuration;
+    private String placeduration;
 
-    // Getters and Setters
-    public int getPlaceId() {
-        return placeId;
+    public int getPlaceid() {
+        return this.placeid;
     }
 
-    public void setPlaceId(int placeId) {
-        this.placeId = placeId;
+    public void setPlaceid(int placeid) {
+        this.placeid = placeid;
     }
 
-    public String getPlaceName() {
-        return placeName;
+    public String getPlacename() {
+        return this.placename;
     }
 
-    public void setPlaceName(String placeName) {
-        this.placeName = placeName;
+    public void setPlacename(String placename) {
+        this.placename = placename;
     }
 
-    public String getPlaceThumbnail() {
-        return placeThumbnail;
+    public String getPlacethumbnail() {
+        return this.placethumbnail;
     }
 
-    public void setPlaceThumbnail(String placeThumbnail) {
-        this.placeThumbnail = placeThumbnail;
+    public void setPlacethumbnail(String placethumbnail) {
+        this.placethumbnail = placethumbnail;
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public String getPlaceDuration() {
-        return placeDuration;
+    public String getPlaceduration() {
+        return this.placeduration;
     }
 
-    public void setPlaceDuration(String placeDuration) {
-        this.placeDuration = placeDuration;
+    public void setPlaceduration(String placeduration) {
+        this.placeduration = placeduration;
     }
+
+   
 }

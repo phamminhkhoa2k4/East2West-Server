@@ -26,7 +26,7 @@ public class  HomestayDTO {
     private Double latitude;
     private String title;
     private String address;
-    private Point geom;
+    private String geom;
     private List<String> photos;
     private String description;
     private String extraInfo;
@@ -34,6 +34,10 @@ public class  HomestayDTO {
     private Boolean isApproved;
     private String type;
     private Integer maxGuest;
+    private Integer room;
+    private Boolean instant;
+    private Integer bathroom;
+    private Integer beds;
     private BigDecimal pricePerNight;
     private List<Integer> perkIds;
     private List<HomestayAvailabilityDTO> availability;
