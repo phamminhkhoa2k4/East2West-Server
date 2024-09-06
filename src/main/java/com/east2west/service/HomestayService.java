@@ -246,9 +246,14 @@ public class HomestayService {
         dto.setCleaningFee(homestay.getCleaningfee());
         dto.setIsApproved(homestay.isIsapproved());
         dto.setMaxGuest(homestay.getMaxguest());
+<<<<<<< HEAD
+        dto.setPerkIds(homestay.getPerks().stream()
+                .map(Perk::getAmenitiesid)
+=======
 
         dto.setPerkIds(homestay.getAmenities().stream()
                 .map(Amenities::getAmenitiesid)
+>>>>>>> ad3c44083ad3a7ae2509377f86d26ba516a90ea7
                 .collect(Collectors.toList()));
 
         List<HomestayAvailabilityDTO> availabilityDTOs = homestay.getHomestayAvailabilityList().stream()

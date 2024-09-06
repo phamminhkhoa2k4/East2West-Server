@@ -8,5 +8,5 @@ import com.east2west.models.Entity.Model;
 
 public interface ModelRepository extends JpaRepository<Model, Integer>{
     Optional<Model> findByModelName(String modelName);
-
+    Optional<Model> findByModelNameAndModelIdNot(String modelName, int excludeModelId);
 }

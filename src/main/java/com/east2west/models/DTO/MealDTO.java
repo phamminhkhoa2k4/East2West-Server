@@ -1,51 +1,51 @@
 package com.east2west.models.DTO;
 
 public class MealDTO {
-    private int mealId;
-    private String mealName;
-    private String mealThumbnail;
-    private String mealDuration;
-    private String mealActivity;
+    private int mealid;
+    private String mealname;
+    private String mealthumbnail;
+    private String mealduration;
+    private String mealactivity;
 
-    // Getters and Setters
-    public int getMealId() {
-        return mealId;
+    public int getMealid() {
+        return this.mealid;
     }
 
-    public void setMealId(int mealId) {
-        this.mealId = mealId;
+    public void setMealid(int mealid) {
+        this.mealid = mealid;
     }
 
-    public String getMealName() {
-        return mealName;
+    public String getMealname() {
+        return this.mealname;
     }
 
-    public void setMealName(String mealName) {
-        this.mealName = mealName;
+    public void setMealname(String mealname) {
+        this.mealname = mealname;
     }
 
-    public String getMealThumbnail() {
-        return mealThumbnail;
+    public String getMealthumbnail() {
+        return this.mealthumbnail;
     }
 
-    public void setMealThumbnail(String mealThumbnail) {
-        this.mealThumbnail = mealThumbnail;
+    public void setMealthumbnail(String mealthumbnail) {
+        this.mealthumbnail = mealthumbnail;
     }
 
-    public String getMealDuration() {
-        return mealDuration;
+    public String getMealduration() {
+        return this.mealduration;
     }
 
-    public void setMealDuration(String mealDuration) {
-        this.mealDuration = mealDuration;
+    public void setMealduration(String mealduration) {
+        this.mealduration = mealduration;
     }
 
-    public String getMealActivity() {
-        return mealActivity;
+    public String getMealactivity() {
+        return this.mealactivity;
     }
 
-    public void setMealActivity(String mealActivity) {
-        this.mealActivity = mealActivity;
+    public void setMealactivity(String mealactivity) {
+        this.mealactivity = mealactivity;
     }
+    
 }
 

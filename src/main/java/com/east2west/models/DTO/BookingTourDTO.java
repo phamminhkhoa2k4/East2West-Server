@@ -69,5 +69,10 @@ public class BookingTourDTO {
         this.depositAmount = depositAmount;
     }
 
-
+    public String toParamString() {
+        return String.format(
+            "Tour Package ID: %d, User ID: %d, Tour Date: %s, Number of People: %d, Total Price: %s, Status: %s",
+            packageId, userId, tourDate.toLocalDateTime().toString(), numberOfPeople, totalPrice.toString(), "New"
+        );
+    }
 }
