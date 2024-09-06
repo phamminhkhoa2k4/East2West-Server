@@ -11,7 +11,6 @@ import java.util.List;
 @Table(name = "homestays")
 public class Homestay {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "homestayid")

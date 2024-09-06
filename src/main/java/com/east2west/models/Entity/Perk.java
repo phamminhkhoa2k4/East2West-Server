@@ -21,7 +21,6 @@ public class Perk {
         this.amenitiesid = amenitiesid;
     }
 
-
     @Column(name = "perkname")
     private String amenitiesname;
 

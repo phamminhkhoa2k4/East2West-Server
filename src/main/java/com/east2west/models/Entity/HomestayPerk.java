@@ -1,6 +1,7 @@
 package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
+
 import lombok.*;
 
 @Entity
