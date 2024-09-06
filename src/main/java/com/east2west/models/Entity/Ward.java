@@ -1,7 +1,12 @@
 package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+
+@Getter
+@Setter
 @Entity
 @Table(name = "wards")
 public class Ward {
@@ -19,27 +24,5 @@ public class Ward {
     private District district;
 
     // Getters and Setters
-    public int getWardid() {
-        return wardid;
-    }
 
-    public void setWardid(int wardid) {
-        this.wardid = wardid;
-    }
-
-    public String getWardname() {
-        return wardname;
-    }
-
-    public void setWardname(String wardname) {
-        this.wardname = wardname;
-    }
-
-    public District getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(District district) {
-        this.district = district;
-    }
 }

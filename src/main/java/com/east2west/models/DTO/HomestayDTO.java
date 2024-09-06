@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.locationtech.jts.geom.Point;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,6 +34,10 @@ public class  HomestayDTO {
     private Boolean isApproved;
     private String type;
     private Integer maxGuest;
+    private Integer room;
+    private Boolean instant;
+    private Integer bathroom;
+    private Integer beds;
     private BigDecimal pricePerNight;
     private List<Integer> perkIds;
     private List<HomestayAvailabilityDTO> availability;

@@ -5,13 +5,23 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+<<<<<<< HEAD:src/main/java/com/east2west/models/Entity/HomestayPerk.java
 @Table(name = "homestayperks")
 public class HomestayPerk {
+=======
+@Table(name = "homestayamenities")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class HomestayAmenities {
+>>>>>>> ad3c44083ad3a7ae2509377f86d26ba516a90ea7:src/main/java/com/east2west/models/Entity/HomestayAmenities.java
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "homestayperkid")
-    private Integer homestayPerkID;
+    @Column(name = "homestayamenitiesid")
+    private Integer homestayAmenitiesID;
 
     public Integer getHomestayPerkID() {
         return this.homestayPerkID;
@@ -34,6 +44,7 @@ public class HomestayPerk {
     }
 
     @ManyToOne
+<<<<<<< HEAD:src/main/java/com/east2west/models/Entity/HomestayPerk.java
     @JoinColumn(name = "perkid", referencedColumnName = "perkid")
     private Perk perk;
 
@@ -45,5 +56,9 @@ public class HomestayPerk {
         this.perk = perk;
     }
 
+=======
+    @JoinColumn(name = "amenitiesid", referencedColumnName = "amenitiesid")
+    private Amenities amenities;
+>>>>>>> ad3c44083ad3a7ae2509377f86d26ba516a90ea7:src/main/java/com/east2west/models/Entity/HomestayAmenities.java
 }
 

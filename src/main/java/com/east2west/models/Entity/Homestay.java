@@ -1,245 +1,145 @@
 package com.east2west.models.Entity;
 
 import com.east2west.util.StringListConverter;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.locationtech.jts.geom.Point;
+
 
 import java.math.BigDecimal;
 import java.util.List;
 @Entity
 @Table(name = "homestays")
+
 public class Homestay {
 
+    @Setter
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "homestayid")
     private int homestayid;
 
-    public int getHomestayid() {
-        return this.homestayid;
-    }
 
-    public void setHomestayid(int homestayid) {
-        this.homestayid = homestayid;
-    }
-
-
-    
+    @Setter
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wardid", referencedColumnName = "wardid")
     private Ward ward;
 
-    public Ward getWard() {
-        return this.ward;
-    }
-
-    public void setWard(Ward ward) {
-        this.ward = ward;
-    }
-
     // alter small
-    
+    @Setter
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "structureid", referencedColumnName = "structureid")
     private Structure structure;
 
-    public Structure getStructure() {
-        return this.structure;
-    }
-
-    public void setStructure(Structure structure) {
-        this.structure = structure;
-    }
-
-    
+    @Setter
+    @Getter
     @Column(name = "type")
     private String type;
 
-    public String getType() {
-        return this.type;
-    }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-
-    
+    @Setter
+    @Getter
     @Column(name = "userid")
     private int userid;
 
-    public int getUserid() {
-        return this.userid;
-    }
-
-    public void setUserid(int userid) {
-        this.userid = userid;
-    }
-
-    
+    @Setter
+    @Getter
     @Column(name = "longitude")
     private double longitude;
 
-    public double getLongitude() {
-        return this.longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-   
+    @Setter
+    @Getter
     @Column(name = "latitude")
     private double latitude;
 
-    public double getLatitude() {
-        return this.latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    
+    @Setter
+    @Getter
     @Column(name = "title")
     private String title;
 
-    public String getTitle() {
-        return this.title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    
+    @Setter
+    @Getter
     @Column(name = "address")
     private String address;
 
-    public String getAddress() {
-        return this.address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    
-    @Column(name = "geom")
-    private String geom;
-
-    public String getGeom() {
-        return this.geom;
-    }
-
-    public void setGeom(String geom) {
-        this.geom = geom;
-    }
+    @Getter
+    @Setter
+    @Column(columnDefinition = "geometry(Point, 3857)")
+    private Point geom;
 
 
 
-   
+    @Setter
+    @Getter
     @Column(name = "photos")
     @Convert(converter = StringListConverter.class)
     private List<String> photos;
 
-    public List<String> getPhotos() {
-        return this.photos;
-    }
-
-    public void setPhotos(List<String> photos) {
-        this.photos = photos;
-    }
-
-    
+    @Setter
+    @Getter
     @Column(name = "description")
     private String description;
 
-    public String getDescription() {
-        return this.description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-   
+    @Setter
+    @Getter
     @Column(name = "extrainfo")
     private String extrainfo;
 
-    public String getExtrainfo() {
-        return this.extrainfo;
-    }
-
-    public void setExtrainfo(String extrainfo) {
-        this.extrainfo = extrainfo;
-    }
-
-    
+    @Setter
+    @Getter
     @Column(name = "cleaningfee")
     private BigDecimal cleaningfee;
 
-    public BigDecimal getCleaningfee() {
-        return this.cleaningfee;
-    }
-
-    public void setCleaningfee(BigDecimal cleaningfee) {
-        this.cleaningfee = cleaningfee;
-    }
-
-    
+    @Setter
+    @Getter
     @Column(name = "isapproved")
     private boolean isapproved;
 
-    public boolean isIsapproved() {
-        return this.isapproved;
-    }
-
-    public void setIsapproved(boolean isapproved) {
-        this.isapproved = isapproved;
-    }
-
-    
+    @Setter
+    @Getter
     @Column(name = "maxguest")
     private int maxguest;
 
-    public int getMaxguest() {
-        return this.maxguest;
-    }
 
-    public void setMaxguest(int maxguest) {
-        this.maxguest = maxguest;
-    }
+    @Setter
+    @Getter
+    @Column(name = "instant")
+    private boolean instant;
+
+    @Setter
+    @Getter
+    @Column(name = "bathroom")
+    private int bathroom;
+
+    @Setter
+    @Getter
+    @Column(name = "room")
+    private int room;
+
+    @Setter
+    @Getter
+    @Column(name = "beds")
+    private int beds;
+
 
     // Getters and Setters
-    
+    @Setter
+    @Getter
     @ManyToMany
     @JoinTable(
-        name = "homestayperks",
+        name = "homestayamenities",
         joinColumns = @JoinColumn(name = "homestayid"),
-        inverseJoinColumns = @JoinColumn(name = "perkid")
+        inverseJoinColumns = @JoinColumn(name = "amenitiesid")
     )
-    private List<Perk> perks;
+    private List<Amenities> amenities;
 
-    public List<Perk> getPerks() {
-        return this.perks;
-    }
-
-    public void setPerks(List<Perk> perks) {
-        this.perks = perks;
-    }
-
-    
+    @Setter
+    @Getter
     @OneToMany(mappedBy = "homestay", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<HomestayAvailability> homestayAvailabilityList;
-
-    public List<HomestayAvailability> getHomestayAvailabilityList() {
-        return this.homestayAvailabilityList;
-    }
-
-    public void setHomestayAvailabilityList(List<HomestayAvailability> homestayAvailabilityList) {
-        this.homestayAvailabilityList = homestayAvailabilityList;
-    }
-
 }
