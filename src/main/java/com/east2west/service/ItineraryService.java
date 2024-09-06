@@ -98,11 +98,9 @@ public class ItineraryService {
             }
             accommodation = new Accommodation();
         }
-
         accommodation.setAccommodationname(accommodationDTO.getAccommodationname());
         accommodation.setDurationaccommodation(accommodationDTO.getDurationaccommodation());
         accommodation.setAccommodationtype(accommodationDTO.getAccommodationtype());
-
         return accommodationRepository.save(accommodation);
     }
 
