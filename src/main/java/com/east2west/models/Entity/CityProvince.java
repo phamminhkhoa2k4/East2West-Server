@@ -1,8 +1,12 @@
 package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "citiesprovinces")
 public class CityProvince {
 
@@ -15,19 +19,5 @@ public class CityProvince {
     private String cityname;
 
     // Getters and Setters
-    public int getCityprovinceid() {
-        return cityprovinceid;
-    }
 
-    public void setCityprovinceid(int cityprovinceid) {
-        this.cityprovinceid = cityprovinceid;
-    }
-
-    public String getCityname() {
-        return cityname;
-    }
-
-    public void setCityname(String cityname) {
-        this.cityname = cityname;
-    }
 }

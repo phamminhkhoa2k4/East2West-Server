@@ -15,6 +15,9 @@ import com.east2west.models.DTO.HomestaySearchDTO;
 import com.east2west.models.Entity.*;
 import com.east2west.repository.*;
 import com.east2west.util.DateUtil;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
@@ -29,7 +32,7 @@ public class HomestayService {
     private HomestayRepository homestayRepository;
 
     @Autowired
-    private PerkRepository perkRepository;
+    private AmenitiesRepository amenitiesRepository;
 
     @Autowired
     private WardRepository wardRepository;
@@ -59,20 +62,20 @@ public class HomestayService {
 
 
 
-    public Perk createAmenities(Perk amenities) {
-        return perkRepository.save(amenities);
+    public Amenities createAmenities(Amenities amenities) {
+        return amenitiesRepository.save(amenities);
     }
 
-    public Optional<Perk>  getByIdAmenities(int id){
-        return perkRepository.findById(id);
+    public Optional<Amenities>  getByIdAmenities(int id){
+        return amenitiesRepository.findById(id);
     }
 
-    public List<Perk> getAmenitiesAll(){return  perkRepository.findAll();}
+    public List<Amenities> getAmenitiesAll(){return  amenitiesRepository.findAll();}
 
-    public List<Perk> getByIdsAmenities(List<Integer> ids) {
-        return perkRepository.findAllById(ids);
+    public List<Amenities> getByIdsAmenities(List<Integer> ids) {
+        return amenitiesRepository.findAllById(ids);
     }
-    public void deleteAmenities(int id){ perkRepository.deleteById(id);}
+    public void deleteAmenities(int id){ amenitiesRepository.deleteById(id);}
     public Structure createStructure(Structure structure) {
         return structureRepository.save(structure);
     }
@@ -94,26 +97,31 @@ public class HomestayService {
     public Homestay createHomestay(HomestayDTO homestayDTO) {
         Homestay homestay = new Homestay();
         populateHomestayFields(homestay, homestayDTO);
-        System.out.println(homestay.getPhotos());
-
-        Homestay savedHomestay = homestayRepository.save(homestay);
 
 
-        LocalDate today = LocalDate.now();
-        LocalDate endDate = today.plusDays(30);
 
-        while (!today.isAfter(endDate)) {
-            HomestayAvailability availability = new HomestayAvailability();
-            availability.setHomestay(savedHomestay);
-            availability.setDate(Timestamp.valueOf(today.atStartOfDay(ZoneId.systemDefault()).toLocalDateTime()));
-            availability.setStatus("available");
-            availability.setPricepernight(homestayDTO.getPricePerNight());
+            Homestay savedHomestay = homestayRepository.save(homestay);
+            LocalDate today = LocalDate.now();
+            LocalDate endDate = today.plusDays(30);
 
-            homestayAvailabilityRepository.save(availability);
-            today = today.plusDays(1);
-        }
+            while (!today.isAfter(endDate)) {
+                HomestayAvailability availability = new HomestayAvailability();
+                availability.setHomestay(savedHomestay);
+                availability.setDate(Timestamp.valueOf(today.atStartOfDay(ZoneId.systemDefault()).toLocalDateTime()));
+                availability.setStatus("available");
+                availability.setPricepernight(homestayDTO.getPricePerNight());
+
+                homestayAvailabilityRepository.save(availability);
+                today = today.plusDays(1);
+
+            }
+
 
         return savedHomestay;
+
+
+
+
     }
 
     public void createBooking(BookingHomestayDTO bookingDTO) {
@@ -162,28 +170,31 @@ public class HomestayService {
         homestay.setLatitude(homestayDTO.getLatitude());
         homestay.setTitle(homestayDTO.getTitle());
         homestay.setAddress(homestayDTO.getAddress());
-        homestay.setGeom(homestayDTO.getGeom());
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Point point = geometryFactory.createPoint(new Coordinate(homestayDTO.getLongitude(), homestayDTO.getLatitude()));
+        homestay.setGeom(point);
         homestay.setPhotos(homestayDTO.getPhotos());
         homestay.setDescription(homestayDTO.getDescription());
         homestay.setExtrainfo(homestayDTO.getExtraInfo());
         homestay.setCleaningfee(homestayDTO.getCleaningFee());
         homestay.setIsapproved(homestayDTO.getIsApproved());
         homestay.setMaxguest(homestayDTO.getMaxGuest());
+        homestay.setType(homestayDTO.getType());
 
 
         CityProvince cityProvince = new CityProvince();
-        cityProvince.setCityname("Default City Name");
+        cityProvince.setCityname(homestayDTO.getCityProvinceName());
         cityProvince = cityProvinceRepository.save(cityProvince);
 
 
         District district = new District();
-        district.setDistrictname("Default District Name");
+        district.setDistrictname(homestayDTO.getDistrictName());
         district.setCityprovince(cityProvince);
         district = districtRepository.save(district);
 
 
         Ward ward = new Ward();
-        ward.setWardname("Default Ward Name");
+        ward.setWardname(homestayDTO.getWardName());
         ward.setDistrict(district);
         ward = wardRepository.save(ward);
 
@@ -198,10 +209,10 @@ public class HomestayService {
 
 
         if (homestayDTO.getPerkIds() != null && !homestayDTO.getPerkIds().isEmpty()) {
-            List<Perk> perks = perkRepository.findAllById(homestayDTO.getPerkIds());
-            homestay.setPerks(perks);
+            List<Amenities> amenities = amenitiesRepository.findAllById(homestayDTO.getPerkIds());
+            homestay.setAmenities(amenities);
         } else {
-            homestay.setPerks(new ArrayList<>());
+            homestay.setAmenities(new ArrayList<>());
         }
     }
 
@@ -229,15 +240,20 @@ public class HomestayService {
         dto.setLatitude(homestay.getLatitude());
         dto.setTitle(homestay.getTitle());
         dto.setAddress(homestay.getAddress());
-        dto.setGeom(homestay.getGeom());
         dto.setPhotos(homestay.getPhotos());
         dto.setDescription(homestay.getDescription());
         dto.setExtraInfo(homestay.getExtrainfo());
         dto.setCleaningFee(homestay.getCleaningfee());
         dto.setIsApproved(homestay.isIsapproved());
         dto.setMaxGuest(homestay.getMaxguest());
+<<<<<<< HEAD
         dto.setPerkIds(homestay.getPerks().stream()
                 .map(Perk::getAmenitiesid)
+=======
+
+        dto.setPerkIds(homestay.getAmenities().stream()
+                .map(Amenities::getAmenitiesid)
+>>>>>>> ad3c44083ad3a7ae2509377f86d26ba516a90ea7
                 .collect(Collectors.toList()));
 
         List<HomestayAvailabilityDTO> availabilityDTOs = homestay.getHomestayAvailabilityList().stream()
