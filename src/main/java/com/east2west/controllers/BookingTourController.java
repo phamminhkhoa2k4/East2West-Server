@@ -22,7 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -48,10 +53,12 @@ public class BookingTourController {
     public List<BookingTourFetch> getBookingsTourList() {
         return packTourService.getAllBookingTours();
     }
+
     @GetMapping("/refund")
     public List<RefundFetch> getBookingsTourRefundList() {
         return packTourService.getAllRefunds();
     }
+
     @PostMapping()
     public ResponseEntity<String> createBookingTour(@RequestBody BookingTourDTO bookingTourDTO) {
         packTourService.saveBookingTour(bookingTourDTO);
@@ -70,7 +77,7 @@ public class BookingTourController {
     }
 
     @PostMapping("/create_payment/{amount}")
-    public ResponseEntity<?> createPayment(@PathVariable long amount, @RequestBody BookingTourDTO bookingTourDTO)
+    public ResponseEntity<?> createPayment(@PathVariable double amount, @RequestBody BookingTourDTO bookingTourDTO)
             throws UnsupportedEncodingException {
         String orderType = "other";
         String bankCode = "NCB";
@@ -80,7 +87,7 @@ public class BookingTourController {
         vnp_Params.put("vnp_Version", PaymentConfig.vnp_Version);
         vnp_Params.put("vnp_Command", PaymentConfig.vnp_Command);
         vnp_Params.put("vnp_TmnCode", PaymentConfig.vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(amount * 100)); // Convert to VND
+        vnp_Params.put("vnp_Amount", String.valueOf((int) (amount * 2200))); // Convert to VND
         vnp_Params.put("vnp_CurrCode", "VND");
 
         if (bankCode != null && !bankCode.isEmpty()) {
@@ -90,7 +97,7 @@ public class BookingTourController {
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + bookingTourDTO.toParamString());
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_OrderType", orderType);
-        vnp_Params.put("vnp_ReturnUrl", PaymentConfig.vnp_ReturnUrl);
+        vnp_Params.put("vnp_ReturnUrl", "http://localhost:8080/api/bookings/payment_infor");
         vnp_Params.put("vnp_IpAddr", "127.0.0.1");
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -139,38 +146,55 @@ public class BookingTourController {
             @RequestParam(value = "vnp_OrderInfo") String order,
             @RequestParam(value = "vnp_ResponseCode", required = false) String responseCode,
             HttpServletResponse response) throws IOException, MessagingException, java.io.IOException {
+
         if (responseCode != null && responseCode.equals("00")) {
             BookingTourDTO bookingTourDTO = parseOrderInfo(order);
             packTourService.saveBookingTour(bookingTourDTO);
 
-            // Additional processing, like sending email
-            // Assume userService and bookingTourService methods are available
-            Optional<User> userAuth = userService.getUserById(bookingTourDTO.getUserId());
-            if (userAuth.isPresent()) {
-                // Replace with appropriate email sending logic
-                // UserEmail userEmail = getUserEmail(userAuth, bookingTourDTO);
-                // emailService.sendEmail(userEmail);
-            }
+        
         }
-        String responseUrl = "http://localhost:3000/bookingtours";
+        String responseUrl = "http://localhost:3000";
         response.sendRedirect(responseUrl);
     }
 
     private BookingTourDTO parseOrderInfo(String orderInfo) {
-        BookingTourDTO dto = new BookingTourDTO();
-
-        // Adjust the pattern based on the actual orderInfo format
         Pattern pattern = Pattern.compile(
-                "Tour Package ID: (\\d+), User ID: (\\d+), Tour Date: ([^,]+), Number of People: (\\d+), Total Price: ([\\d]+), Status: ([^,]*)");
+            "Tour Package ID: (\\d+), User ID: (\\d+), Tour Date: (\\d{4}-\\d{2}-\\d{2}), Number of People: (\\d+), Total Price: ([\\d.]+)"
+        );
+    
         Matcher matcher = pattern.matcher(orderInfo);
+    
+        BookingTourDTO bookingTourDTO = new BookingTourDTO();
+    
         if (matcher.find()) {
-            dto.setPackageId(Integer.parseInt(matcher.group(1)));
-            dto.setUserId(Integer.parseInt(matcher.group(2)));
-            dto.setTourDate(Timestamp.valueOf(matcher.group(3)));
-            dto.setNumberOfPeople(Integer.parseInt(matcher.group(4)));
-            dto.setTotalPrice(new BigDecimal(matcher.group(5)));
+            try {
+                // Extract and set properties
+                bookingTourDTO.setPackageId(Integer.parseInt(matcher.group(1)));
+                bookingTourDTO.setUserId(Integer.parseInt(matcher.group(2)));
+                bookingTourDTO.setTourDate(parseDate(matcher.group(3))); 
+                bookingTourDTO.setPaymentId(1);
+                bookingTourDTO.setNumberOfPeople(Integer.parseInt(matcher.group(4)));
+                bookingTourDTO.setTotalPrice(new BigDecimal(matcher.group(5)));
+            } catch (NumberFormatException | ParseException e) {
+                // Handle errors
+                System.err.println("Error parsing booking tour info: " + e.getMessage());
+            }
+        } else {
+            // Handle case where pattern doesn't match
+            System.err.println("No match found for the order info: " + orderInfo);
         }
-
-        return dto;
+    
+        return bookingTourDTO;
     }
+    
+
+    private java.sql.Date parseDate(String dateStr) throws ParseException {
+        // Converts a date string in yyyy-MM-dd format to java.sql.Date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date parsedDate = dateFormat.parse(dateStr);
+        return new java.sql.Date(parsedDate.getTime()); // Convert to java.sql.Date
+    }
+    
+
+
 }

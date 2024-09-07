@@ -1,5 +1,6 @@
 package com.east2west.models.Entity;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.Timestamp;
 import jakarta.persistence.*;
 
@@ -67,8 +68,8 @@ public class BookingTour {
         return this.tourdate;
     }
 
-    public void setTourdate(Timestamp tourdate) {
-        this.tourdate = tourdate;
+    public void setTourdate(Timestamp date) {
+        this.tourdate = date;
     }
 
     @Column(name = "numberofpeople")

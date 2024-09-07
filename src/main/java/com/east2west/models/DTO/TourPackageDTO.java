@@ -10,7 +10,16 @@ import java.util.List;
 public class TourPackageDTO {
     private int id;
     private String title;
-    private String thumbnail;
+    private List<String> thumbnail;
+
+    public List<String> getThumbnail() {
+        return this.thumbnail;
+    }
+
+    public void setThumbnail(List<String> thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
     private BigDecimal price;
     private BigDecimal pricereduce;
     private String groupsize;
@@ -22,7 +31,6 @@ public class TourPackageDTO {
     private List<Integer> suitableTourId;
     private List<DepartureDateDTO> departureDates;
 
-    // Getters and setters for all fields...
 
     public static class DepartureDateDTO {
         private String dateTime;
@@ -89,13 +97,6 @@ public class TourPackageDTO {
         this.title = title;
     }
 
-    public String getThumbnail() {
-        return this.thumbnail;
-    }
-
-    public void setThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
-    }
 
     public BigDecimal getPrice() {
         return this.price;

@@ -22,6 +22,7 @@ public class EmployeeController {
     private RentalCarService rentalCarService;
     @Autowired
     private PackTourService packTourService;
+
     @PostMapping("/rental")
     public ResponseEntity<Rental> bookRentalDirectly(@RequestBody RentalDTO rentalDTO) {
         Rental rental = rentalCarService.saveRental(rentalDTO);
@@ -29,21 +30,16 @@ public class EmployeeController {
         Rental confirmedRental = rentalCarService.saveBooking(rental);
         return ResponseEntity.ok(confirmedRental);
     }
+
     @PostMapping("/tour")
     public ResponseEntity<String> bookTourDirectly(@RequestBody BookingTourDTO bookingTourDTO) {
         packTourService.eployeeSaveBookingTour(bookingTourDTO);
         return ResponseEntity.ok("Booking tour created successfully!");
     }
-    @PostMapping("/employee/refund")
-        public ResponseEntity<String> processEmployeeRefund(@RequestBody CancelDTO refundRequest) {
-        Optional<BookingTour> bookingTourOpt = packTourService.getBookingTourById(refundRequest.getBookingTourId());
-        if (bookingTourOpt.isPresent()) {
-            BookingTour bookingTour = bookingTourOpt.get();
-            bookingTour.setStatus("Refunded");
-            bookingTour.setReason(refundRequest.getReasson());
-            packTourService.saveBookingTour(bookingTour);
-            return ResponseEntity.ok("Employee processed tour refund successfully");
-        }
-    return ResponseEntity.badRequest().body("Invalid refund request");
-}
+
+    @PostMapping("/refund")
+    public ResponseEntity<String> processEmployeeRefund(@RequestBody CancelDTO refundRequest) {
+        packTourService.cancelBookingEmployee(refundRequest);
+        return ResponseEntity.badRequest().body("Invalid refund request");
+    }
 }

@@ -7,7 +7,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import java.util.List;
+
+import com.east2west.util.StringListConverter;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -133,5 +139,15 @@ public class Car {
     private String location;
 
 
+@Convert(converter = StringListConverter.class)
+    @Column(name = "thumbnail")
+    private List<String> thumbnail;
 
+    public List<String> getThumbnail() {
+        return this.thumbnail;
+    }
+
+    public void setThumbnail(List<String> thumbnail) {
+        this.thumbnail = thumbnail;
+    }
 }
