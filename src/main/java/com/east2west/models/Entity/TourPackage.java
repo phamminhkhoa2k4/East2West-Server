@@ -3,6 +3,8 @@ package com.east2west.models.Entity;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.east2west.util.StringListConverter;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -12,29 +14,35 @@ public class TourPackage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "packageid")
     private int packageid;
+
     public int getPackageid() {
         return this.packageid;
     }
+
     public void setPackageid(int packageid) {
         this.packageid = packageid;
     }
+
     @Column(name = "title")
     private String title;
+
     public String getTitle() {
         return this.title;
     }
+
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @Convert(converter = StringListConverter.class)
     @Column(name = "thumbnail")
-    private String thumbnail;
+    private List<String> thumbnail;
 
-    public String getThumbnail() {
+    public List<String> getThumbnail() {
         return this.thumbnail;
     }
 
-    public void setThumbnail(String thumbnail) {
+    public void setThumbnail(List<String> thumbnail) {
         this.thumbnail = thumbnail;
     }
 
@@ -103,6 +111,7 @@ public class TourPackage {
     public void setBookingchange(String bookingchange) {
         this.bookingchange = bookingchange;
     }
+
     @OneToMany(mappedBy = "tourPackage", fetch = FetchType.LAZY)
     private List<Itinerary> itineraries;
 
@@ -113,12 +122,9 @@ public class TourPackage {
     public void setItineraries(List<Itinerary> itineraries) {
         this.itineraries = itineraries;
     }
+
     @ManyToMany
-    @JoinTable(
-        name = "tourcategorytour",
-        joinColumns = @JoinColumn(name = "packageid"),
-        inverseJoinColumns = @JoinColumn(name = "categorytourid")
-    )
+    @JoinTable(name = "tourcategorytour", joinColumns = @JoinColumn(name = "packageid"), inverseJoinColumns = @JoinColumn(name = "categorytourid"))
     private List<CategoryTour> categoryTours;
 
     public List<CategoryTour> getCategoryTours() {
@@ -130,11 +136,7 @@ public class TourPackage {
     }
 
     @ManyToMany
-    @JoinTable(
-        name = "tourthemetour",
-        joinColumns = @JoinColumn(name = "packageid"),
-        inverseJoinColumns = @JoinColumn(name = "themetourid")
-    )
+    @JoinTable(name = "tourthemetour", joinColumns = @JoinColumn(name = "packageid"), inverseJoinColumns = @JoinColumn(name = "themetourid"))
     private List<ThemeTour> themeTours;
 
     public List<ThemeTour> getThemeTours() {
@@ -146,11 +148,7 @@ public class TourPackage {
     }
 
     @ManyToMany
-    @JoinTable(
-        name = "toursuitabletour",
-        joinColumns = @JoinColumn(name = "packageid"),
-        inverseJoinColumns = @JoinColumn(name = "suitabletourid")
-    )
+    @JoinTable(name = "toursuitabletour", joinColumns = @JoinColumn(name = "packageid"), inverseJoinColumns = @JoinColumn(name = "suitabletourid"))
     private List<SuitableTour> suitableTours;
 
     public List<SuitableTour> getSuitableTours() {
@@ -160,12 +158,9 @@ public class TourPackage {
     public void setSuitableTours(List<SuitableTour> suitableTours) {
         this.suitableTours = suitableTours;
     }
+
     @ManyToMany
-    @JoinTable(
-        name = "tourdeparturedate",
-        joinColumns = @JoinColumn(name = "packageid"),
-        inverseJoinColumns = @JoinColumn(name = "departuredateid")
-    )
+    @JoinTable(name = "tourdeparturedate", joinColumns = @JoinColumn(name = "packageid"), inverseJoinColumns = @JoinColumn(name = "departuredateid"))
     private List<DepartureDate> departureDates;
 
     public List<DepartureDate> getDepartureDate() {
@@ -177,4 +172,3 @@ public class TourPackage {
     }
 
 }
-

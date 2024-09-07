@@ -1,23 +1,18 @@
 package com.east2west.models.DTO;
-import java.sql.Timestamp;
+
+import java.sql.Date;
 import java.math.BigDecimal;
+
 public class BookingTourDTO {
     private int userId;
     private int paymentId;
     private int packageId;
-    private Timestamp tourDate;
+    private Date tourDate;
     private int numberOfPeople;
     private BigDecimal totalPrice;
     private BigDecimal depositAmount;
-    
-    public BigDecimal getTotalPrice() {
-        return this.totalPrice;
-    }
 
-    public void setTotalPrice(BigDecimal totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
+    // Getters and setters
     public int getUserId() {
         return this.userId;
     }
@@ -42,14 +37,12 @@ public class BookingTourDTO {
         this.packageId = packageId;
     }
 
-
-
-    public Timestamp getTourDate() {
+    public Date getTourDate() {
         return this.tourDate;
     }
 
-    public void setTourDate(Timestamp tourDate) {
-        this.tourDate = tourDate;
+    public void setTourDate(Date date) {
+        this.tourDate = date;
     }
 
     public int getNumberOfPeople() {
@@ -60,7 +53,14 @@ public class BookingTourDTO {
         this.numberOfPeople = numberOfPeople;
     }
 
-   
+    public BigDecimal getTotalPrice() {
+        return this.totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
     public BigDecimal getDepositAmount() {
         return this.depositAmount;
     }
@@ -71,8 +71,8 @@ public class BookingTourDTO {
 
     public String toParamString() {
         return String.format(
-            "Tour Package ID: %d, User ID: %d, Tour Date: %s, Number of People: %d, Total Price: %s, Status: %s",
-            packageId, userId, tourDate.toLocalDateTime().toString(), numberOfPeople, totalPrice.toString(), "New"
+            "Tour Package ID: %d, User ID: %d, Tour Date: %s, Number of People: %d, Total Price: %s",
+            packageId, userId, tourDate.toLocalDate().toString(), numberOfPeople, totalPrice.toString()
         );
     }
 }

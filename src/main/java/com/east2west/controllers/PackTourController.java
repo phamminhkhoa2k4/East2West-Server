@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.east2west.models.DTO.ApiResponse;
+import com.east2west.models.DTO.TourPackageDTO;
 import com.east2west.models.DTO.TourPackageDetailDTO;
 import com.east2west.models.DTO.TourPackageFilterDTO;
 import com.east2west.models.Entity.CategoryTour;
@@ -34,7 +35,7 @@ public class PackTourController {
 
     @GetMapping
     public List<TourPackage> getAllTourPackages() {
-        return packTourService.getAllTourPackages();
+        return packTourService.getAllTourpackages();
     }
 
     @GetMapping("/{packageid}")
@@ -42,7 +43,19 @@ public class PackTourController {
     public TourPackageDetailDTO getToursByPackageId(@PathVariable int packageid) {
         return packTourService.getTourDetailByPackageid(packageid);
     }
-
+    
+    @GetMapping("/search")
+    public ResponseEntity<List<TourPackage>> searchTourPackages(
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false) Integer minPrice,
+        @RequestParam(required = false) Integer maxPrice,
+        @RequestParam(required = false) Integer categoryId,
+        @RequestParam(required = false) Integer themeId,
+        @RequestParam(required = false) Integer suitableId
+    ) {
+        List<TourPackage> result = packTourService.searchTourPackages(title, minPrice, maxPrice, categoryId, themeId, suitableId);
+        return ResponseEntity.ok(result);
+    }
     // @GetMapping("/category/{categoryTourName}")
     // public List<TourPackage> getToursByCategory(@PathVariable String categoryTourName) {
     //     return packTourService.getAllTourPackagesByCategory(categoryTourName);
@@ -175,7 +188,7 @@ public ResponseEntity<ApiResponse<ThemeTour>> updateTheme(
         List<TourPackage> filteredPackages = packTourService.filterTourPackages(filterDTO);
         return ResponseEntity.ok(filteredPackages);
     }
-    @GetMapping("/search")
+    @GetMapping("/search/name")
     public List<TourPackage> searchToursByTitle(@RequestParam("title") String title) {
         return packTourService.findByTitle(title);
     }
