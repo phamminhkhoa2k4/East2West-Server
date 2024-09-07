@@ -108,7 +108,11 @@ public class AuthController {
             errors.put("email", "Email is already in use!");
             return ResponseEntity.badRequest().body(errors);
         }
-
+        if (userRepository.existsByPhone(signUpRequest.getPhone())) {
+            Map<String, String> errors = new HashMap<>();
+            errors.put("phone", "Phone number is already in use!");
+            return ResponseEntity.badRequest().body(errors);
+        }
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()),

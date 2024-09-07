@@ -7,15 +7,21 @@ import java.util.List;
 import com.east2west.models.Entity.*;
 
 
-import com.east2west.models.Entity.CategoryTour;
-
-
 
     
     public class TourPackageDetailDTO {
         private int packageid;
     private String title;
-    private String thumbnail;
+    private List<String> thumbnail;
+
+    public List<String> getThumbnail() {
+        return this.thumbnail;
+    }
+
+    public void setThumbnail(List<String> thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
     private BigDecimal price;
     private BigDecimal pricereduce;
     private String groupsize;
@@ -79,14 +85,7 @@ import com.east2west.models.Entity.CategoryTour;
             this.title = title;
         }
     
-        public String getThumbnail() {
-            return thumbnail;
-        }
-    
-        public void setThumbnail(String thumbnail) {
-            this.thumbnail = thumbnail;
-        }
-    
+       
         public BigDecimal getPrice() {
             return price;
         }

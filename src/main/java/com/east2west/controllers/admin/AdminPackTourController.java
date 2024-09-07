@@ -30,10 +30,9 @@ public class AdminPackTourController {
 
     @GetMapping
     public ResponseEntity<List<TourPackage>> getAllTours() {
-        List<TourPackage> tours = packTourService.getAllTourPackages();
-        return new ResponseEntity<>(tours, HttpStatus.OK);
+        List<TourPackage> tours = packTourService.getAllTourpackages();
+        return new ResponseEntity<>(tours,HttpStatus.OK);
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<TourPackage> getTourById(@PathVariable int id) {
         TourPackage tour = packTourService.getTourPackageByPackageid(id);
@@ -45,8 +44,10 @@ public class AdminPackTourController {
         TourPackage createdTour = packTourService.createTour(tourPackageDTO);
         return new ResponseEntity<>(createdTour, HttpStatus.CREATED);
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTourPackage(@PathVariable int id, @RequestBody @Valid TourPackageDTO tourPackageDTO) {
+    public ResponseEntity<?> updateTourPackage(@PathVariable int id,
+            @RequestBody @Valid TourPackageDTO tourPackageDTO) {
         // Tìm đối tượng TourPackage cần cập nhật
         Optional<TourPackage> existingTourPackageOpt = packTourService.findById(id);
 
@@ -70,7 +71,8 @@ public class AdminPackTourController {
         }
 
         // Gọi service để cập nhật đối tượng TourPackage
-        TourPackage updatedTourPackage = packTourService.updateTourPackageFields(existingTourPackageOpt.get(), tourPackageDTO);
+        TourPackage updatedTourPackage = packTourService.updateTourPackageFields(existingTourPackageOpt.get(),
+                tourPackageDTO);
         packTourService.save(updatedTourPackage);
 
         return new ResponseEntity<>(updatedTourPackage, HttpStatus.OK);

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.east2west.models.DTO.CarDTO;
 import com.east2west.models.Entity.Car;
 import com.east2west.models.Entity.TourPackage;
 
@@ -22,5 +23,27 @@ public interface CarRepository extends JpaRepository<Car, Integer> {
     
   
     Optional<Car> findByCarNameAndCarIdNot(String carName, int carId);
+    @Query("SELECT c FROM Car c " +
+            "WHERE (:carName IS NULL OR c.carName LIKE %:carName%) " +
+            "AND (:modelName IS NULL OR c.model.modelName = :modelName) " +
+            "AND (:makeName IS NULL OR c.make.makeName = :makeName) " +
+            "AND (:typeName IS NULL OR c.type.typeName = :typeName) " +
+            "AND (:airConditioned IS NULL OR c.airConditioned = :airConditioned) " +
+            "AND (:minPrice IS NULL OR c.pricePerDay >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR c.pricePerDay <= :maxPrice) " +
+            "AND (:location IS NULL OR c.location = :location) " +
+            "AND (:minMiles IS NULL OR c.miles >= :minMiles) " +
+            "AND (:maxMiles IS NULL OR c.miles <= :maxMiles)")
+    List<Car> findByFilters(
+            @Param("carName") String carName,
+            @Param("modelName") String modelName,
+            @Param("makeName") String makeName,
+            @Param("typeName") String typeName,
+            @Param("airConditioned") Boolean airConditioned,
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice,
+            @Param("location") String location,
+            @Param("minMiles") Long minMiles,
+            @Param("maxMiles") Long maxMiles);
 
 }

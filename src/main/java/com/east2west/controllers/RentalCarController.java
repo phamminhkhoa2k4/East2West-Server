@@ -1,44 +1,34 @@
 package com.east2west.controllers;
 
-
-
-import org.springframework.beans.factory.annotation.Autowired;
+import java.sql.Date;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.text.ParseException;
 import com.east2west.config.PaymentConfig;
 import com.east2west.models.Entity.Rental;
 import com.east2west.service.PDFService;
 import com.east2west.service.RentalCarService;
 
 import jakarta.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.UnsupportedEncodingException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import com.east2west.models.DTO.*;
-import com.east2west.models.Entity.Homestay;
-import com.east2west.models.Entity.HomestayAvailability;
-import com.east2west.models.Entity.User;
-import com.east2west.service.EmailService;
-import com.east2west.service.HomestayService;
-import com.east2west.service.UserService;
-import jakarta.mail.MessagingException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 @RestController
 @RequestMapping("/api/rental")
 public class RentalCarController {
@@ -46,8 +36,6 @@ public class RentalCarController {
     private final RentalCarService rentalCarService;
     private final PDFService pdfService;
 
-
-   
     public RentalCarController(RentalCarService rentalCarService, PDFService pdfService) {
         this.rentalCarService = rentalCarService;
         this.pdfService = pdfService;
@@ -67,7 +55,7 @@ public class RentalCarController {
     public List<Rental> getRentalsByUserId(@PathVariable int userId) {
         return rentalCarService.getRentalsByUserId(userId);
     }
-    
+
     @PostMapping("/pdf/{rentalid}")
     public ResponseEntity<?> downloadRentalPDF(@PathVariable int rentalid) {
         Rental rental = rentalCarService.findById(rentalid);
@@ -91,6 +79,7 @@ public class RentalCarController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
     }
+
     @PostMapping("/create_payment/{amount}")
     public ResponseEntity<?> createPayment(@PathVariable double amount, @RequestBody RentalDTO rentalDTO)
             throws UnsupportedEncodingException {
@@ -101,13 +90,13 @@ public class RentalCarController {
         vnp_Params.put("vnp_Version", PaymentConfig.vnp_Version);
         vnp_Params.put("vnp_Command", PaymentConfig.vnp_Command);
         vnp_Params.put("vnp_TmnCode", PaymentConfig.vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf((int) (amount * 100))); // Convert to VND
+        vnp_Params.put("vnp_Amount", String.valueOf((int) (amount * 2200))); // Convert to VND
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang: " + rentalDTO.toParamString());
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_OrderType", orderType);
-        vnp_Params.put("vnp_ReturnUrl", PaymentConfig.vnp_ReturnUrl);
+        vnp_Params.put("vnp_ReturnUrl", "http://localhost:8080/api/rental/payment_infor");
         vnp_Params.put("vnp_IpAddr", "127.0.0.1");
 
         Calendar cld = Calendar.getInstance();
@@ -158,10 +147,66 @@ public class RentalCarController {
             HttpServletResponse response) throws IOException {
 
         if (responseCode != null && responseCode.equals("00")) {
-            // Lưu thông tin thanh toán thành công vào cơ sở dữ liệu
-            // Xử lý các bước như gửi email nếu cần
+            RentalDTO rentalDTO = processOrderInfo(order);
+
+            // Gọi dịch vụ để lưu thông tin thanh toán vào cơ sở dữ liệu
+            rentalCarService.saveRental(rentalDTO);
         }
         String responseUrl = "http://localhost:3000/rentals";
         response.sendRedirect(responseUrl);
+    }
+
+    public RentalDTO processOrderInfo(String orderInfo) {
+        // In ra chuỗi orderInfo để kiểm tra định dạng
+        System.out.println("Order Info: " + orderInfo);
+
+        // Biểu thức chính quy để phân tích chuỗi orderInfo
+        Pattern pattern = Pattern.compile(
+            "User ID: (\\d+), Car ID: (\\d+), Payment ID: (\\d+), Rental Date: (\\d{14}), Return Date: (\\d{14}), Total Amount: ([\\d.]+)"
+        );
+        
+        Matcher matcher = pattern.matcher(orderInfo);
+
+        RentalDTO rentalDTO = new RentalDTO();
+
+        if (matcher.find()) {
+            try {
+                // Lấy các nhóm khớp từ biểu thức chính quy
+                rentalDTO.setUserId(Integer.parseInt(matcher.group(1)));
+                rentalDTO.setCarId(Integer.parseInt(matcher.group(2)));
+                rentalDTO.setPaymentId(Integer.parseInt(matcher.group(3)));
+
+                // Chuyển đổi chuỗi ngày giờ từ định dạng yyyyMMddHHmmss thành java.sql.Timestamp
+                rentalDTO.setRentalDate(convertToSqlDate(parseDate(matcher.group(4))));
+                rentalDTO.setReturnDate(convertToSqlDate(parseDate(matcher.group(5))));
+
+                // Chuyển đổi tổng số tiền thành double
+                rentalDTO.setTotalAmount(Double.parseDouble(matcher.group(6)));
+            } catch (NumberFormatException e) {
+                // Xử lý lỗi khi không thể chuyển đổi giá trị thành số hoặc ngày giờ
+                System.err.println("Error parsing value: " + e.getMessage());
+            }
+        } else {
+            // Nếu không tìm thấy kết quả khớp với biểu thức chính quy
+            System.err.println("No match found for the order info: " + orderInfo);
+        }
+
+        return rentalDTO;
+    }
+
+    private Timestamp parseDate(String dateStr) {   
+        // Chuyển đổi định dạng yyyyMMddHHmmss thành Timestamp
+        try {
+            java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyyMMddHHmmss");
+            java.util.Date parsedDate = dateFormat.parse(dateStr);
+            return new Timestamp(parsedDate.getTime());
+        } catch (java.text.ParseException e) {
+            System.err.println("Date parse error: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private java.sql.Date convertToSqlDate(java.sql.Timestamp timestamp) {
+        return new java.sql.Date(timestamp.getTime());
     }
 }

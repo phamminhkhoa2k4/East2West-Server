@@ -185,4 +185,10 @@ public class CarService {
     public List<Car> findByName(String name) {
         return carRepository.findByTitleContainingIgnoreCase(name);
     }
+    public List<Car> searchCars(String carName, String modelName, String makeName, String typeName,
+                                   Boolean airConditioned, Double minPrice, Double maxPrice,
+                                   String location, Long minMiles, Long maxMiles) {
+        
+        return carRepository.findByFilters(carName, modelName, makeName, typeName, airConditioned, minPrice, maxPrice, location, minMiles, maxMiles);
+    }
 }
