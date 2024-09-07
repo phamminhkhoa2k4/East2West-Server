@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+
+      - 'POSTGRES_DB=travelminhpart'
+      - 'POSTGRES_PASSWORD=sa'
+      - 'POSTGRES_USER=postgres'
+
+    ports:
+      - '5432'
