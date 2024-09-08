@@ -359,7 +359,18 @@ public class PackTourService {
     public Timestamp convertToTimestamp(Date date) {
         return new Timestamp(date.getTime());
     }
-
+    public String cancelRefund(int id) {
+        BookingTour bookingTour = bookingTourRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "bookingTourId not found with id " + id));
+        bookingTour.setRefundamount(null);
+        bookingTour.setRefunddate(null);
+        bookingTour.setStatus("Waiting");
+        bookingTour.setReason("");
+        bookingTour.setDepositrefund(false);
+        bookingTourRepository.save(bookingTour);
+        return "Cancel Refund ";
+    }
     public String cancelBooking(CancelDTO cancelDTO) {
         BookingTour bookingTour = bookingTourRepository.findById(cancelDTO.getBookingTourId())
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -399,8 +410,9 @@ public class PackTourService {
         return "Booking canceled successfully. Refund amount: " + refundAmount;
     }
     private BigDecimal calculateRefund(BigDecimal depositAmount, long daysBeforeTour) {
+    
         BigDecimal refundPercentage;
-
+    
         if (daysBeforeTour >= 5) {
             refundPercentage = BigDecimal.valueOf(0.95);
         } else if (daysBeforeTour == 4) {
@@ -412,9 +424,10 @@ public class PackTourService {
         } else {
             refundPercentage = BigDecimal.valueOf(0.75);
         }
-
+    
         return depositAmount.multiply(refundPercentage);
     }
+    
 
     public List<TourPackage> findTop10ByOrderByTotalBookingsDesc() {
         List<TourPackage> top10Tours = bookingTourRepository.findAll().stream()

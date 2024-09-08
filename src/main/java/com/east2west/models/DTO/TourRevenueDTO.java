@@ -4,52 +4,59 @@ import org.apache.el.lang.ELArithmetic.BigDecimalDelegate;
 import java.math.BigDecimal;
 public class TourRevenueDTO {
 
-    private int id;
+    private int tourId;
+    private String tourTitle;
+    private long bookingCount;
+    private BigDecimal totalRevenue;
+    private BigDecimal totalRefund;
 
-    public int getId() {
-        return this.id;
+    public int getTourId() {
+        return this.tourId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setTourId(int tourId) {
+        this.tourId = tourId;
     }
 
-  
-
-    private String name;
-    private BigDecimal revenue;
-
-    public BigDecimal getRevenue() {
-        return this.revenue;
+    public String getTourTitle() {
+        return this.tourTitle;
     }
 
-    public void setRevenue(BigDecimal revenue) {
-        this.revenue = revenue;
+    public void setTourTitle(String tourTitle) {
+        this.tourTitle = tourTitle;
     }
 
-    private long bookingcount;
-
-    public long getBookingcount() {
-        return this.bookingcount;
+    public long getBookingCount() {
+        return this.bookingCount;
     }
 
-    public void setBookingcount(long bookingcount) {
-        this.bookingcount = bookingcount;
+    public void setBookingCount(long bookingCount) {
+        this.bookingCount = bookingCount;
     }
 
-    public String getName() {
-        return this.name;
+    public BigDecimal getTotalRevenue() {
+        return this.totalRevenue;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTotalRevenue(BigDecimal totalRevenue) {
+        this.totalRevenue = totalRevenue;
     }
 
-
-    public TourRevenueDTO(int id, String name, Long bookingcount,BigDecimal revenue) {
-        this.id = id;
-        this.name = name;
-        this.revenue = revenue;
-        this.bookingcount=bookingcount;
+    public BigDecimal getTotalRefund() {
+        return this.totalRefund;
     }
+
+    public void setTotalRefund(BigDecimal totalRefund) {
+        this.totalRefund = totalRefund;
+    }
+
+    // Constructor matching parameters used
+    public TourRevenueDTO(int tourId, String tourTitle, long bookingCount, BigDecimal totalRevenue, BigDecimal totalRefund) {
+        this.tourId = tourId;
+        this.tourTitle = tourTitle;
+        this.bookingCount = bookingCount;
+        this.totalRevenue = totalRevenue;
+        this.totalRefund = totalRefund;
+    }
+
 }
