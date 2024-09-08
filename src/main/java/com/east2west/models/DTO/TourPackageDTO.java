@@ -32,12 +32,25 @@ public class TourPackageDTO {
     private List<DepartureDateDTO> departureDates;
 
 
-    public static class DepartureDateDTO {
-        private String dateTime;
+    public static class DepartureDateDTO { // Make this class static
 
-        // Constructor to handle string deserialization
-        public DepartureDateDTO(String dateTime) {
+        private String id;
+        private String dateTime;
+        public DepartureDateDTO() {}
+
+        // All-arg constructor (optional, but helpful)
+        public DepartureDateDTO(String id, String dateTime) {
+            this.id = id;
             this.dateTime = dateTime;
+        }
+
+        // Getters and setters
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
         }
 
         public String getDateTime() {
@@ -46,12 +59,6 @@ public class TourPackageDTO {
 
         public void setDateTime(String dateTime) {
             this.dateTime = dateTime;
-        }
-
-        public Timestamp toTimestamp() {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
-            LocalDateTime localDateTime = LocalDateTime.parse(this.dateTime, formatter);
-            return Timestamp.from(localDateTime.toInstant(ZoneOffset.UTC));
         }
     }
 
