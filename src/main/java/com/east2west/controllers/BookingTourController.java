@@ -70,7 +70,12 @@ public class BookingTourController {
         String response = packTourService.cancelBooking(cancelDTO);
         return ResponseEntity.ok(response);
     }
-
+    @PostMapping("/cancelRefund/{id}")
+    public ResponseEntity<String> cancelRefund(@PathVariable int id) {
+        String response = packTourService.cancelRefund(id);
+        return ResponseEntity.ok(response);
+    }
+    
     @GetMapping("/user/{userId}")
     public List<BookingTour> getRentalsByUserId(@PathVariable int userId) {
         return packTourService.getListBookingByUser(userId);
@@ -173,6 +178,7 @@ public class BookingTourController {
                 bookingTourDTO.setUserId(Integer.parseInt(matcher.group(2)));
                 bookingTourDTO.setTourDate(parseDate(matcher.group(3))); 
                 bookingTourDTO.setPaymentId(1);
+                bookingTourDTO.setDepositAmount(new BigDecimal(matcher.group(5)));
                 bookingTourDTO.setNumberOfPeople(Integer.parseInt(matcher.group(4)));
                 bookingTourDTO.setTotalPrice(new BigDecimal(matcher.group(5)));
             } catch (NumberFormatException | ParseException e) {
