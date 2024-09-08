@@ -24,5 +24,7 @@ public class UserController {
         ApiResponse<List<User>> response = new ApiResponse<>(users, "success", "Users retrieved successfully");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
 }
 
