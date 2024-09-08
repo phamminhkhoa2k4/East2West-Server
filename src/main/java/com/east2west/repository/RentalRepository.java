@@ -6,4 +6,6 @@ import com.east2west.models.Entity.Rental;
 
 public interface RentalRepository extends JpaRepository<Rental, Integer> {
     List<Rental> findByUserid(int userid);
+
+    List<Rental> findByCar_CarIdAndUseridAndStatusIn(int carId,int userId, List<String> statuses);
 }

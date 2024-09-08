@@ -1,28 +1,23 @@
 package com.east2west.controllers;
 
-import java.sql.Date;
+
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.text.ParseException;
 import com.east2west.config.PaymentConfig;
 import com.east2west.models.Entity.Rental;
 import com.east2west.service.PDFService;
 import com.east2west.service.RentalCarService;
-
 import jakarta.servlet.http.HttpServletResponse;
-import java.text.ParseException;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.UnsupportedEncodingException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
 import com.east2west.models.DTO.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -47,8 +42,17 @@ public class RentalCarController {
     }
 
     @PostMapping
-    public Rental saveRental(@RequestBody RentalDTO rentalDTO) {
-        return rentalCarService.saveRental(rentalDTO);
+    public ResponseEntity<?> saveRental(@RequestBody RentalDTO rentalDTO) {
+        try {
+            Rental rental = rentalCarService.saveRental(rentalDTO);
+            return new ResponseEntity<>(rental, HttpStatus.CREATED);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return new ResponseEntity<>(Map.of("status", "error", "message", e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            // Log the exception details for debugging
+            e.printStackTrace();
+            return new ResponseEntity<>(Map.of("status", "error", "message", "An unexpected error occurred."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/user/{userId}")

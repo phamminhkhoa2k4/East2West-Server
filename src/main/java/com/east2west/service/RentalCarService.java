@@ -11,6 +11,8 @@ import com.east2west.models.Entity.Car;
 import com.east2west.models.Entity.Payment;
 import com.east2west.models.Entity.Rental;
 import com.east2west.models.Entity.User;
+import java.util.Arrays;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,11 +62,17 @@ private UserRepository userRepository;
         return rentalCarRepository.save(bookingCar);
     }
     public Rental saveRental(RentalDTO rentalDTO) {
+        boolean carAlreadyRented = isCarAlreadyRented(rentalDTO.getCarId(), rentalDTO.getUserId(), rentalDTO.getRentalDate(), rentalDTO.getReturnDate());
+    
+        if (carAlreadyRented) {
+            throw new IllegalStateException("Car is already rented by the user and the previous rental is still active.");
+        }
         Car car = carRepository.findById(rentalDTO.getCarId())
             .orElseThrow(() -> new IllegalArgumentException("Car not found"));
         Payment payment = paymentRepository.findById(rentalDTO.getPaymentId())
             .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
-
+    
+        // Create and save the Rental entity
         Rental rental = new Rental();
         rental.setUserid(rentalDTO.getUserId());
         rental.setCar(car);
@@ -73,8 +81,28 @@ private UserRepository userRepository;
         rental.setRentalDate(rentalDTO.getRentalDate());
         rental.setReturnDate(rentalDTO.getReturnDate());
         rental.setTotalAmount(rentalDTO.getTotalAmount());
+    
         return rentalCarRepository.save(rental);
     }
+    
+    public boolean isCarAlreadyRented(int carId, int userId, Date rentalDate, Date returnDate) {
+        // Get all active rentals for the specific car and user with statuses "Waiting" and "Confirmed"
+        List<Rental> rentals = rentalCarRepository.findByCar_CarIdAndUseridAndStatusIn(
+            carId, 
+            userId, 
+            Arrays.asList("Waiting", "Confirmed")
+        );
+        for (Rental rental : rentals) {
+            Date existingRentalDate = rental.getRentalDate();
+            Date existingReturnDate = rental.getReturnDate();
+            if ((rentalDate.before(existingReturnDate) && returnDate.after(existingRentalDate))) {
+                return true; 
+            }
+        }
+    
+        return false;
+    }
+    
     public List<Rental> getRentalsByUserId(int userId) {
         return rentalCarRepository.findByUserid(userId);
     }
