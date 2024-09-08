@@ -1,5 +1,6 @@
 package com.east2west.service;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,11 +15,14 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import com.east2west.exception.ResourceNotFoundException;
 import com.east2west.models.DTO.BookingTourDTO;
+import com.east2west.models.DTO.BookingTourFetch;
 import com.east2west.models.DTO.CancelDTO;
+import com.east2west.models.DTO.RefundFetch;
 import com.east2west.models.DTO.TourPackageDTO;
 import com.east2west.models.DTO.TourPackageDTO.DepartureDateDTO;
 import com.east2west.models.DTO.TourPackageDetailDTO;
 import com.east2west.models.DTO.TourPackageFilterDTO;
+import com.east2west.models.DTO.UserFetch;
 import com.east2west.models.Entity.BookingTour;
 import com.east2west.models.Entity.CategoryTour;
 import com.east2west.models.Entity.DepartureDate;
@@ -28,6 +32,7 @@ import com.east2west.models.Entity.SuitableTour;
 import com.east2west.models.Entity.ThemeTour;
 import com.east2west.models.Entity.TourDepartureDate;
 import com.east2west.models.Entity.TourPackage;
+import com.east2west.models.Entity.User;
 import com.east2west.repository.BookingTourRepository;
 import com.east2west.repository.CategoryTourRepository;
 import com.east2west.repository.DepartureDateRepository;
@@ -36,11 +41,14 @@ import com.east2west.repository.SuitableTourRepository;
 import com.east2west.repository.ThemeTourRepository;
 import com.east2west.repository.TourDepartureDateRepository;
 import com.east2west.repository.TourPackageRepository;
+import com.east2west.repository.UserRepository;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 
@@ -69,11 +77,12 @@ public class PackTourService {
 
     @Autowired
     private BookingTourRepository bookingTourRepository;
-
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private PaymentRepository paymentRepository;
 
-    public List<TourPackage> getAllTourPackages() {
+    public List<TourPackage> getAllTourpackages() {
         return tourPackageRepository.findAll();
     }
 
@@ -135,7 +144,19 @@ public class PackTourService {
         return tourPackageRepository.findByPackageid(id);
     }
 
-    private void updateTourPackageFields(TourPackage tourPackage, TourPackageDTO tourPackageDTO) {
+    public Optional<TourPackage> findById(int id) {
+        return tourPackageRepository.findById(id);
+    }
+
+    public void save(TourPackage tourPackage) {
+        tourPackageRepository.save(tourPackage);
+    }
+
+    public boolean existsByTitle(String title) {
+        return tourPackageRepository.existsByTitle(title);
+    }
+
+    public TourPackage updateTourPackageFields(TourPackage tourPackage, TourPackageDTO tourPackageDTO) {
         tourPackage.setTitle(tourPackageDTO.getTitle());
         tourPackage.setThumbnail(tourPackageDTO.getThumbnail());
         tourPackage.setPrice(tourPackageDTO.getPrice());
@@ -161,7 +182,12 @@ public class PackTourService {
         tourPackage.setSuitableTours(suitableTours);
 
         // Map DepartureDates
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+                .toFormatter();
+
         tourPackage.getDepartureDate().clear();
         List<DepartureDate> existingDepartureDates = new ArrayList<>();
 
@@ -185,17 +211,79 @@ public class PackTourService {
         }
 
         tourPackage.setDepartureDate(existingDepartureDates);
+
+        return tourPackage;
     }
 
     public TourPackage createTour(TourPackageDTO tourPackageDTO) {
+        // Validate input fields
+        if (tourPackageDTO.getTitle() == null || tourPackageDTO.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Title cannot be empty");
+        }
+        if (tourPackageDTO.getPrice() == null || tourPackageDTO.getPricereduce() == null) {
+            throw new IllegalArgumentException("Price and reduced price cannot be null");
+        }
+        if (tourPackageDTO.getGroupsize() == null || tourPackageDTO.getDeposit() == null ||
+                tourPackageDTO.getBookinghold() == null || tourPackageDTO.getBookingchange() == null) {
+            throw new IllegalArgumentException("Groupsize, deposit, booking hold, and booking change cannot be null");
+        }
+
+        // Check for duplicate title
+        if (tourPackageRepository.existsByTitle(tourPackageDTO.getTitle())) {
+            throw new IllegalArgumentException("A tour package with this title already exists");
+        }
+
+        // Create a new TourPackage entity
         TourPackage tourPackage = new TourPackage();
-        tourPackage.setCategoryTours(new ArrayList<>());
-        tourPackage.setThemeTours(new ArrayList<>());
-        tourPackage.setSuitableTours(new ArrayList<>());
-        tourPackage.setDepartureDate(new ArrayList<>());
+        tourPackage.setTitle(tourPackageDTO.getTitle());
+        tourPackage.setThumbnail(tourPackageDTO.getThumbnail());
+        tourPackage.setPrice(tourPackageDTO.getPrice());
+        tourPackage.setPricereduce(tourPackageDTO.getPricereduce());
+        tourPackage.setGroupsize(tourPackageDTO.getGroupsize());
+        tourPackage.setDeposit(tourPackageDTO.getDeposit());
+        tourPackage.setBookinghold(tourPackageDTO.getBookinghold());
+        tourPackage.setBookingchange(tourPackageDTO.getBookingchange());
 
-        updateTourPackageFields(tourPackage, tourPackageDTO);
+        // Map CategoryTours
+        List<CategoryTour> categoryTours = categoryTourRepository.findAllById(tourPackageDTO.getCategoryTourId());
+        tourPackage.setCategoryTours(categoryTours);
 
+        // Map ThemeTours
+        List<ThemeTour> themeTours = themeTourRepository.findAllById(tourPackageDTO.getThemeTourId());
+        tourPackage.setThemeTours(themeTours);
+
+        // Map SuitableTours
+        List<SuitableTour> suitableTours = suitableTourRepository.findAllById(tourPackageDTO.getSuitableTourId());
+        tourPackage.setSuitableTours(suitableTours);
+
+        // Map DepartureDates
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME; // Handles '2024-09-01T08:00:00Z'
+        List<DepartureDate> departureDates = new ArrayList<>();
+
+        for (TourPackageDTO.DepartureDateDTO departureDateDTO : tourPackageDTO.getDepartureDates()) {
+            String departureDateString = departureDateDTO.getDateTime();
+            try {
+                LocalDateTime localDateTime = LocalDateTime.parse(departureDateString, formatter);
+                Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
+                Timestamp timestamp = Timestamp.from(instant);
+
+                // Find existing DepartureDate or create a new one
+                Optional<DepartureDate> departureDateOpt = departureDateRepository.findByDeparturedate(timestamp);
+                DepartureDate departureDate = departureDateOpt.orElseGet(() -> {
+                    DepartureDate newDepartureDate = new DepartureDate();
+                    newDepartureDate.setDeparturedate(timestamp);
+                    return departureDateRepository.save(newDepartureDate);
+                });
+
+                departureDates.add(departureDate);
+            } catch (DateTimeParseException dtpe) {
+                throw new RuntimeException("Invalid date format for departure date: " + departureDateString, dtpe);
+            }
+        }
+
+        tourPackage.setDepartureDate(departureDates);
+
+        // Save TourPackage entity
         return tourPackageRepository.save(tourPackage);
     }
 
@@ -254,7 +342,7 @@ public class PackTourService {
         LocalDateTime now = LocalDateTime.now();
         Timestamp timestamp = Timestamp.valueOf(now);
         bookingTour.setBookingdate(timestamp);
-        bookingTour.setTourdate(bookingTourDTO.getTourDate());
+        bookingTour.setTourdate(convertToTimestamp(bookingTourDTO.getTourDate()));
         bookingTour.setNumberofpeople(bookingTourDTO.getNumberOfPeople());
         bookingTour.setTotalprice(bookingTourDTO.getTotalPrice());
         bookingTour.setDepositamount(bookingTourDTO.getDepositAmount());
@@ -268,6 +356,21 @@ public class PackTourService {
         return bookingTourRepository.save(bookingTour);
     }
 
+    public Timestamp convertToTimestamp(Date date) {
+        return new Timestamp(date.getTime());
+    }
+    public String cancelRefund(int id) {
+        BookingTour bookingTour = bookingTourRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "bookingTourId not found with id " + id));
+        bookingTour.setRefundamount(null);
+        bookingTour.setRefunddate(null);
+        bookingTour.setStatus("Waiting");
+        bookingTour.setReason("");
+        bookingTour.setDepositrefund(false);
+        bookingTourRepository.save(bookingTour);
+        return "Cancel Refund ";
+    }
     public String cancelBooking(CancelDTO cancelDTO) {
         BookingTour bookingTour = bookingTourRepository.findById(cancelDTO.getBookingTourId())
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -279,7 +382,7 @@ public class PackTourService {
         BigDecimal refundAmount = calculateRefund(bookingTour.getDepositamount(), daysBeforeTour);
         bookingTour.setRefundamount(refundAmount);
         bookingTour.setRefunddate(Timestamp.valueOf(LocalDateTime.now()));
-        bookingTour.setStatus("Cancelled");
+        bookingTour.setStatus("Waiting Refund");
         bookingTour.setReason(cancelDTO.getReasson());
         bookingTour.setDepositrefund(true);
 
@@ -287,10 +390,29 @@ public class PackTourService {
 
         return "Booking canceled successfully. Refund amount: " + refundAmount;
     }
+    public String cancelBookingEmployee(CancelDTO cancelDTO) {
+        BookingTour bookingTour = bookingTourRepository.findById(cancelDTO.getBookingTourId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "bookingTourId not found with id " + cancelDTO.getBookingTourId()));
 
+        long daysBeforeTour = ChronoUnit.DAYS.between(LocalDate.now(),
+                bookingTour.getTourdate().toLocalDateTime().toLocalDate());
+
+        BigDecimal refundAmount = calculateRefund(bookingTour.getDepositamount(), daysBeforeTour);
+        bookingTour.setRefundamount(refundAmount);
+        bookingTour.setRefunddate(Timestamp.valueOf(LocalDateTime.now()));
+        bookingTour.setStatus("Refunded");
+        bookingTour.setReason(cancelDTO.getReasson());
+        bookingTour.setDepositrefund(true);
+
+        bookingTourRepository.save(bookingTour);
+
+        return "Booking canceled successfully. Refund amount: " + refundAmount;
+    }
     private BigDecimal calculateRefund(BigDecimal depositAmount, long daysBeforeTour) {
+    
         BigDecimal refundPercentage;
-
+    
         if (daysBeforeTour >= 5) {
             refundPercentage = BigDecimal.valueOf(0.95);
         } else if (daysBeforeTour == 4) {
@@ -302,9 +424,10 @@ public class PackTourService {
         } else {
             refundPercentage = BigDecimal.valueOf(0.75);
         }
-
+    
         return depositAmount.multiply(refundPercentage);
     }
+    
 
     public List<TourPackage> findTop10ByOrderByTotalBookingsDesc() {
         List<TourPackage> top10Tours = bookingTourRepository.findAll().stream()
@@ -334,32 +457,54 @@ public class PackTourService {
         return suitableTourRepository.findById(id);
     }
 
-    public SuitableTour updateSuitableTour(int id, String suitableTourName) {
-        Optional<SuitableTour> suitableTourOptional = suitableTourRepository.findById(id);
-
-        if (suitableTourOptional.isPresent()) {
-            SuitableTour suitableTour = suitableTourOptional.get();
-            suitableTour.setSuitableName(suitableTourName);
-            return suitableTourRepository.save(suitableTour);
-        }
-
-        return null;
-    }
-
     public Optional<CategoryTour> findCategoryById(int id) {
         return categoryTourRepository.findById(id);
-    }
-
-    public CategoryTour saveCategory(CategoryTour categoryTour) {
-        return categoryTourRepository.save(categoryTour);
     }
 
     public Optional<ThemeTour> findThemeById(int id) {
         return themeTourRepository.findById(id);
     }
 
+    public SuitableTour saveSuitableTour(SuitableTour suitableTour) {
+        if (doesSuitableTourNameExist(suitableTour.getSuitableName(), suitableTour.getSuitableTourId())) {
+            throw new IllegalArgumentException("SuitableTour name already exists.");
+        }
+
+        return suitableTourRepository.save(suitableTour);
+    }
+
+    private boolean doesSuitableTourNameExist(String name, int excludeId) {
+        return suitableTourRepository.findBySuitableNameAndSuitableTourIdNot(name, excludeId).isPresent();
+    }
+
+    public CategoryTour saveCategory(CategoryTour categoryTour) {
+        Optional<CategoryTour> existingCategory = categoryTourRepository.findById(categoryTour.getCategoryTourId());
+        if (!existingCategory.isPresent()) {
+            throw new IllegalArgumentException("CategoryTour not found for update.");
+        }
+        if (doesCategoryTourNameExist(categoryTour.getCategoryTourName(), categoryTour.getCategoryTourId())) {
+            throw new IllegalArgumentException("CategoryTour name already exists.");
+        }
+        return categoryTourRepository.save(categoryTour);
+    }
+
+    private boolean doesCategoryTourNameExist(String name, int excludeId) {
+        return categoryTourRepository.findByCategoryTourNameAndCategoryTourIdNot(name, excludeId).isPresent();
+    }
+
     public ThemeTour saveTheme(ThemeTour themeTour) {
+        Optional<ThemeTour> existingTheme = themeTourRepository.findById(themeTour.getThemeTourId());
+        if (!existingTheme.isPresent()) {
+            throw new IllegalArgumentException("ThemeTour not found for update.");
+        }
+        if (doesThemeTourNameExist(themeTour.getThemeTourName(), themeTour.getThemeTourId())) {
+            throw new IllegalArgumentException("ThemeTour name already exists.");
+        }
         return themeTourRepository.save(themeTour);
+    }
+
+    private boolean doesThemeTourNameExist(String name, int excludeId) {
+        return themeTourRepository.findByThemeTourNameAndThemeTourIdNot(name, excludeId).isPresent();
     }
 
     public List<TourPackage> filterTourPackages(TourPackageFilterDTO filterDTO) {
@@ -385,9 +530,59 @@ public class PackTourService {
         return bookingTourRepository.findByUserid(userId);
     }
 
-    public List<BookingTour> getBookingTour() {
-        return bookingTourRepository.findAll();
+    // public List<BookingTour> getBookingTour() {
+    // return bookingTourRepository.findAll();
+    // }
+    public List<BookingTourFetch> getAllBookingTours() {
+        List<BookingTour> bookings = bookingTourRepository.findAll();
+        return bookings.stream()
+        .filter(booking -> !booking.isDepositrefund())
+        .map(booking -> {
+            User user = userRepository.findById(booking.getUserid()).orElse(null);
+            UserFetch userFetch = new UserFetch();
+
+            userFetch.setFirstname(user.getFirstname());
+            userFetch.setLastname(user.getLastname());
+            userFetch.setPhone(user.getPhone());
+
+            BookingTourFetch bookingTourFetch = new BookingTourFetch();
+            bookingTourFetch.setBookingTourId(booking.getBookingtourid());
+            bookingTourFetch.setTourTitle(booking.getTourpackage().getTitle()); // Tên tiêu đề tour
+            bookingTourFetch.setUser(userFetch);
+            bookingTourFetch.setStatus(booking.getStatus());
+            bookingTourFetch.setTotalAmount(booking.getTotalprice());
+            bookingTourFetch.setBookingDate(booking.getBookingdate());
+            return bookingTourFetch;
+        }).collect(Collectors.toList());
     }
+
+    public List<RefundFetch> getAllRefunds() {
+        List<BookingTour> bookings = bookingTourRepository.findAll();
+
+        return bookings.stream()
+                .filter(BookingTour::isDepositrefund) 
+                .map(bookingTour -> {
+                    User user = userRepository.findById(bookingTour.getUserid()).orElse(null);
+                    UserFetch userFetch = new UserFetch();
+                    if (user != null) {
+                        userFetch.setFirstname(user.getFirstname());
+                        userFetch.setLastname(user.getLastname());
+                        userFetch.setPhone(user.getPhone());
+                    }
+                    RefundFetch refundFetch = new RefundFetch();
+                    refundFetch.setBookingTourId(bookingTour.getBookingtourid());
+                    refundFetch.setTourTitle(bookingTour.getTourpackage().getTitle()); 
+                    refundFetch.setUser(userFetch);
+                    refundFetch.setStatus(bookingTour.getStatus());
+                    refundFetch.setReason(bookingTour.getReason()); 
+                    refundFetch.setRefundAmount(bookingTour.getRefundamount());
+                    refundFetch.setRefundDate(bookingTour.getRefunddate());
+    
+                    return refundFetch; // Return RefundFetch object
+                })
+                .collect(Collectors.toList());
+    }
+    
 
     public boolean deleteThemeTour(int id) {
         try {
@@ -442,7 +637,7 @@ public class PackTourService {
         LocalDateTime now = LocalDateTime.now();
         Timestamp timestamp = Timestamp.valueOf(now);
         bookingTour.setBookingdate(timestamp);
-        bookingTour.setTourdate(bookingTourDTO.getTourDate());
+       bookingTour.setTourdate(convertToTimestamp(bookingTourDTO.getTourDate()));
         bookingTour.setNumberofpeople(bookingTourDTO.getNumberOfPeople());
         bookingTour.setTotalprice(bookingTourDTO.getTotalPrice());
         bookingTour.setDepositamount(bookingTourDTO.getDepositAmount());
@@ -466,4 +661,10 @@ public class PackTourService {
         return tourPackageRepository.findByTitleContainingIgnoreCase(title);
     }
 
+
+
+
+    public List<TourPackage> searchTourPackages(String title, Integer minPrice, Integer maxPrice, Integer categoryId, Integer themeId, Integer suitableId) {
+        return tourPackageRepository.findByCriteria(title, minPrice, maxPrice, categoryId, themeId, suitableId);
+    }
 }

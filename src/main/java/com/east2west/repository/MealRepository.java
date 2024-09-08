@@ -10,4 +10,5 @@ import com.east2west.models.Entity.Meal;
 
 public interface MealRepository extends JpaRepository<Meal, Integer> {
     List<Meal> findByMealnameContainingIgnoreCase(String name);
+    boolean existsByMealname(String mealname);
 }

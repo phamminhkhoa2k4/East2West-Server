@@ -4,28 +4,46 @@ package com.east2west.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.east2west.repository.*;
-import com.east2west.exception.ResourceNotFoundException;
-import com.east2west.models.DTO.CancelDTO;
 import com.east2west.models.DTO.RentalDTO;
+import com.east2west.models.DTO.RentalFetch;
+import com.east2west.models.DTO.UserFetch;
 import com.east2west.models.Entity.Car;
 import com.east2west.models.Entity.Payment;
 import com.east2west.models.Entity.Rental;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import com.east2west.models.Entity.User;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class RentalCarService {
     @Autowired
     private RentalRepository rentalCarRepository;
+@Autowired
+private UserRepository userRepository; 
+    public List<RentalFetch> getAllRentals() {
+    List<Rental> rentals = rentalCarRepository.findAll();
+    return rentals.stream().map(rental -> {
+        // Truy xuất thông tin người dùng bằng userId
+        User user = userRepository.findById(rental.getUserid()).orElse(null);
 
-    public List<Rental> getAllBookings() {
-        return rentalCarRepository.findAll();
-    }
+        UserFetch userFetch = new UserFetch();
+        if (user != null) {
+            userFetch.setFirstname(user.getFirstname());
+            userFetch.setLastname(user.getLastname());
+            userFetch.setPhone(user.getPhone());
+        }
+
+        RentalFetch rentalFetch = new RentalFetch();
+        rentalFetch.setRentalId(rental.getRentalid());
+        rentalFetch.setCarName(rental.getCar().getCarName()); // Tên xe
+        rentalFetch.setUser(userFetch);
+        rentalFetch.setStatus(rental.getStatus());
+        rentalFetch.setRentalDate(rental.getRentalDate());
+        rentalFetch.setTotalAmount(rental.getTotalAmount());
+        return rentalFetch;
+    }).collect(Collectors.toList());
+}
     // @Autowired
     // private UserRepository userRepository;
 

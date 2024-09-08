@@ -32,12 +32,20 @@ public class CarService {
 
     public Car createOrUpdateCar(CarDTO carDTO) {
         Car car;
-        if (carDTO.getCarId() != 0) {
+        boolean isNewCar = carDTO.getCarId() == 0;
+
+        if (!isNewCar) {
             Optional<Car> optionalCar = carRepository.findById(carDTO.getCarId());
             car = optionalCar.orElse(new Car());
         } else {
             car = new Car();
         }
+
+        // Check for duplicate car name
+        if (doesCarNameExist(carDTO.getCarName(), carDTO.getCarId())) {
+            throw new IllegalArgumentException("Car name already exists.");
+        }
+
         car.setCarName(carDTO.getCarName());
         car.setYear(carDTO.getYear());
         car.setSeatCapacity(carDTO.getSeatCapacity());
@@ -49,13 +57,29 @@ public class CarService {
         car.setFueltankcapacity(carDTO.getFueltankcapacity());
         car.setFuel(carDTO.getFuel());
         car.setLocation(carDTO.getLocation());
+
         modelRepository.findById(carDTO.getModelId()).ifPresent(car::setModel);
         makeRepository.findById(carDTO.getMakeId()).ifPresent(car::setMake);
         typeRepository.findById(carDTO.getTypeId()).ifPresent(car::setType);
         locationTypeRepository.findById(carDTO.getLocationTypeId()).ifPresent(car::setLocationtype);
+
         return carRepository.save(car);
     }
+    private boolean doesCarNameExist(String carName, int excludeCarId) {
+        // Check if the car name exists, excluding the current car
+        return carRepository.findByCarNameAndCarIdNot(carName, excludeCarId).isPresent();
+    }
 
+    // Other methods...
+
+    public boolean doesCarNameExist(String carName) {
+        return carRepository.existsByCarName(carName);
+    }
+
+    // New repository method
+    public Optional<Car> findByCarNameAndIdNot(String carName, int excludeCarId) {
+        return carRepository.findByCarNameAndCarIdNot(carName, excludeCarId);
+    }
     public boolean deleteCar(int carId) {
         if (carRepository.existsById(carId)) {
             carRepository.deleteById(carId);
@@ -87,18 +111,50 @@ public class CarService {
 
 
     public Model saveModel(Model model) {
+        if (doesModelNameExist(model.getModelName(), model.getModelId())) {
+            throw new IllegalArgumentException("Model name already exists.");
+        }
         return modelRepository.save(model);
     }
 
+    private boolean doesModelNameExist(String modelName, int excludeModelId) {
+        return modelRepository.findByModelNameAndModelIdNot(modelName, excludeModelId).isPresent();
+    }
+
+    // Make-related methods
     public Make saveMake(Make make) {
+        if (doesMakeNameExist(make.getMakeName(), make.getMakeId())) {
+            throw new IllegalArgumentException("Make name already exists.");
+        }
         return makeRepository.save(make);
     }
 
+    private boolean doesMakeNameExist(String makeName, int excludeMakeId) {
+        return makeRepository.findByMakeNameAndMakeIdNot(makeName, excludeMakeId).isPresent();
+    }
+
+    // Type-related methods
     public Type saveType(Type type) {
+        if (doesTypeNameExist(type.getTypeName(), type.getTypeId())) {
+            throw new IllegalArgumentException("Type name already exists.");
+        }
         return typeRepository.save(type);
     }
+
+    private boolean doesTypeNameExist(String typeName,int excludeTypeId) {
+        return typeRepository.findByTypeNameAndTypeIdNot(typeName, excludeTypeId).isPresent();
+    }
+
+    // LocationType-related methods
     public LocationType saveLocationType(LocationType locationType) {
+        if (doesLocationTypeNameExist(locationType.getLocationtypename(), locationType.getLocationtypeid())) {
+            throw new IllegalArgumentException("Location type name already exists.");
+        }
         return locationTypeRepository.save(locationType);
+    }
+
+    private boolean doesLocationTypeNameExist(String locationTypeName, int excludeLocationTypeId) {
+        return locationTypeRepository.findByLocationtypenameAndLocationtypeidNot(locationTypeName, excludeLocationTypeId).isPresent();
     }
     public List<LocationType> getAllLocationType(){
         return locationTypeRepository.findAll();
@@ -124,11 +180,15 @@ public class CarService {
     public void deleteLocationType(int locationTypeId) {
         locationTypeRepository.deleteById(locationTypeId);
     }
-    public boolean doesCarNameExist(String carName) {
-        return carRepository.existsByCarName(carName);
-    }
+
 
     public List<Car> findByName(String name) {
         return carRepository.findByTitleContainingIgnoreCase(name);
+    }
+    public List<Car> searchCars(String carName, String modelName, String makeName, String typeName,
+                                   Boolean airConditioned, Double minPrice, Double maxPrice,
+                                   String location, Long minMiles, Long maxMiles) {
+        
+        return carRepository.findByFilters(carName, modelName, makeName, typeName, airConditioned, minPrice, maxPrice, location, minMiles, maxMiles);
     }
 }

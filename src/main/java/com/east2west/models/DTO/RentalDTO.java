@@ -1,7 +1,7 @@
 package com.east2west.models.DTO;
 
 import java.sql.Date;
-
+import java.text.SimpleDateFormat;
 public class RentalDTO {
     private int userId;
     private int carId;
@@ -57,5 +57,9 @@ public class RentalDTO {
     public void setTotalAmount(double totalAmount) {
         this.totalAmount = totalAmount;
     }
-
+    public String toParamString() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        return String.format("User ID: %d, Car ID: %d, Payment ID: %d, Rental Date: %s, Return Date: %s, Total Amount: %.2f",
+                userId, carId, paymentId, sdf.format(rentalDate), sdf.format(returnDate), totalAmount);
+    }
 }

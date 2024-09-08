@@ -1,7 +1,10 @@
 package com.east2west.controllers;
 
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.east2west.service.UserService;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import com.east2west.models.DTO.LoginRequest;
 import com.east2west.models.DTO.MessageResponse;
 import com.east2west.models.DTO.SignupRequest;
+import com.east2west.models.DTO.UpdateUserRequest;
 import com.east2west.models.DTO.UserInfoResponse;
 import com.east2west.models.Entity.ERole;
 import com.east2west.models.Entity.Role;
@@ -104,7 +108,11 @@ public class AuthController {
             errors.put("email", "Email is already in use!");
             return ResponseEntity.badRequest().body(errors);
         }
-
+        if (userRepository.existsByPhone(signUpRequest.getPhone())) {
+            Map<String, String> errors = new HashMap<>();
+            errors.put("phone", "Phone number is already in use!");
+            return ResponseEntity.badRequest().body(errors);
+        }
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()),
@@ -165,8 +173,54 @@ public class AuthController {
     }
 
     @GetMapping("/{id}")
-    public  ResponseEntity<?> getUserById(@PathVariable int id){
-       Optional<User> user = userService.getUserById(id);
-       return  ResponseEntity.ok(user);
+    public ResponseEntity<?> getUserById(@PathVariable int id) {
+        Optional<User> user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
     }
+
+    @PutMapping("/update/{id}")
+public ResponseEntity<?> updateUser(@PathVariable int id, @Valid @RequestBody UpdateUserRequest updateRequest) {
+    Optional<User> userData = userRepository.findById(id);
+
+    if (!userData.isPresent()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("User not found!"));
+    }
+
+    User existingUser = userData.get();
+
+    // Kiểm tra trùng lặp
+    if (userRepository.existsByUsername(updateRequest.getUsername()) &&
+            !existingUser.getUsername().equals(updateRequest.getUsername())) {
+                Map<String, String> errors = new HashMap<>();
+                errors.put("username", "Username is already taken!");
+                return ResponseEntity.badRequest().body(errors);
+    }
+
+    if (userRepository.existsByEmail(updateRequest.getEmail()) &&
+            !existingUser.getEmail().equals(updateRequest.getEmail())) {
+                Map<String, String> errors = new HashMap<>();
+                errors.put("email", "Email is already in use!");
+                return ResponseEntity.badRequest().body(errors);
+    }
+
+    if (userRepository.existsByPhone(updateRequest.getPhone()) &&
+            !existingUser.getPhone().equals(updateRequest.getPhone())) {
+                Map<String, String> errors = new HashMap<>();
+                errors.put("phone", "Phone number is already in use!");
+                return ResponseEntity.badRequest().body(errors);
+    }
+
+    // Cập nhật thông tin người dùng
+    existingUser.setUsername(updateRequest.getUsername());
+    existingUser.setFirstname(updateRequest.getFirstname());
+    existingUser.setLastname(updateRequest.getLastname());
+    existingUser.setEmail(updateRequest.getEmail());
+    existingUser.setPhone(updateRequest.getPhone());
+    existingUser.setAddress(updateRequest.getAddress());
+    // Không thay đổi mật khẩu
+    userRepository.save(existingUser);
+
+    return ResponseEntity.ok(new MessageResponse("User updated successfully!"));
+}
+
 }
