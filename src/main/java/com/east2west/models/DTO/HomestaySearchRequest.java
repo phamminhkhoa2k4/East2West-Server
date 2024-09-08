@@ -1,17 +1,19 @@
 package com.east2west.models.DTO;
 
-import com.east2west.constans.AvailabilityStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
+
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HomestaySearchDTO {
+public class HomestaySearchRequest {
+
     private Double longitude;
     private Double latitude;
     private Double radius;
@@ -19,12 +21,5 @@ public class HomestaySearchDTO {
     private LocalDate checkoutDate;
     private Integer guests;
     private String status;
+
 }
-
-
-
-
-
-
-
-

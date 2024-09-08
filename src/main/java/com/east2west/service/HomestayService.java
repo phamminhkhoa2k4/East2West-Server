@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import com.east2west.exception.ResourceNotFoundException;
 import com.east2west.models.DTO.HomestayDTO;
 import org.springframework.stereotype.Service;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.io.WKBWriter;
 
 @Service
 public class HomestayService {
@@ -62,6 +64,7 @@ public class HomestayService {
 
 
 
+    public Amenities updateAmenities(Amenities amenities){return amenitiesRepository.save(amenities);}
     public Amenities createAmenities(Amenities amenities) {
         return amenitiesRepository.save(amenities);
     }
@@ -79,11 +82,21 @@ public class HomestayService {
     public Structure createStructure(Structure structure) {
         return structureRepository.save(structure);
     }
+    public Structure updateStructure(Structure structure) {
+        return structureRepository.save(structure);
+    }
 
     public Optional<Structure>  getByIdStructure(int id){
         return structureRepository.findById(id);
     }
 
+    public List<HomestayDTO> getHomestaysByStructureId(int structureId) {
+
+        List<Homestay> homestays  =      homestayRepository.findByStructure_Structureid(structureId);
+        return homestays.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
     public List<Structure> getStructureAll(){
         return structureRepository.findAll();
     }
@@ -91,6 +104,7 @@ public class HomestayService {
     public void deleteStructure(int id){
         structureRepository.deleteById(id);
     }
+
 
 
 
@@ -141,7 +155,7 @@ public class HomestayService {
         booking.setCheckin(bookingDTO.getCheckin());
         booking.setCheckout(bookingDTO.getCheckout());
         booking.setFeeamount(bookingDTO.getFeeamount());
-        booking.setStatus("Booked");
+        booking.setStatus("Available");
         booking.setNumberofguest(bookingDTO.getNumberofguest());
         booking.setTotalprice(totalPrice);
         booking.setBookingdate(Timestamp.valueOf(LocalDateTime.now()));
@@ -180,6 +194,15 @@ public class HomestayService {
         homestay.setIsapproved(homestayDTO.getIsApproved());
         homestay.setMaxguest(homestayDTO.getMaxGuest());
         homestay.setType(homestayDTO.getType());
+        homestay.setBathroom(homestayDTO.getBathroom());
+        homestay.setBeds(homestayDTO.getBeds());
+        homestay.setInstant(homestayDTO.getInstant());
+        if(homestayDTO.getRoom() == null){
+            homestay.setRoom(0);
+        }else{
+            homestay.setRoom(homestayDTO.getRoom());
+        }
+
 
 
         CityProvince cityProvince = new CityProvince();
@@ -231,6 +254,13 @@ public class HomestayService {
                 .collect(Collectors.toList());
     }
 
+    public List<HomestayDTO> getAllByIdUser(int id) {
+        List<Homestay> homestays = homestayRepository.findByUserid(id);
+        return homestays.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     private HomestayDTO convertToDTO(Homestay homestay) {
         HomestayDTO dto = new HomestayDTO();
         dto.setHomestayid(homestay.getHomestayid());
@@ -246,7 +276,10 @@ public class HomestayService {
         dto.setCleaningFee(homestay.getCleaningfee());
         dto.setIsApproved(homestay.isIsapproved());
         dto.setMaxGuest(homestay.getMaxguest());
-
+        dto.setRoom(homestay.getRoom());
+        dto.setBeds(homestay.getBeds());
+        dto.setBathroom(homestay.getBathroom());
+        dto.setInstant(homestay.isInstant());
         dto.setPerkIds(homestay.getAmenities().stream()
                 .map(Amenities::getAmenitiesid)
                 .collect(Collectors.toList()));
@@ -264,7 +297,23 @@ public class HomestayService {
 
         dto.setAvailability(availabilityDTOs);
 
+        dto.setWardName(homestay.getWard().getWardname());
+        dto.setDistrictName(homestay.getWard().getDistrict().getDistrictname());
+        dto.setCityProvinceName(homestay.getWard().getDistrict().getCityprovince().getCityname());
+        if (homestay.getGeom() != null) {
+            WKBWriter wkbWriter = new WKBWriter();
+            byte[] wkb = wkbWriter.write(homestay.getGeom());
+            String wkbHex = bytesToHex(wkb);
+            dto.setGeom(wkbHex);
+        }
         return dto;
+    }
+    private String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02X", b));
+        }
+        return sb.toString();
     }
     public HomestayDTO getById(int id) {
         Homestay homestay = homestayRepository.findById(id)
@@ -277,25 +326,28 @@ public class HomestayService {
                 .orElseThrow(() -> new ResourceNotFoundException("Homestay not found with id " + id));
     }
 
-    public List<Homestay> searchHomestays(HomestaySearchDTO request) {
-        request.setStatus(AvailabilityStatus.AVAILABLE);
+    public void updateBasePrice(int homestayId, BigDecimal newPrice) {
+        homestayAvailabilityRepository.updateBasePrice(homestayId, newPrice);
+    }
+
+
+    public void updateWeekendPrice(int homestayId, BigDecimal newPrice) {
+        homestayAvailabilityRepository.updateWeekendPrice(homestayId, newPrice);
+    }
+
+    public List<HomestayDTO> searchHomestays(HomestaySearchDTO request) {
+
 
         var checkinDate = request.getCheckinDate();
         var checkoutDate = request.getCheckoutDate();
 
-//        if (request.getCheckinDate().isAfter(request.getCheckoutDate())) {
-//            throw new BusinessException(ResponseCode.CHECKIN_DATE_INVALID);
-//        }
-//
-//        if (request.getCheckinDate().isBefore(LocalDate.now())) {
-//            throw new BusinessException(ResponseCode.CHECKIN_DATE_INVALID);
-//        }
+
 
 
         int nights = (int) DateUtil.getDiffInDays(checkinDate, checkoutDate);
         checkoutDate = checkoutDate.minusDays(1);
 
-        return homestayRepository.searchHomestay(
+        List<Homestay> homestays = homestayRepository.searchHomestay(
                 request.getLongitude(),
                 request.getLatitude(),
                 request.getRadius(),
@@ -303,7 +355,11 @@ public class HomestayService {
                 checkoutDate,
                 nights,
                 request.getGuests(),
-                request.getStatus().getValue()
+                request.getStatus()
+
         );
+        return homestays.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 }
