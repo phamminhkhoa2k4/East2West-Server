@@ -63,10 +63,8 @@ public class PDFService {
         Table table = new Table(UnitValue.createPercentArray(2)).useAllAvailableWidth();
         table.addCell("Field");
         table.addCell("Value");
-
         table.addCell("Rental ID");
         table.addCell(String.valueOf(rental.getRentalid()));
-
         table.addCell("User Email");
         table.addCell(String.valueOf(getUser(rental.getUserid()).getEmail()));
 

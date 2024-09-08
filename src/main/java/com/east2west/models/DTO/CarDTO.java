@@ -4,6 +4,11 @@ package com.east2west.models.DTO;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.east2west.models.Entity.Car;
+
 import jakarta.validation.constraints.NotBlank;
 
 public class CarDTO {
@@ -29,6 +34,14 @@ public class CarDTO {
 
     private Boolean airConditioned;
 
+    public Boolean getAirConditioned() {
+        return this.airConditioned;
+    }
+
+    public void setAirConditioned(Boolean airConditioned) {
+        this.airConditioned = airConditioned;
+    }
+
     @Positive(message = "Price Per Day must be positive")
     private Double pricePerDay;
 
@@ -52,6 +65,15 @@ public class CarDTO {
     @NotBlank(message = "status is required")
     private String status;
 
+    private List<String> thumbnail;
+
+    public List<String> getThumbnail() {
+        return this.thumbnail;
+    }
+
+    public void setThumbnail(List<String> thumbnail) {
+        this.thumbnail = thumbnail;
+    }
     public int getCarId() {
         return this.carId;
     }

@@ -6,10 +6,10 @@ import com.east2west.models.DTO.AccommodationDTO;
 import com.east2west.models.DTO.ItineraryDTO;
 import com.east2west.models.DTO.MealDTO;
 import com.east2west.models.DTO.PlaceDTO;
+import com.east2west.models.DTO.TransferDTO;
 import com.east2west.repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,6 +34,9 @@ public class ItineraryService {
     @Autowired
     private PlaceRepository placeRepository;
 
+    @Autowired
+    private TransferRepository transferRepository;
+
     public Itinerary createOrUpdateItinerary(ItineraryDTO itineraryDTO) {
         Optional<Itinerary> optionalItinerary = itineraryRepository.findById(itineraryDTO.getItineraryId());
         Itinerary itinerary;
@@ -41,7 +44,6 @@ public class ItineraryService {
         if (optionalItinerary.isPresent()) {
             itinerary = optionalItinerary.get();
 
-            // Khởi tạo danh sách nếu chúng là null
             if (itinerary.getAccommodations() == null) {
                 itinerary.setAccommodations(new ArrayList<>());
             }
@@ -53,32 +55,26 @@ public class ItineraryService {
             }
         } else {
             itinerary = new Itinerary();
-            // Khởi tạo danh sách nếu là tạo mới
             itinerary.setAccommodations(new ArrayList<>());
             itinerary.setMeals(new ArrayList<>());
             itinerary.setPlaces(new ArrayList<>());
         }
 
-        // Cập nhật TourPackage nếu có
         Optional<TourPackage> optionalTourPackage = tourPackageRepository.findById(itineraryDTO.getTourPackageId());
         optionalTourPackage.ifPresent(itinerary::setTourPackage);
 
-        // Cập nhật danh sách accommodations
         List<Accommodation> accommodations = accommodationRepository.findAllById(itineraryDTO.getAccommodationIds());
         itinerary.getAccommodations().clear();
         itinerary.getAccommodations().addAll(accommodations);
 
-        // Cập nhật danh sách meals
         List<Meal> meals = mealRepository.findAllById(itineraryDTO.getMealIds());
         itinerary.getMeals().clear();
         itinerary.getMeals().addAll(meals);
 
-        // Cập nhật danh sách places
         List<Place> places = placeRepository.findAllById(itineraryDTO.getPlaceIds());
         itinerary.getPlaces().clear();
         itinerary.getPlaces().addAll(places);
 
-        // Cập nhật các thuộc tính khác
         itinerary.setDay(itineraryDTO.getDay());
 
         return itineraryRepository.save(itinerary);
@@ -89,16 +85,22 @@ public class ItineraryService {
     }
 
     public Accommodation createOrUpdateAccommodation(AccommodationDTO accommodationDTO) {
-        Accommodation accommodation = new Accommodation();
-        if (accommodationDTO.getAccommodationId() != 0) {
-            accommodation = accommodationRepository.findById(accommodationDTO.getAccommodationId())
-                    .orElse(new Accommodation());
-        }
-        // Set fields from DTO to entity
-        accommodation.setAccommodationname(accommodationDTO.getAccommodationName());
-        accommodation.setDurationaccommodation(accommodationDTO.getDurationAccommodation());
-        accommodation.setAccommodationtype(accommodationDTO.getAccommodationType());
+        Accommodation accommodation;
 
+        if (accommodationDTO.getAccommodationid() > 0) {
+            Optional<Accommodation> existingAccommodation = accommodationRepository
+                    .findById(accommodationDTO.getAccommodationid());
+            accommodation = existingAccommodation.get();
+
+        } else {
+            if (accommodationRepository.existsByAccommodationname(accommodationDTO.getAccommodationname())) {
+                throw new IllegalArgumentException("Accommodation with this name already exists.");
+            }
+            accommodation = new Accommodation();
+        }
+        accommodation.setAccommodationname(accommodationDTO.getAccommodationname());
+        accommodation.setDurationaccommodation(accommodationDTO.getDurationaccommodation());
+        accommodation.setAccommodationtype(accommodationDTO.getAccommodationtype());
         return accommodationRepository.save(accommodation);
     }
 
@@ -106,26 +108,32 @@ public class ItineraryService {
         accommodationRepository.deleteById(id);
     }
 
+    public List<Accommodation> searchAccommodationsByName(String name) {
+        return accommodationRepository.findByAccommodationnameContainingIgnoreCase(name);
+    }
+
     public List<Accommodation> getAllAccommodations() {
         return accommodationRepository.findAll();
     }
-
-    public Accommodation getAccommodationById(int id) {
-        return accommodationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Meal not found with id " + id));
-    }
-
     public Meal createOrUpdateMeal(MealDTO mealDTO) {
-        Meal meal = new Meal();
-        if (mealDTO.getMealId() != 0) {
-            meal = mealRepository.findById(mealDTO.getMealId())
-                    .orElse(new Meal());
+        Meal meal;
+        if (mealDTO.getMealid() > 0) {
+            Optional<Meal> existingMeal = mealRepository.findById(mealDTO.getMealid());
+            if (existingMeal.isPresent()) {
+                meal = existingMeal.get();
+            } else {
+                throw new ResourceNotFoundException("Meal not found with id " + mealDTO.getMealid());
+            }
+        } else {
+            if (mealRepository.existsByMealname(mealDTO.getMealname())) {
+                throw new IllegalArgumentException("Meal with this name already exists.");
+            }
+            meal = new Meal();
         }
-        // Set fields from DTO to entity
-        meal.setMealname(mealDTO.getMealName());
-        meal.setMealthumbnail(mealDTO.getMealThumbnail());
-        meal.setMealduration(mealDTO.getMealDuration());
-        meal.setMealactivity(mealDTO.getMealActivity());
+        meal.setMealname(mealDTO.getMealname());
+        meal.setMealthumbnail(mealDTO.getMealthumbnail());
+        meal.setMealduration(mealDTO.getMealduration());
+        meal.setMealactivity(mealDTO.getMealactivity());
 
         return mealRepository.save(meal);
     }
@@ -134,26 +142,35 @@ public class ItineraryService {
         mealRepository.deleteById(id);
     }
 
+    public List<Meal> searchMealsByName(String name) {
+        return mealRepository.findByMealnameContainingIgnoreCase(name);
+    }
+
     public List<Meal> getAllMeals() {
         return mealRepository.findAll();
     }
 
-    public Meal getMealById(int id) {
-        return mealRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Meal not found with id " + id));
-    }
-
     public Place createOrUpdatePlace(PlaceDTO placeDTO) {
-        Place place = new Place();
-        if (placeDTO.getPlaceId() != 0) {
-            place = placeRepository.findById(placeDTO.getPlaceId())
-                    .orElse(new Place());
+        Place place;
+
+        if (placeDTO.getPlaceid() > 0) {
+            Optional<Place> existingPlace = placeRepository.findById(placeDTO.getPlaceid());
+            if (existingPlace.isPresent()) {
+                place = existingPlace.get();
+            } else {
+                throw new ResourceNotFoundException("Place not found with id " + placeDTO.getPlaceid());
+            }
+        } else {
+            if (placeRepository.existsByPlacename(placeDTO.getPlacename())) {
+                throw new IllegalArgumentException("Place with this name already exists.");
+            }
+            place = new Place();
         }
-        // Set fields from DTO to entity
-        place.setPlacename(placeDTO.getPlaceName());
-        place.setPlacethumbnail(placeDTO.getPlaceThumbnail());
+
+        place.setPlacename(placeDTO.getPlacename());
+        place.setPlacethumbnail(placeDTO.getPlacethumbnail());
         place.setDescription(placeDTO.getDescription());
-        place.setPlaceduration(placeDTO.getPlaceDuration());
+        place.setPlaceduration(placeDTO.getPlaceduration());
 
         return placeRepository.save(place);
     }
@@ -162,23 +179,47 @@ public class ItineraryService {
         placeRepository.deleteById(id);
     }
 
-    public List<Place> getAllPlaces() {
-        return placeRepository.findAll();
-    }
-
-    public Place getPlaceById(int id) {
-        return placeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Place not found with id " + id));
-    }
-    public List<Accommodation> searchAccommodationsByName(String name) {
-        return accommodationRepository.findByAccommodationnameContainingIgnoreCase(name);
-    }
-
     public List<Place> searchPlacesByName(String name) {
         return placeRepository.findByPlacenameContainingIgnoreCase(name);
     }
 
-    public List<Meal> searchMealsByName(String name) {
-        return mealRepository.findByMealnameContainingIgnoreCase(name);
+    public List<Place> getAllPlaces() {
+        return placeRepository.findAll();
+    }
+
+    public Transfer createOrUpdateTransfer(TransferDTO transferDTO) {
+        Transfer transfer;
+
+        if (transferDTO.getTransferid() > 0) {
+            Optional<Transfer> existingTransfer = transferRepository.findById(transferDTO.getTransferid());
+            if (existingTransfer.isPresent()) {
+                transfer = existingTransfer.get();
+            } else {
+                throw new ResourceNotFoundException("Transfer not found with id " + transferDTO.getTransferid());
+            }
+        } else {
+            if (transferRepository.existsByTransfername(transferDTO.getTransfername())) {
+                throw new IllegalArgumentException("Transfer with this name already exists.");
+            }
+            transfer = new Transfer();
+        }
+
+        transfer.setTransfername(transferDTO.getTransfername());
+        transfer.setDescription(transferDTO.getDescription());
+        transfer.setTransferduration(transferDTO.getTransferduration());
+
+        return transferRepository.save(transfer);
+    }
+
+    public void deleteTransfer(int id) {
+        transferRepository.deleteById(id);
+    }
+
+    public List<Transfer> searchTransfersByName(String name) {
+        return transferRepository.findByTransfernameContainingIgnoreCase(name);
+    }
+
+    public List<Transfer> getAllTransfers() {
+        return transferRepository.findAll();
     }
 }

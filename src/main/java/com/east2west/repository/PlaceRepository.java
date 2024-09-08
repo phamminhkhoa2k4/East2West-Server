@@ -9,6 +9,7 @@ import com.east2west.models.Entity.Place;
 
 public interface PlaceRepository extends JpaRepository<Place, Integer>{
     List<Place> findByPlacenameContainingIgnoreCase(String name);
+    boolean existsByPlacename(String placename);
 }
     
 

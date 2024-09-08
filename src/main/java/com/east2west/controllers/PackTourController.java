@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.east2west.models.DTO.ApiResponse;
+import com.east2west.models.DTO.TourPackageDTO;
 import com.east2west.models.DTO.TourPackageDetailDTO;
 import com.east2west.models.DTO.TourPackageFilterDTO;
 import com.east2west.models.Entity.CategoryTour;
@@ -32,7 +35,7 @@ public class PackTourController {
 
     @GetMapping
     public List<TourPackage> getAllTourPackages() {
-        return packTourService.getAllTourPackages();
+        return packTourService.getAllTourpackages();
     }
 
     @GetMapping("/{packageid}")
@@ -40,7 +43,19 @@ public class PackTourController {
     public TourPackageDetailDTO getToursByPackageId(@PathVariable int packageid) {
         return packTourService.getTourDetailByPackageid(packageid);
     }
-
+    
+    @GetMapping("/search")
+    public ResponseEntity<List<TourPackage>> searchTourPackages(
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false) Integer minPrice,
+        @RequestParam(required = false) Integer maxPrice,
+        @RequestParam(required = false) Integer categoryId,
+        @RequestParam(required = false) Integer themeId,
+        @RequestParam(required = false) Integer suitableId
+    ) {
+        List<TourPackage> result = packTourService.searchTourPackages(title, minPrice, maxPrice, categoryId, themeId, suitableId);
+        return ResponseEntity.ok(result);
+    }
     // @GetMapping("/category/{categoryTourName}")
     // public List<TourPackage> getToursByCategory(@PathVariable String categoryTourName) {
     //     return packTourService.getAllTourPackagesByCategory(categoryTourName);
@@ -89,72 +104,91 @@ public class PackTourController {
     }
 
     @PostMapping("/suitable")
-    public ResponseEntity<SuitableTour> createSuitableTour(@RequestBody SuitableTour suitableTour) {
-        SuitableTour createdSuitable = packTourService.createSuitableTour(suitableTour);
+public ResponseEntity<SuitableTour> createSuitableTour(@RequestBody SuitableTour suitableTour) {
+    try {
+        SuitableTour createdSuitable = packTourService.saveSuitableTour(suitableTour);
         return new ResponseEntity<>(createdSuitable, HttpStatus.CREATED);
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(null);
     }
+}
 
     @GetMapping("/suitable/{id}")
     public Optional<SuitableTour> getSuitableById(@PathVariable int id) {
         return packTourService.findSuitableById(id);
     }
 
-    @PutMapping("/suitable/{id}")
-    public ResponseEntity<SuitableTour> updateSuitableTour(
-            @PathVariable int id,
-            @RequestBody SuitableTour suitableTourData) {
 
-        SuitableTour updatedSuitableTour = packTourService.updateSuitableTour(id, suitableTourData.getSuitableName());
-        if (updatedSuitableTour != null) {
-            return ResponseEntity.ok(updatedSuitableTour);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
     @GetMapping("/category/{id}")
     public  Optional<CategoryTour> getCategoryById(@PathVariable int id) {
        return packTourService.findCategoryById(id);
 
     }
-    @PutMapping("/category/{id}")
-    public ResponseEntity<CategoryTour> updateCategory(
-            @PathVariable int id,
-            @RequestBody CategoryTour categoryTour) {
-        Optional<CategoryTour> existingCategory = packTourService.findCategoryById(id);
-        if (existingCategory.isPresent()) {
-            CategoryTour updatedCategory = existingCategory.get();
-            updatedCategory.setCategoryTourName(categoryTour.getCategoryTourName());
-            packTourService.saveCategory(updatedCategory);
-            return ResponseEntity.ok(updatedCategory);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+    
     @GetMapping("/theme/{id}")
     public Optional<ThemeTour>getThemeById(@PathVariable int id) {
          return packTourService.findThemeById(id);
     }
 
-    @PutMapping("/theme/{id}")
-    public ResponseEntity<ThemeTour> updateTheme(
-            @PathVariable int id,
-            @RequestBody ThemeTour themeTour) {
-        Optional<ThemeTour> existingTheme = packTourService.findThemeById(id);
-        if (existingTheme.isPresent()) {
-            ThemeTour updatedTheme = existingTheme.get();
-            updatedTheme.setThemeTourName(themeTour.getThemeTourName());
-            packTourService.saveTheme(updatedTheme);
-            return ResponseEntity.ok(updatedTheme);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+
+    @PutMapping("/suitable/{id}")
+public ResponseEntity<ApiResponse<SuitableTour>> updateSuitableTour(
+        @PathVariable int id,
+        @RequestBody SuitableTour suitableTourData) {
+    Optional<SuitableTour> existingSuitableTour = packTourService.findSuitableById(id);
+    if (existingSuitableTour.isPresent()) {
+        SuitableTour updatedSuitableTour = existingSuitableTour.get();
+        updatedSuitableTour.setSuitableName(suitableTourData.getSuitableName()); // Update with new data
+        packTourService.saveSuitableTour(updatedSuitableTour);
+        ApiResponse<SuitableTour> response = new ApiResponse<>(updatedSuitableTour, "success", null);
+        return ResponseEntity.ok(response);
+    } else {
+        ApiResponse<SuitableTour> response = new ApiResponse<>(null, "error", "SuitableTour not found for update.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+}
+
+// Update CategoryTour
+@PutMapping("/category/{id}")
+public ResponseEntity<ApiResponse<CategoryTour>> updateCategory(
+        @PathVariable int id,
+        @RequestBody CategoryTour categoryTourData) {
+    Optional<CategoryTour> existingCategory = packTourService.findCategoryById(id);
+    if (existingCategory.isPresent()) {
+        CategoryTour updatedCategory = existingCategory.get();
+        updatedCategory.setCategoryTourName(categoryTourData.getCategoryTourName()); // Update with new data
+        packTourService.saveCategory(updatedCategory);
+        ApiResponse<CategoryTour> response = new ApiResponse<>(updatedCategory, "success", null);
+        return ResponseEntity.ok(response);
+    } else {
+        ApiResponse<CategoryTour> response = new ApiResponse<>(null, "error", "CategoryTour not found for update.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+}
+
+// Update ThemeTour
+@PutMapping("/theme/{id}")
+public ResponseEntity<ApiResponse<ThemeTour>> updateTheme(
+        @PathVariable int id,
+        @RequestBody ThemeTour themeTourData) {
+    Optional<ThemeTour> existingTheme = packTourService.findThemeById(id);
+    if (existingTheme.isPresent()) {
+        ThemeTour updatedTheme = existingTheme.get();
+        updatedTheme.setThemeTourName(themeTourData.getThemeTourName()); // Update with new data
+        packTourService.saveTheme(updatedTheme);
+        ApiResponse<ThemeTour> response = new ApiResponse<>(updatedTheme, "success", null);
+        return ResponseEntity.ok(response);
+    } else {
+        ApiResponse<ThemeTour> response = new ApiResponse<>(null, "error", "ThemeTour not found for update.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+}
     @PostMapping("/filter")
     public ResponseEntity<List<TourPackage>> filterTourPackages(@RequestBody TourPackageFilterDTO filterDTO) {
         List<TourPackage> filteredPackages = packTourService.filterTourPackages(filterDTO);
         return ResponseEntity.ok(filteredPackages);
     }
-    @GetMapping("/search")
+    @GetMapping("/search/name")
     public List<TourPackage> searchToursByTitle(@RequestParam("title") String title) {
         return packTourService.findByTitle(title);
     }
