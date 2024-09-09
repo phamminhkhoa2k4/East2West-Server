@@ -112,10 +112,11 @@
 			<artifactId>okhttp</artifactId>
 			<version>4.9.3</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.10.1</version> <!-- Hoặc phiên bản mới nhất -->
+			<version>2.10.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.orm</groupId>
@@ -130,7 +131,7 @@
 		<dependency>
 			<groupId>com.vladmihalcea</groupId>
 			<artifactId>hibernate-types-60</artifactId>
-			<version>2.21.1</version> <!-- Phiên bản tương thích với Hibernate 6.x -->
+			<version>2.21.1</version>
 		</dependency>
 
 		<dependency>
