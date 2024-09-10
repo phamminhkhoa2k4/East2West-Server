@@ -101,7 +101,7 @@ public class FlightSearchController {
         parameters.put("arrival_id", arrivalId);
         parameters.put("outbound_date", outboundDate);
         parameters.put("currency", "USD");
-        parameters.put("class", travelClass);
+        parameters.put("travel_class", mapClassesTypeToApiFormat(travelClass));
         parameters.put("adults", String.valueOf(adults));
         parameters.put("children", String.valueOf(children));
         parameters.put("infants", String.valueOf(infants));
@@ -127,7 +127,7 @@ public class FlightSearchController {
         parameters.put("hl", "en");
         parameters.put("gl", "us");
         parameters.put("currency", "USD");
-        parameters.put("class", travelClass);
+        parameters.put("travel_class", mapClassesTypeToApiFormat(travelClass));
         parameters.put("adults", String.valueOf(adults));
         parameters.put("children", String.valueOf(children));
         parameters.put("infants", String.valueOf(infants));
@@ -172,6 +172,19 @@ public class FlightSearchController {
                 return "3";
             default:
                 return "2"; // Default to one-way if unknown
+        }
+    }
+
+    private String mapClassesTypeToApiFormat(String tripClasses) {
+        switch (tripClasses.toLowerCase()) {
+            case "special-popular":
+                return "2";
+            case "business-class":
+                return "3";
+            case "first-class":
+                return "4";
+            default:
+                return "1";
         }
     }
 
