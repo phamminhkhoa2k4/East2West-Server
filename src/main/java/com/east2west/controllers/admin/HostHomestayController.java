@@ -1,6 +1,7 @@
 
 package com.east2west.controllers.admin;
 
+import com.east2west.models.DTO.PhotoDeleteDTO;
 import com.east2west.models.Entity.Amenities;
 import com.east2west.models.Entity.Structure;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ public class HostHomestayController {
     }
     @PostMapping
     public ResponseEntity<Homestay> createHomestay(@RequestBody HomestayDTO homestayDTO) {
+        homestayDTO.setGeom(null);
+        homestayDTO.setHomestayid(null);
         Homestay homestay = homestayService.createHomestay(homestayDTO);
         return ResponseEntity.ok(homestay);
     }
@@ -42,6 +45,19 @@ public class HostHomestayController {
         homestayService.deleteHomestay(id);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/deletePhotos")
+    public ResponseEntity<?> deletePhotosHomestay(@RequestBody PhotoDeleteDTO photo) {
+        try {
+            homestayService.deletePhotos(photo.getUrl(), photo.getId());
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+
 
     @PutMapping("/amenities")
     public ResponseEntity<Amenities> updateAmenities(@RequestBody Amenities amenities) {

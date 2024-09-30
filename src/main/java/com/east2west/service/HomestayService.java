@@ -2,6 +2,7 @@ package com.east2west.service;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
@@ -9,9 +10,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 import com.east2west.constans.AvailabilityStatus;
-import com.east2west.models.DTO.BookingHomestayDTO;
-import com.east2west.models.DTO.HomestayAvailabilityDTO;
-import com.east2west.models.DTO.HomestaySearchDTO;
+import com.east2west.models.DTO.*;
 import com.east2west.models.Entity.*;
 import com.east2west.repository.*;
 import com.east2west.util.DateUtil;
@@ -23,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import com.east2west.exception.ResourceNotFoundException;
-import com.east2west.models.DTO.HomestayDTO;
 import org.springframework.stereotype.Service;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKBWriter;
@@ -108,7 +106,31 @@ public class HomestayService {
 
 
 
+
+    public void deletePhotos(String url, int id) {
+        Optional<Homestay> homestay = homestayRepository.findById(id);
+        if (homestay.isPresent()) {
+            Homestay homestayy = homestay.get();
+            List<String> photos = new ArrayList<>(homestayy.getPhotos()); // Tạo một bản sao có thể sửa đổi
+
+            System.out.println("Before removing: " + photos);
+
+            if (photos.contains(url)) {
+                boolean removed = photos.remove(url);
+                if (removed) {
+                    System.out.println("Successfully removed: " + url);
+                    homestayy.setPhotos(photos);
+                    homestayRepository.save(homestayy);
+                } else {
+                    System.out.println("URL not found in photos.");
+                }
+            }
+        }
+    }
+
+
     public Homestay createHomestay(HomestayDTO homestayDTO) {
+
         Homestay homestay = new Homestay();
         populateHomestayFields(homestay, homestayDTO);
 
@@ -242,6 +264,8 @@ public class HomestayService {
 
 
 
+
+
     public void  deleteHomestay(int id) {
         homestayRepository.deleteById(id);
     }
@@ -249,6 +273,21 @@ public class HomestayService {
 
     public List<HomestayDTO> getAll() {
         List<Homestay> homestays = homestayRepository.findAll();
+        return homestays.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<HomestayDTO> filterHomestays(HomestayFilterDTO filterDTO) {
+        List<Homestay>  homestays =  homestayRepository.findByFilter(
+                filterDTO.getMinBeds(),
+                filterDTO.getMaxBeds(),
+                filterDTO.getMinMaxGuest(),
+                filterDTO.getMaxMaxGuest(),
+                filterDTO.getType(),
+                filterDTO.getAmenityIds()
+        );
+
         return homestays.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -277,6 +316,7 @@ public class HomestayService {
         dto.setIsApproved(homestay.isIsapproved());
         dto.setMaxGuest(homestay.getMaxguest());
         dto.setRoom(homestay.getRoom());
+        dto.setType(homestay.getType());
         dto.setBeds(homestay.getBeds());
         dto.setBathroom(homestay.getBathroom());
         dto.setInstant(homestay.isInstant());
@@ -333,6 +373,17 @@ public class HomestayService {
 
     public void updateWeekendPrice(int homestayId, BigDecimal newPrice) {
         homestayAvailabilityRepository.updateWeekendPrice(homestayId, newPrice);
+    }
+
+
+    public BigDecimal getMinPriceForToday() {
+        Timestamp today = Timestamp.from(Instant.now());
+        return homestayAvailabilityRepository.findMinPriceByDate(today);
+    }
+
+    public BigDecimal getMaxPriceForToday() {
+        Timestamp today = Timestamp.from(Instant.now());
+        return homestayAvailabilityRepository.findMaxPriceByDate(today);
     }
 
     public List<HomestayDTO> searchHomestays(HomestaySearchDTO request) {

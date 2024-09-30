@@ -1,6 +1,7 @@
 package com.east2west.controllers;
 
 import com.east2west.models.DTO.HomestayDTO;
+import com.east2west.models.DTO.HomestayFilterDTO;
 import com.east2west.models.DTO.HomestaySearchDTO;
 import com.east2west.models.DTO.HomestaySearchRequest;
 import com.east2west.models.Entity.Homestay;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -31,11 +33,21 @@ public class HomestayController {
         return ResponseEntity.ok(homestay);
     }
 
+    @GetMapping("/price/max-today")
+    public BigDecimal getMaxPriceForToday() {
+        return homestayService.getMaxPriceForToday();
+    }
+    @GetMapping("/price/min-today")
+    public BigDecimal getMinPriceForToday() {
+        return homestayService.getMinPriceForToday();
+    }
     @GetMapping
     public ResponseEntity<List<HomestayDTO>> getAll() {
         List<HomestayDTO> homestays = homestayService.getAll();
         return ResponseEntity.ok(homestays);
     }
+
+
 
 
     @GetMapping("/structure")
@@ -69,5 +81,23 @@ public class HomestayController {
                 .build();
 
         return homestayService.searchHomestays(request);
+    }
+
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<HomestayDTO>> filterHomestays(@RequestParam(required = false) Integer minBeds,
+                                          @RequestParam(required = false) Integer maxBeds,
+                                          @RequestParam(required = false) Integer minMaxGuest,
+                                          @RequestParam(required = false) Integer maxMaxGuest,
+                                          @RequestParam(required = false) String type,
+                                          @RequestParam(required = false) List<Integer> amenityIds) {
+        HomestayFilterDTO filterDTO = new HomestayFilterDTO();
+        filterDTO.setMinBeds(minBeds);
+        filterDTO.setMaxBeds(maxBeds);
+        filterDTO.setMinMaxGuest(minMaxGuest);
+        filterDTO.setMaxMaxGuest(maxMaxGuest);
+        filterDTO.setType(type);
+        filterDTO.setAmenityIds(amenityIds);
+        return ResponseEntity.ok(homestayService.filterHomestays(filterDTO));
     }
 }
