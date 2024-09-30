@@ -1,5 +1,6 @@
 package com.east2west.repository;
 
+import com.east2west.models.Entity.Amenities;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.east2west.models.Entity.Homestay;
@@ -56,4 +57,24 @@ public interface HomestayRepository extends JpaRepository<Homestay,Integer>{
     List<Homestay> findByUserid(int userid);
 
     List<Homestay> findByStructure_Structureid(int structureid);
+
+
+
+    @Query("SELECT h FROM Homestay h JOIN h.amenities a WHERE " +
+            "(:minBeds IS NULL OR h.beds >= :minBeds) AND " +
+            "(:maxBeds IS NULL OR h.beds <= :maxBeds) AND " +
+            "(:minMaxGuest IS NULL OR h.maxguest >= :minMaxGuest) AND " +
+            "(:maxMaxGuest IS NULL OR h.maxguest <= :maxMaxGuest) AND " +
+            "(:type IS NULL OR h.type = :type) AND " +
+            "(:amenityIds IS NULL OR a.id IN :amenityIds)")
+    List<Homestay> findByFilter(
+            @Param("minBeds") Integer minBeds,
+            @Param("maxBeds") Integer maxBeds,
+            @Param("minMaxGuest") Integer minMaxGuest,
+            @Param("maxMaxGuest") Integer maxMaxGuest,
+            @Param("type") String type,
+            @Param("amenityIds") List<Integer> amenityIds);
+
 }
+
+
