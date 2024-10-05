@@ -9,39 +9,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.east2west.models.DTO.*;
+import com.east2west.models.Entity.*;
+import com.east2west.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import com.east2west.exception.ResourceNotFoundException;
-import com.east2west.models.DTO.BookingTourDTO;
-import com.east2west.models.DTO.BookingTourFetch;
-import com.east2west.models.DTO.CancelDTO;
-import com.east2west.models.DTO.RefundFetch;
-import com.east2west.models.DTO.TourPackageDTO;
-import com.east2west.models.DTO.TourPackageDTO.DepartureDateDTO;
-import com.east2west.models.DTO.TourPackageDetailDTO;
-import com.east2west.models.DTO.TourPackageFilterDTO;
-import com.east2west.models.DTO.UserFetch;
-import com.east2west.models.Entity.BookingTour;
-import com.east2west.models.Entity.CategoryTour;
-import com.east2west.models.Entity.DepartureDate;
-import com.east2west.models.Entity.Itinerary;
-import com.east2west.models.Entity.Payment;
-import com.east2west.models.Entity.SuitableTour;
-import com.east2west.models.Entity.ThemeTour;
-import com.east2west.models.Entity.TourDepartureDate;
-import com.east2west.models.Entity.TourPackage;
-import com.east2west.models.Entity.User;
-import com.east2west.repository.BookingTourRepository;
-import com.east2west.repository.CategoryTourRepository;
-import com.east2west.repository.DepartureDateRepository;
-import com.east2west.repository.PaymentRepository;
-import com.east2west.repository.SuitableTourRepository;
-import com.east2west.repository.ThemeTourRepository;
-import com.east2west.repository.TourDepartureDateRepository;
-import com.east2west.repository.TourPackageRepository;
-import com.east2west.repository.UserRepository;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -81,6 +56,24 @@ public class PackTourService {
     private UserRepository userRepository;
     @Autowired
     private PaymentRepository paymentRepository;
+
+
+
+    @Autowired
+    private ItineraryRepository itineraryRepository;
+
+
+    @Autowired
+    private AccommodationRepository accommodationRepository;
+
+    @Autowired
+    private MealRepository mealRepository;
+
+    @Autowired
+    private PlaceRepository placeRepository;
+
+    @Autowired
+    private TransferRepository transferRepository;
 
     public List<TourPackage> getAllTourpackages() {
         return tourPackageRepository.findAll();
@@ -127,7 +120,7 @@ public class PackTourService {
         dto.setTitle(tourPackage.getTitle());
         dto.setThumbnail(tourPackage.getThumbnail());
         dto.setPrice(tourPackage.getPrice());
-        dto.setPricereduce(tourPackage.getPricereduce());
+//        dto.setPricereduce(tourPackage.getPricereduce());
         dto.setGroupsize(tourPackage.getGroupsize());
         dto.setDeposit(tourPackage.getDeposit());
         dto.setBookinghold(tourPackage.getBookinghold());
@@ -160,7 +153,7 @@ public class PackTourService {
         tourPackage.setTitle(tourPackageDTO.getTitle());
         tourPackage.setThumbnail(tourPackageDTO.getThumbnail());
         tourPackage.setPrice(tourPackageDTO.getPrice());
-        tourPackage.setPricereduce(tourPackageDTO.getPricereduce());
+//        tourPackage.setPricereduce(tourPackageDTO.getPricereduce());
         tourPackage.setGroupsize(tourPackageDTO.getGroupsize());
         tourPackage.setDeposit(tourPackageDTO.getDeposit());
         tourPackage.setBookinghold(tourPackageDTO.getBookinghold());
@@ -191,7 +184,7 @@ public class PackTourService {
         tourPackage.getDepartureDate().clear();
         List<DepartureDate> existingDepartureDates = new ArrayList<>();
 
-        for (DepartureDateDTO departureDateDTO : tourPackageDTO.getDepartureDates()) {
+        for (TourPackageDTO.DepartureDateDTO departureDateDTO : tourPackageDTO.getDepartureDates()) {
             String dt = departureDateDTO.getDateTime();
             try {
                 LocalDateTime localDateTime = LocalDateTime.parse(dt, formatter);
@@ -216,48 +209,39 @@ public class PackTourService {
     }
 
     public TourPackage createTour(TourPackageDTO tourPackageDTO) {
-        // Validate input fields
         if (tourPackageDTO.getTitle() == null || tourPackageDTO.getTitle().trim().isEmpty()) {
             throw new IllegalArgumentException("Title cannot be empty");
         }
-        if (tourPackageDTO.getPrice() == null || tourPackageDTO.getPricereduce() == null) {
-            throw new IllegalArgumentException("Price and reduced price cannot be null");
-        }
+
         if (tourPackageDTO.getGroupsize() == null || tourPackageDTO.getDeposit() == null ||
                 tourPackageDTO.getBookinghold() == null || tourPackageDTO.getBookingchange() == null) {
             throw new IllegalArgumentException("Groupsize, deposit, booking hold, and booking change cannot be null");
         }
 
-        // Check for duplicate title
         if (tourPackageRepository.existsByTitle(tourPackageDTO.getTitle())) {
             throw new IllegalArgumentException("A tour package with this title already exists");
         }
 
-        // Create a new TourPackage entity
         TourPackage tourPackage = new TourPackage();
         tourPackage.setTitle(tourPackageDTO.getTitle());
         tourPackage.setThumbnail(tourPackageDTO.getThumbnail());
         tourPackage.setPrice(tourPackageDTO.getPrice());
-        tourPackage.setPricereduce(tourPackageDTO.getPricereduce());
+//        tourPackage.setPricereduce(tourPackageDTO.getPricereduce());
         tourPackage.setGroupsize(tourPackageDTO.getGroupsize());
         tourPackage.setDeposit(tourPackageDTO.getDeposit());
         tourPackage.setBookinghold(tourPackageDTO.getBookinghold());
         tourPackage.setBookingchange(tourPackageDTO.getBookingchange());
 
-        // Map CategoryTours
         List<CategoryTour> categoryTours = categoryTourRepository.findAllById(tourPackageDTO.getCategoryTourId());
         tourPackage.setCategoryTours(categoryTours);
 
-        // Map ThemeTours
         List<ThemeTour> themeTours = themeTourRepository.findAllById(tourPackageDTO.getThemeTourId());
         tourPackage.setThemeTours(themeTours);
 
-        // Map SuitableTours
         List<SuitableTour> suitableTours = suitableTourRepository.findAllById(tourPackageDTO.getSuitableTourId());
         tourPackage.setSuitableTours(suitableTours);
 
-        // Map DepartureDates
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME; // Handles '2024-09-01T08:00:00Z'
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         List<DepartureDate> departureDates = new ArrayList<>();
 
         for (TourPackageDTO.DepartureDateDTO departureDateDTO : tourPackageDTO.getDepartureDates()) {
@@ -267,7 +251,6 @@ public class PackTourService {
                 Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
                 Timestamp timestamp = Timestamp.from(instant);
 
-                // Find existing DepartureDate or create a new one
                 Optional<DepartureDate> departureDateOpt = departureDateRepository.findByDeparturedate(timestamp);
                 DepartureDate departureDate = departureDateOpt.orElseGet(() -> {
                     DepartureDate newDepartureDate = new DepartureDate();
@@ -283,9 +266,49 @@ public class PackTourService {
 
         tourPackage.setDepartureDate(departureDates);
 
-        // Save TourPackage entity
-        return tourPackageRepository.save(tourPackage);
+        TourPackage savedTourPackage = tourPackageRepository.save(tourPackage);
+
+        List<Itinerary> itineraries = new ArrayList<>();
+
+        for (ItineraryDTO itineraryDTO : tourPackageDTO.getItinerary()) {
+            Itinerary itinerary = new Itinerary();
+            itinerary.setAccommodations(new ArrayList<>());
+            itinerary.setMeals(new ArrayList<>());
+            itinerary.setPlaces(new ArrayList<>());
+            itinerary.setTransfers(new ArrayList<>());
+
+            itinerary.setTourPackage(savedTourPackage);
+
+            if (itineraryDTO.getAccommodationIds() != null && !itineraryDTO.getAccommodationIds().isEmpty()) {
+                List<Accommodation> accommodations = accommodationRepository.findAllById(itineraryDTO.getAccommodationIds());
+                itinerary.getAccommodations().addAll(accommodations);
+            }
+
+            if (itineraryDTO.getMealIds() != null && !itineraryDTO.getMealIds().isEmpty()) {
+                List<Meal> meals = mealRepository.findAllById(itineraryDTO.getMealIds());
+                itinerary.getMeals().addAll(meals);
+            }
+
+            if (itineraryDTO.getPlaceIds() != null && !itineraryDTO.getPlaceIds().isEmpty()) {
+                List<Place> places = placeRepository.findAllById(itineraryDTO.getPlaceIds());
+                itinerary.getPlaces().addAll(places);
+            }
+
+            if (itineraryDTO.getTransferIds() != null && !itineraryDTO.getTransferIds().isEmpty()) {
+                List<Transfer> transfers = transferRepository.findAllById(itineraryDTO.getTransferIds());
+                itinerary.getTransfers().addAll(transfers);
+            }
+
+            itinerary.setDay(itineraryDTO.getDay());
+
+            // Save each Itinerary
+            itineraries.add(itineraryRepository.save(itinerary));
+        }
+
+
+        return savedTourPackage;
     }
+
 
     public TourPackage updateTour(TourPackageDTO tourPackageDTO) {
         Integer id = tourPackageDTO.getId();
@@ -313,14 +336,30 @@ public class PackTourService {
     }
 
     public boolean deleteTour(int id) {
-        Optional<TourPackage> tourPackage = tourPackageRepository.findById(id);
-        if (tourPackage.isPresent()) {
+        Optional<TourPackage> tourPackageOpt = tourPackageRepository.findById(id);
+        if (tourPackageOpt.isPresent()) {
+            TourPackage tourPackage = tourPackageOpt.get();
+
+            List<Itinerary> itineraries = itineraryRepository.findByTourPackage_Packageid(id);
+
+
+            for (Itinerary itinerary : itineraries) {
+                itinerary.getAccommodations().clear();
+                itinerary.getMeals().clear();
+                itinerary.getPlaces().clear();
+                itinerary.getTransfers().clear();
+
+                itineraryRepository.delete(itinerary);
+            }
+
             tourPackageRepository.deleteById(id);
+
             return true;
         } else {
             return false;
         }
     }
+
 
     public BookingTour saveBookingTour(BookingTourDTO bookingTourDTO) {
         BookingTour bookingTour = new BookingTour();

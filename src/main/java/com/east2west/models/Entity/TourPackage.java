@@ -57,16 +57,16 @@ public class TourPackage {
         this.price = price;
     }
 
-    @Column(name = "pricereduce")
-    private BigDecimal pricereduce;
+//    @Column(name = "pricereduce")
+//    private BigDecimal pricereduce;
 
-    public BigDecimal getPricereduce() {
-        return this.pricereduce;
-    }
-
-    public void setPricereduce(BigDecimal pricereduce) {
-        this.pricereduce = pricereduce;
-    }
+//    public BigDecimal getPricereduce() {
+//        return this.pricereduce;
+//    }
+//
+//    public void setPricereduce(BigDecimal pricereduce) {
+//        this.pricereduce = pricereduce;
+//    }
 
     @Column(name = "groupsize")
     private String groupsize;
