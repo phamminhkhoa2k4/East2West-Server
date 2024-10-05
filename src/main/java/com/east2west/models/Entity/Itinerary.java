@@ -6,8 +6,12 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "itinerary")
 public class Itinerary {
     @Id
@@ -28,13 +32,7 @@ public class Itinerary {
     )
     private List<Accommodation> accommodations;
 
-    public List<Accommodation> getAccommodations() {
-        return this.accommodations;
-    }
 
-    public void setAccommodations(List<Accommodation> accommodations) {
-        this.accommodations = accommodations;
-    }
 
     @ManyToMany
     @JoinTable(
@@ -44,13 +42,7 @@ public class Itinerary {
     )
     private List<Meal> meals;
 
-    public List<Meal> getMeals() {
-        return this.meals;
-    }
 
-    public void setMeals(List<Meal> meals) {
-        this.meals = meals;
-    }
 
     @ManyToMany
     @JoinTable(
@@ -60,13 +52,6 @@ public class Itinerary {
     )
     private List<Place> places;
 
-    public List<Place> getPlaces() {
-        return this.places;
-    }
-
-    public void setPlaces(List<Place> places) {
-        this.places = places;
-    }
     @ManyToMany
     @JoinTable(
         name = "itinerarytransfer",
@@ -75,39 +60,10 @@ public class Itinerary {
     )
     private List<Transfer> transfers;
 
-    public List<Transfer> getTransfers() {
-        return this.transfers;
-    }
-
-    public void setTransfers(List<Transfer> transfers) {
-        this.transfers = transfers;
-    }
 
     @Column(name = "day")
-    private Timestamp day;
+    private int day;
 
   
-    public int getItineraryId() {
-        return itineraryId;
-    }
 
-    public void setItineraryId(int itineraryId) {
-        this.itineraryId = itineraryId;
-    }
-
-    public TourPackage getTourPackage() {
-        return tourPackage;
-    }
-
-    public void setTourPackage(TourPackage tourPackage) {
-        this.tourPackage = tourPackage;
-    }
-
-    public Timestamp getDay() {
-        return day;
-    }
-
-    public void setDay(Timestamp day) {
-        this.day = day;
-    }
 }

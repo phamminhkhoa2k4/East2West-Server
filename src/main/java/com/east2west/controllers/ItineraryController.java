@@ -1,17 +1,12 @@
 package com.east2west.controllers;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.east2west.models.DTO.AccommodationDTO;
 import com.east2west.models.DTO.ItineraryDTO;
@@ -37,15 +32,16 @@ public class ItineraryController {
         Itinerary itinerary = itineraryService.createOrUpdateItinerary(itineraryDTO);
         return ResponseEntity.ok(itinerary);
     }
-    // {
-    // "itineraryId": null, // Optional, use if updating
-    // tourPackageId:1
-    // "name": "Northern Lights Tour",
-    // "description": "A 5-day tour to explore the Northern Lights",
-    // "accommodationIds": [1, 2], // List of accommodation IDs
-    // "mealIds": [1, 3], // List of meal IDs
-    // "placeIds": [4, 5] // List of place IDs
-    // }
+    @PostMapping("/")
+    public ResponseEntity<List<Itinerary>> createItinerary(@RequestBody List<ItineraryDTO> itineraryDTO) {
+        List<Itinerary> itinerary = itineraryService.createItinerary(itineraryDTO);
+        return ResponseEntity.ok(itinerary);
+    }
+    @PutMapping("/")
+    public ResponseEntity<Itinerary> updateItinerary(@RequestBody ItineraryDTO itineraryDTO) {
+        Itinerary itinerary = itineraryService.updateItinerary(itineraryDTO);
+        return ResponseEntity.ok(itinerary);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteItinerary(@PathVariable int id) {
@@ -54,9 +50,15 @@ public class ItineraryController {
     }
 
     // Accommodation Endpoints
-    @PostMapping("/accommodations/createOrUpdate")
-    public ResponseEntity<Accommodation> createOrUpdateAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
-        Accommodation accommodation = itineraryService.createOrUpdateAccommodation(accommodationDTO);
+    @PostMapping("/accommodations")
+    public ResponseEntity<Accommodation> createAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
+        Accommodation accommodation = itineraryService.createAccommodation(accommodationDTO);
+        return ResponseEntity.ok(accommodation);
+    }
+
+    @PutMapping("/accommodations")
+    public ResponseEntity<Accommodation> updateAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
+        Accommodation accommodation = itineraryService.updateAccommodation(accommodationDTO);
         return ResponseEntity.ok(accommodation);
     }
 
@@ -66,10 +68,16 @@ public class ItineraryController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/accommodations/{id}")
+    public ResponseEntity<Optional<Accommodation>> getAccommodationById(@PathVariable int id) {
+        Optional<Accommodation> accommodation = itineraryService.getAccommodationById(id);
+        return ResponseEntity.ok(accommodation);
+    }
+
     @GetMapping("/accommodations/search")
     public ResponseEntity<List<Accommodation>> searchAccommodations(@RequestParam String search) {
         List<Accommodation> accommodations = null;
-        if (search != "") {
+        if (!Objects.equals(search, "")) {
             accommodations = itineraryService.searchAccommodationsByName(search);
         }
 
@@ -82,12 +90,18 @@ public class ItineraryController {
         return ResponseEntity.ok(accommodations);
     }
 
-    // Place Endpoints
-    @PostMapping("/places/createOrUpdate")
-    public ResponseEntity<Place> createOrUpdatePlace(@RequestBody PlaceDTO placeDTO) {
-        Place place = itineraryService.createOrUpdatePlace(placeDTO);
+    // Place
+    @PostMapping("/places")
+    public ResponseEntity<Place> createPlace(@RequestBody PlaceDTO placeDTO) {
+        Place place = itineraryService.createPlace(placeDTO);
         return ResponseEntity.ok(place);
     }
+    @PutMapping("/places")
+    public ResponseEntity<Place> updatePlace(@RequestBody PlaceDTO placeDTO) {
+        Place place = itineraryService.updatePlace(placeDTO);
+        return ResponseEntity.ok(place);
+    }
+
 
     @DeleteMapping("/places/{id}")
     public ResponseEntity<Void> deletePlace(@PathVariable int id) {
@@ -95,10 +109,16 @@ public class ItineraryController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/places/{id}")
+    public ResponseEntity<Optional<Place>> getPlaceById(@PathVariable int id) {
+        Optional<Place> place = itineraryService.getPlaceById(id);
+        return ResponseEntity.ok(place);
+    }
+
     @GetMapping("/places/search")
     public ResponseEntity<List<Place>> searchPlaces(@RequestParam String search) {
         List<Place> places =null;
-        if(search!=""){
+        if(!Objects.equals(search, "")){
             places= itineraryService.searchPlacesByName(search);
         }
         return ResponseEntity.ok(places);
@@ -110,10 +130,16 @@ public class ItineraryController {
         return ResponseEntity.ok(places);
     }
 
-    // Meal Endpoints
-    @PostMapping("/meals/createOrUpdate")
-    public ResponseEntity<Meal> createOrUpdateMeal(@RequestBody MealDTO mealDTO) {
-        Meal meal = itineraryService.createOrUpdateMeal(mealDTO);
+    // Meal
+    @PostMapping("/meals")
+    public ResponseEntity<Meal> createMeal(@RequestBody MealDTO mealDTO) {
+        Meal meal = itineraryService.createMeal(mealDTO);
+        return ResponseEntity.ok(meal);
+    }
+
+    @PutMapping("/meals")
+    public ResponseEntity<Meal> updateMeal(@RequestBody MealDTO mealDTO) {
+        Meal meal = itineraryService.updateMeal(mealDTO);
         return ResponseEntity.ok(meal);
     }
 
@@ -123,10 +149,18 @@ public class ItineraryController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/meals/{id}")
+    public ResponseEntity<Optional<Meal>> getMealsById(@PathVariable int id) {
+        Optional<Meal> meal = itineraryService.getMealsById(id);
+        return ResponseEntity.ok(meal);
+    }
+
+
+
     @GetMapping("/meals/search")
     public ResponseEntity<List<Meal>> searchMeals(@RequestParam String search) {
         List<Meal> meals = null;
-        if(search!=""){
+        if(!Objects.equals(search, "")){
             meals=itineraryService.searchMealsByName(search);
         }
         return ResponseEntity.ok(meals);
@@ -138,10 +172,18 @@ public class ItineraryController {
         return ResponseEntity.ok(meals);
     }
 
-    // Transfer Endpoints
-    @PostMapping("/transfers/createOrUpdate")
-    public ResponseEntity<Transfer> createOrUpdateTransfer(@RequestBody TransferDTO transferDTO) {
-        Transfer transfer = itineraryService.createOrUpdateTransfer(transferDTO);
+
+
+    // Transfer
+    @PostMapping("/transfers")
+    public ResponseEntity<Transfer> createTransfer(@RequestBody TransferDTO transferDTO) {
+        Transfer transfer = itineraryService.createTransfer(transferDTO);
+        return ResponseEntity.ok(transfer);
+    }
+
+    @PutMapping("/transfers")
+    public ResponseEntity<Transfer> updateTransfer(@RequestBody TransferDTO transferDTO) {
+        Transfer transfer = itineraryService.updateTransfer(transferDTO);
         return ResponseEntity.ok(transfer);
     }
 
@@ -149,6 +191,12 @@ public class ItineraryController {
     public ResponseEntity<Void> deleteTransfer(@PathVariable int id) {
         itineraryService.deleteTransfer(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/transfers/{id}")
+    public ResponseEntity<Optional<Transfer>> getTransferById(@PathVariable int id) {
+        Optional<Transfer> transfer = itineraryService.getTransferById(id);
+        return ResponseEntity.ok(transfer);
     }
 
     @GetMapping("/transfers/search")
