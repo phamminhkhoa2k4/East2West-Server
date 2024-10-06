@@ -1,12 +1,16 @@
 package com.east2west.models.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 public class RentalDTO {
     private int userId;
     private int carId;
     private int paymentId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
     private Date rentalDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
     private Date returnDate;
     private double totalAmount;
 

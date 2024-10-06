@@ -226,7 +226,6 @@ public class PackTourService {
         tourPackage.setTitle(tourPackageDTO.getTitle());
         tourPackage.setThumbnail(tourPackageDTO.getThumbnail());
         tourPackage.setPrice(tourPackageDTO.getPrice());
-//        tourPackage.setPricereduce(tourPackageDTO.getPricereduce());
         tourPackage.setGroupsize(tourPackageDTO.getGroupsize());
         tourPackage.setDeposit(tourPackageDTO.getDeposit());
         tourPackage.setBookinghold(tourPackageDTO.getBookinghold());
