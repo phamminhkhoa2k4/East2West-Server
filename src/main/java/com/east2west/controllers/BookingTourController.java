@@ -77,7 +77,7 @@ public class BookingTourController {
     }
     
     @GetMapping("/user/{userId}")
-    public List<BookingTour> getRentalsByUserId(@PathVariable int userId) {
+    public List<BookingTour> gsetRentalsByUserId(@PathVariable int userId) {
         return packTourService.getListBookingByUser(userId);
     }
 

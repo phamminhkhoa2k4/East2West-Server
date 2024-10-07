@@ -102,7 +102,6 @@ private UserRepository userRepository;
     
         return false;
     }
-    
     public List<Rental> getRentalsByUserId(int userId) {
         return rentalCarRepository.findByUserid(userId);
     }
@@ -110,5 +109,4 @@ private UserRepository userRepository;
         Optional<Rental> rental = rentalCarRepository.findById(rentalid);
         return rental.orElse(null);
     }
-
 }
