@@ -3,6 +3,8 @@ package com.east2west.controllers.admin;
 import java.util.List;
 import java.util.Optional;
 
+import com.east2west.models.DTO.TourPackageDTO;
+import com.east2west.service.ItineraryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.east2west.models.DTO.TourPackageDTO;
 import com.east2west.models.Entity.TourPackage;
 import com.east2west.service.PackTourService;
 
@@ -27,6 +28,10 @@ public class AdminPackTourController {
 
     @Autowired
     private PackTourService packTourService;
+
+
+
+
 
     @GetMapping
     public ResponseEntity<List<TourPackage>> getAllTours() {
@@ -48,19 +53,19 @@ public class AdminPackTourController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateTourPackage(@PathVariable int id,
             @RequestBody @Valid TourPackageDTO tourPackageDTO) {
-        // Tìm đối tượng TourPackage cần cập nhật
+
         Optional<TourPackage> existingTourPackageOpt = packTourService.findById(id);
 
         if (existingTourPackageOpt.isEmpty()) {
             return new ResponseEntity<>("TourPackage not found", HttpStatus.NOT_FOUND);
         }
 
-        // Kiểm tra dữ liệu đầu vào
+
         if (tourPackageDTO.getTitle() == null || tourPackageDTO.getTitle().trim().isEmpty()) {
             return new ResponseEntity<>("Title cannot be empty", HttpStatus.BAD_REQUEST);
         }
 
-        // Kiểm tra xem tiêu đề có thay đổi không và nếu có thì kiểm tra trùng lặp
+
         boolean isTitleDuplicate = false;
         if (!existingTourPackageOpt.get().getTitle().equals(tourPackageDTO.getTitle())) {
             isTitleDuplicate = packTourService.existsByTitle(tourPackageDTO.getTitle());
@@ -70,32 +75,13 @@ public class AdminPackTourController {
             return new ResponseEntity<>("Title already exists", HttpStatus.CONFLICT);
         }
 
-        // Gọi service để cập nhật đối tượng TourPackage
+
         TourPackage updatedTourPackage = packTourService.updateTourPackageFields(existingTourPackageOpt.get(),
                 tourPackageDTO);
         packTourService.save(updatedTourPackage);
 
         return new ResponseEntity<>(updatedTourPackage, HttpStatus.OK);
     }
-    // {
-    // "id":null,
-    // "title": "Adventure in the Mountainssss",
-    // "thumbnail": "https://example.com/images/mountain-adventure.jpg",
-    // "price": 1999.99,
-    // "pricereduce": 1799.99,
-    // "groupsize": "10",
-    // "deposit": "500",
-    // "bookinghold": "48 hours",
-    // "bookingchange": "No fee up to 7 days before departure",
-    // "categoryTourId": [1, 2],
-    // "themeTourId": [1, 3],
-    // "suitableTourId": [2],
-    // "departureDateDate": [
-    // "2024-09-01T08:00:00Z",
-    // "2024-09-15T08:00:00Z",
-    // "2024-10-01T08:00:00Z"
-    // ]
-    // }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTour(@PathVariable int id) {

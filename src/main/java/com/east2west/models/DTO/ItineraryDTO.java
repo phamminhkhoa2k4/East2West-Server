@@ -1,8 +1,12 @@
 package com.east2west.models.DTO;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.sql.Timestamp;
 import java.util.List;
-
+@Getter
+@Setter
 public class ItineraryDTO {
 
     private int itineraryId;
@@ -10,55 +14,17 @@ public class ItineraryDTO {
     private List<Integer> accommodationIds;
     private List<Integer> mealIds;
     private List<Integer> placeIds;
-    private Timestamp day;
+    private List<Integer> transferIds;
 
-    public int getItineraryId() {
-        return itineraryId;
-    }
+    private int day;
 
-    public void setItineraryId(int itineraryId) {
-        this.itineraryId = itineraryId;
-    }
 
-    public int getTourPackageId() {
-        return tourPackageId;
-    }
 
-    public void setTourPackageId(int tourPackageId) {
-        this.tourPackageId = tourPackageId;
-    }
 
-    public List<Integer> getAccommodationIds() {
-        return accommodationIds;
-    }
 
-    public void setAccommodationIds(List<Integer> accommodationIds) {
-        this.accommodationIds = accommodationIds;
-    }
 
-    public List<Integer> getMealIds() {
-        return mealIds;
-    }
 
-    public void setMealIds(List<Integer> mealIds) {
-        this.mealIds = mealIds;
-    }
 
-    public List<Integer> getPlaceIds() {
-        return placeIds;
-    }
-
-    public void setPlaceIds(List<Integer> placeIds) {
-        this.placeIds = placeIds;
-    }
-
-    public Timestamp getDay() {
-        return day;
-    }
-
-    public void setDay(Timestamp day) {
-        this.day = day;
-    }
 
 }
 

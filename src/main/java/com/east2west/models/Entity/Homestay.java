@@ -25,14 +25,14 @@ public class Homestay {
 
     @Setter
     @Getter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "wardid", referencedColumnName = "wardid")
     private Ward ward;
 
     // alter small
     @Setter
     @Getter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "structureid", referencedColumnName = "structureid")
     private Structure structure;
 
