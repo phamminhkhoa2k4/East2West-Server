@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.east2west.models.DTO.TourPackageDTO;
 import com.east2west.models.Entity.TourPackage;
 
 @Repository

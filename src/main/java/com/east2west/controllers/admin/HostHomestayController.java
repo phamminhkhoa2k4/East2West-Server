@@ -1,9 +1,12 @@
 
 package com.east2west.controllers.admin;
 
+import com.east2west.models.DTO.PhotoDeleteDTO;
 import com.east2west.models.Entity.Amenities;
 import com.east2west.models.Entity.Structure;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +35,8 @@ public class HostHomestayController {
     }
     @PostMapping
     public ResponseEntity<Homestay> createHomestay(@RequestBody HomestayDTO homestayDTO) {
+        homestayDTO.setGeom(null);
+        homestayDTO.setHomestayid(null);
         Homestay homestay = homestayService.createHomestay(homestayDTO);
         return ResponseEntity.ok(homestay);
     }
@@ -41,6 +46,30 @@ public class HostHomestayController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/deletePhotos")
+    public ResponseEntity<?> deletePhotosHomestay(@RequestBody PhotoDeleteDTO photo) {
+        try {
+            homestayService.deletePhotos(photo.getUrl(), photo.getId());
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+
+
+    @PutMapping("/amenities")
+    public ResponseEntity<Amenities> updateAmenities(@RequestBody Amenities amenities) {
+        Amenities homestay = homestayService.updateAmenities(amenities);
+        return ResponseEntity.ok(homestay);
+    }
+
+    @PutMapping("/structure")
+    public ResponseEntity<Structure> updateStructure(@RequestBody Structure structure) {
+        Structure homestay = homestayService.updateStructure(structure);
+        return ResponseEntity.ok(homestay);
+    }
 
     @PostMapping("/structure")
     public ResponseEntity<Structure> createStructure(@RequestBody Structure structure) {
@@ -94,8 +123,42 @@ public class HostHomestayController {
 
     @DeleteMapping("/amenities/{id}")
     public void deleteAmenities(@PathVariable int id) {
-        homestayService.deleteStructure(id);
+        try{
+            homestayService.deleteStructure(id);
+    } catch (
+    DataIntegrityViolationException ex) {
+            System.out.println(ex);
     }
 
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<HomestayDTO>> getAllHomestaysByIdUser(@PathVariable int id){
+        List<HomestayDTO> homestay = homestayService.getAllByIdUser(id);
+        return ResponseEntity.ok(homestay);
+    }
+
+
+    @PostMapping("/baseprice")
+    public ResponseEntity<?> updateBasePrice(@RequestBody HomestayDTO homestayDTO){
+        try {
+            homestayService.updateBasePrice(homestayDTO.getHomestayid(), homestayDTO.getPricePerNight());
+            return ResponseEntity.ok("Price updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the price");
+        }
+    }
+
+
+
+    @PostMapping("/weekendprice")
+    public ResponseEntity<?> updateWeekendPrice(@RequestBody HomestayDTO homestayDTO){
+        try {
+            homestayService.updateWeekendPrice(homestayDTO.getHomestayid(), homestayDTO.getPricePerNight());
+            return ResponseEntity.ok("Price updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the price");
+        }
+    }
 
 }

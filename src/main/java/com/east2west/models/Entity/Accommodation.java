@@ -1,8 +1,12 @@
 package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "accommodations")
 public class Accommodation {
 
@@ -11,46 +15,32 @@ public class Accommodation {
     @Column(name = "accommodationid")
     private int accommodationid;
 
-    public int getAccommodationid() {
-        return this.accommodationid;
-    }
 
-    public void setAccommodationid(int accommodationid) {
-        this.accommodationid = accommodationid;
-    }
 
     @Column(name = "accommodationname")
     private String accommodationname;
 
-    public String getAccommodationname() {
-        return this.accommodationname;
-    }
 
-    public void setAccommodationname(String accommodationname) {
-        this.accommodationname = accommodationname;
-    }
+    @Column(name = "accommodationthumbnail")
+    private String accommodationthumbnail;
+
+    @Column(name = "roomtype")
+    private String roomtype;
+
+    @Column(name = "isbreadkfast")
+    private boolean isbreadkfast;
+
+
 
     @Column(name = "durationaccommodation")
     private String durationaccommodation;
 
-    public String getDurationaccommodation() {
-        return this.durationaccommodation;
-    }
 
-    public void setDurationaccommodation(String durationaccommodation) {
-        this.durationaccommodation = durationaccommodation;
-    }
 
     @Column(name = "accommodationtype")
     private String accommodationtype;
 
-    public String getAccommodationtype() {
-        return this.accommodationtype;
-    }
 
-    public void setAccommodationtype(String accommodationtype) {
-        this.accommodationtype = accommodationtype;
-    }
 
     
     
