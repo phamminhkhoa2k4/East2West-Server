@@ -168,7 +168,6 @@ public class CarController {
         Optional<Make> make = carService.getAllMake().stream().filter(m -> m.getMakeId() == id).findFirst();
         return make.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
-
     @PutMapping("/make/{id}")
     public ResponseEntity<Make> updateMake(@PathVariable int id, @RequestBody Make make) {
         Optional<Make> existingMake = carService.getAllMake().stream().filter(m -> m.getMakeId() == id).findFirst();
@@ -176,6 +175,23 @@ public class CarController {
             Make updatedMake = existingMake.get();
             updatedMake.setMakeName(make.getMakeName()); // Assuming Make has a setMakeName method
             carService.saveMake(updatedMake);
+            return ResponseEntity.ok(updatedMake);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @GetMapping("/locationtype/{id}")
+    public ResponseEntity<LocationType> getLocationTypeById(@PathVariable int id) {
+        Optional<LocationType> locationtype = carService.getAllLocationType().stream().filter(m -> m.getLocationtypeid() == id).findFirst();
+        return locationtype.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    @PutMapping("/locationtype/{id}")
+    public ResponseEntity<LocationType> updateLocationType(@PathVariable int id, @RequestBody LocationType locationType) {
+        Optional<LocationType> existingMake = carService.getAllLocationType().stream().filter(m -> m.getLocationtypeid() == id).findFirst();
+        if (existingMake.isPresent()) {
+            LocationType updatedMake = existingMake.get();
+            updatedMake.setLocationtypename(locationType.getLocationtypename());
+            carService.saveLocationType(updatedMake);
             return ResponseEntity.ok(updatedMake);
         } else {
             return ResponseEntity.notFound().build();
