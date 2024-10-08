@@ -38,8 +38,6 @@ import com.east2west.security.jwt.JwtUtils;
 import com.east2west.security.services.UserDetailsImpl;
 
 //for Angular Client (withCredentials)
-//@CrossOrigin(origins = "http://localhost:8081", maxAge = 3600, allowCredentials="true")
-@CrossOrigin(origins = "http://localhost:3000/signin", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -63,37 +61,44 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
-                        loginRequest.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
-        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
-
-        // Create response body
-        UserInfoResponse userInfoResponse = new UserInfoResponse(
-                userDetails.getUserId(),
-                userDetails.getUsername(),
-                userDetails.getFirstname(),
-                userDetails.getLastname(),
-                userDetails.getEmail(),
-                userDetails.getPhone(),
-                userDetails.getAddress(),
-                roles);
-
-        // Return response with Set-Cookie header
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(userInfoResponse);
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+                            loginRequest.getPassword()));
+    
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+    
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+    
+            ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+    
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(item -> item.getAuthority())
+                    .collect(Collectors.toList());
+    
+            // Create response body
+            UserInfoResponse userInfoResponse = new UserInfoResponse(
+                    userDetails.getUserId(),
+                    userDetails.getUsername(),
+                    userDetails.getFirstname(),
+                    userDetails.getLastname(),
+                    userDetails.getEmail(),
+                    userDetails.getPhone(),
+                    userDetails.getAddress(),
+                    roles);
+    
+            // Return response with Set-Cookie header
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                    .body(userInfoResponse);
+    
+        } catch (Exception e) {
+            // Return bad credentials response
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new MessageResponse("Bad credentials"));
+        }
     }
+    
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
