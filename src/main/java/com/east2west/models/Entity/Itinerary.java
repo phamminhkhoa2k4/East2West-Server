@@ -32,8 +32,6 @@ public class Itinerary {
     )
     private List<Accommodation> accommodations;
 
-
-
     @ManyToMany
     @JoinTable(
         name = "itinerarymeals",
@@ -41,8 +39,6 @@ public class Itinerary {
         inverseJoinColumns = @JoinColumn(name = "mealid")
     )
     private List<Meal> meals;
-
-
 
     @ManyToMany
     @JoinTable(
@@ -60,10 +56,6 @@ public class Itinerary {
     )
     private List<Transfer> transfers;
 
-
     @Column(name = "day")
     private int day;
-
-  
-
 }
