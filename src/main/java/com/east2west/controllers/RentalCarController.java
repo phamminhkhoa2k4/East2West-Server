@@ -61,28 +61,19 @@ public class RentalCarController {
     }
 
     @PostMapping("/pdf/{rentalid}")
-    public ResponseEntity<?> downloadRentalPDF(@PathVariable int rentalid) {
-        Rental rental = rentalCarService.findById(rentalid);
-        if (rental == null) {
-            return ResponseEntity.notFound().build();
-        }
+public ResponseEntity<InputStreamResource> downloadRentalPDF(@PathVariable int rentalid) throws IOException {
+    ByteArrayInputStream bis = pdfService.generateRentalPDF(rentalid);
+    
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Disposition", "attachment; filename=rental_details_sample.pdf");
 
-        ByteArrayInputStream bis;
-        try {
-            bis = pdfService.generateRentalPDF(rental);
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body("Error generating PDF: " + e.getMessage());
-        }
+    return ResponseEntity
+            .ok()
+            .headers(headers)
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(new InputStreamResource(bis));
+}
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=rental_" + rentalid + ".pdf");
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
-    }
 
     @PostMapping("/create_payment/{amount}")
     public ResponseEntity<?> createPayment(@PathVariable double amount, @RequestBody RentalDTO rentalDTO)
@@ -156,7 +147,7 @@ public class RentalCarController {
             // Gọi dịch vụ để lưu thông tin thanh toán vào cơ sở dữ liệu
             rentalCarService.saveRental(rentalDTO);
         }
-        String responseUrl = "http://localhost:3000/rentals";
+        String responseUrl = "http://localhost:3000";
         response.sendRedirect(responseUrl);
     }
 

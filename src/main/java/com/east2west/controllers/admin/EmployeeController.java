@@ -40,6 +40,6 @@ public class EmployeeController {
     @PostMapping("/refund")
     public ResponseEntity<String> processEmployeeRefund(@RequestBody CancelDTO refundRequest) {
         packTourService.cancelBookingEmployee(refundRequest);
-        return ResponseEntity.badRequest().body("Invalid refund request");
+        return ResponseEntity.ok("Done Refund!");
     }
 }
