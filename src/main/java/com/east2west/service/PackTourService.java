@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.east2west.models.DTO.*;
+import com.east2west.models.DTO.TourPackageDTO.DepartureDateDTO;
 import com.east2west.models.Entity.*;
 import com.east2west.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -240,18 +241,12 @@ public class PackTourService {
         List<SuitableTour> suitableTours = suitableTourRepository.findAllById(tourPackageDTO.getSuitableTourId());
         tourPackage.setSuitableTours(suitableTours);
 
-<<<<<<< HEAD
-        // Map DepartureDates
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"))
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"))
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
                 .toFormatter();
         List<DepartureDate> existingDepartureDates = new ArrayList<>();
-=======
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-        List<DepartureDate> departureDates = new ArrayList<>();
->>>>>>> b79c00f5448e468c2449c86f69fdd8acb91d6a3d
 
         for (DepartureDateDTO departureDateDTO : tourPackageDTO.getDepartureDates()) {
             String dt = departureDateDTO.getDateTime();
@@ -259,10 +254,6 @@ public class PackTourService {
                 LocalDateTime localDateTime = LocalDateTime.parse(dt, formatter);
                 Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
                 Timestamp timestamp = Timestamp.from(instant);
-<<<<<<< HEAD
-=======
-
->>>>>>> b79c00f5448e468c2449c86f69fdd8acb91d6a3d
                 Optional<DepartureDate> departureDateOpt = departureDateRepository.findByDeparturedate(timestamp);
                 DepartureDate departureDate = departureDateOpt.orElseGet(() -> {
                     DepartureDate newDepartureDate = new DepartureDate();

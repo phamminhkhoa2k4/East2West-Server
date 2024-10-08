@@ -93,32 +93,21 @@ public class Car {
     @Column(name = "status")
     private String status;
 
-
-
-
     @Setter
     @Getter
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "locationtypeid", referencedColumnName = "locationtypeid")
     private LocationType locationtype;
 
-
-
-
-
-
     @Setter
     @Getter
     @Column(name="cargearbox")
     private String cargearbox;
 
-
     @Setter
     @Getter
     @Column(name="miles")
     private String miles;
-
-
 
     @Setter
     @Getter
