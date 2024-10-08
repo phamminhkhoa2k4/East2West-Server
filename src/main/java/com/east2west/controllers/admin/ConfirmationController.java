@@ -19,7 +19,7 @@ public class ConfirmationController {
     @Autowired
     private RentalCarService rentalCarService;
 
-    @PutMapping("/rental/{rentalId}/confirm")
+    @PutMapping("/rental/confirm/{rentalId}")
     public ResponseEntity<Rental> confirmRental(@PathVariable int rentalId) {
         Rental rental = rentalCarService.findById(rentalId);
         if (rental == null) {
@@ -30,7 +30,7 @@ public class ConfirmationController {
         return ResponseEntity.ok(confirmedRental);
     }
 
-    @PutMapping("/tour/{bookingTourId}/confirm")
+    @PutMapping("/tour/confirm/{bookingTourId}")
     public ResponseEntity<String> confirmTourBooking(@PathVariable int bookingTourId) {
         Optional<BookingTour> bookingTourOpt = packTourService.getBookingTourById(bookingTourId);
         if (bookingTourOpt.isEmpty()) {
@@ -43,7 +43,7 @@ public class ConfirmationController {
         return ResponseEntity.ok("Booking confirmed successfully");
     }
 
-    @PutMapping("/tour/{bookingTourId}/refund")
+    @PutMapping("/tour/refund/{bookingTourId}")
     public ResponseEntity<String> confirmTourRefund(@PathVariable int bookingTourId) {
         Optional<BookingTour> bookingTourOpt = packTourService.getBookingTourById(bookingTourId);
 
