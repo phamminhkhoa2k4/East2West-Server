@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.east2west.models.DTO.*;
+import com.east2west.models.DTO.TourPackageDTO.DepartureDateDTO;
 import com.east2west.models.Entity.*;
 import com.east2west.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -240,30 +241,33 @@ public class PackTourService {
         List<SuitableTour> suitableTours = suitableTourRepository.findAllById(tourPackageDTO.getSuitableTourId());
         tourPackage.setSuitableTours(suitableTours);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-        List<DepartureDate> departureDates = new ArrayList<>();
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+                .toFormatter();
+        List<DepartureDate> existingDepartureDates = new ArrayList<>();
 
-        for (TourPackageDTO.DepartureDateDTO departureDateDTO : tourPackageDTO.getDepartureDates()) {
-            String departureDateString = departureDateDTO.getDateTime();
+        for (DepartureDateDTO departureDateDTO : tourPackageDTO.getDepartureDates()) {
+            String dt = departureDateDTO.getDateTime();
             try {
-                LocalDateTime localDateTime = LocalDateTime.parse(departureDateString, formatter);
+                LocalDateTime localDateTime = LocalDateTime.parse(dt, formatter);
                 Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
                 Timestamp timestamp = Timestamp.from(instant);
-
                 Optional<DepartureDate> departureDateOpt = departureDateRepository.findByDeparturedate(timestamp);
                 DepartureDate departureDate = departureDateOpt.orElseGet(() -> {
                     DepartureDate newDepartureDate = new DepartureDate();
                     newDepartureDate.setDeparturedate(timestamp);
-                    return departureDateRepository.save(newDepartureDate);
+                    departureDateRepository.save(newDepartureDate);
+                    return newDepartureDate;
                 });
-
-                departureDates.add(departureDate);
+                existingDepartureDates.add(departureDate);
             } catch (DateTimeParseException dtpe) {
-                throw new RuntimeException("Invalid date format for departure date: " + departureDateString, dtpe);
+                throw new RuntimeException("Invalid date format for departure date: " + dt, dtpe);
             }
         }
 
-        tourPackage.setDepartureDate(departureDates);
+        tourPackage.setDepartureDate(existingDepartureDates);
 
         TourPackage savedTourPackage = tourPackageRepository.save(tourPackage);
 

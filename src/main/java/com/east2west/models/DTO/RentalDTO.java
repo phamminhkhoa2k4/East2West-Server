@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 public class RentalDTO {
     private int userId;
     private int carId;

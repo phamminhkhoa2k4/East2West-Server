@@ -58,7 +58,6 @@ public class CarService {
         car.setFuel(carDTO.getFuel());
         car.setLocation(carDTO.getLocation());
         car.setThumbnail(carDTO.getThumbnail());
-
         modelRepository.findById(carDTO.getModelId()).ifPresent(car::setModel);
         makeRepository.findById(carDTO.getMakeId()).ifPresent(car::setMake);
         typeRepository.findById(carDTO.getTypeId()).ifPresent(car::setType);
