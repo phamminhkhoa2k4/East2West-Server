@@ -2,18 +2,14 @@
 package com.east2west.controllers.admin;
 
 import com.east2west.models.DTO.PhotoDeleteDTO;
-import com.east2west.models.Entity.Amenities;
 import com.east2west.models.Entity.Structure;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.east2west.models.DTO.HomestayDTO;
 import com.east2west.models.Entity.Homestay;
 import com.east2west.service.HomestayService;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +33,7 @@ public class HostHomestayController {
     public ResponseEntity<Homestay> createHomestay(@RequestBody HomestayDTO homestayDTO) {
         homestayDTO.setGeom(null);
         homestayDTO.setHomestayid(null);
+        homestayDTO.setIsApproved(false);
         Homestay homestay = homestayService.createHomestay(homestayDTO);
         return ResponseEntity.ok(homestay);
     }
@@ -44,6 +41,12 @@ public class HostHomestayController {
     public ResponseEntity<Void> deleteHomestay(@PathVariable int id) {
         homestayService.deleteHomestay(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/approved/{id}")
+    public ResponseEntity<?>  approvedHomestay(@PathVariable int id){
+        homestayService.approveHomestay(id);
+        return ResponseEntity.ok("OK");
     }
 
     @DeleteMapping("/deletePhotos")
@@ -59,11 +62,9 @@ public class HostHomestayController {
 
 
 
-    @PutMapping("/amenities")
-    public ResponseEntity<Amenities> updateAmenities(@RequestBody Amenities amenities) {
-        Amenities homestay = homestayService.updateAmenities(amenities);
-        return ResponseEntity.ok(homestay);
-    }
+
+
+
 
     @PutMapping("/structure")
     public ResponseEntity<Structure> updateStructure(@RequestBody Structure structure) {
@@ -97,40 +98,8 @@ public class HostHomestayController {
 
 
 
-    @PostMapping("/amenities")
-    public ResponseEntity<Amenities> createAmenities(@RequestBody Amenities amenities) {
-        Amenities homestay = homestayService.createAmenities(amenities);
-        return ResponseEntity.ok(homestay);
-    }
-
-    @GetMapping("/amenities/{id}")
-    public ResponseEntity<Optional<Amenities>> getAmenitiesById(@PathVariable int id){
-        Optional<Amenities> amenities = homestayService.getByIdAmenities(id);
-        return ResponseEntity.ok(amenities);
-    }
-
-    @GetMapping("/amenitiess")
-    public ResponseEntity<List<Amenities>> getAmenitiesByIds(@RequestParam List<Integer> ids) {
-        List<Amenities> amenities = homestayService.getByIdsAmenities(ids);
-        return ResponseEntity.ok(amenities);
-    }
-    @GetMapping("/amenities")
-    public ResponseEntity<List<Amenities>> getAllAmenities(){
-        List<Amenities> amenities= homestayService.getAmenitiesAll();
-        return ResponseEntity.ok(amenities);
-    }
 
 
-    @DeleteMapping("/amenities/{id}")
-    public void deleteAmenities(@PathVariable int id) {
-        try{
-            homestayService.deleteStructure(id);
-    } catch (
-    DataIntegrityViolationException ex) {
-            System.out.println(ex);
-    }
-
-    }
 
     @GetMapping("/user/{id}")
     public ResponseEntity<List<HomestayDTO>> getAllHomestaysByIdUser(@PathVariable int id){

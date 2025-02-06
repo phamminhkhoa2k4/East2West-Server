@@ -62,21 +62,16 @@ public class HomestayService {
 
 
 
-    public Amenities updateAmenities(Amenities amenities){return amenitiesRepository.save(amenities);}
-    public Amenities createAmenities(Amenities amenities) {
-        return amenitiesRepository.save(amenities);
-    }
 
-    public Optional<Amenities>  getByIdAmenities(int id){
-        return amenitiesRepository.findById(id);
-    }
 
-    public List<Amenities> getAmenitiesAll(){return  amenitiesRepository.findAll();}
 
-    public List<Amenities> getByIdsAmenities(List<Integer> ids) {
-        return amenitiesRepository.findAllById(ids);
-    }
-    public void deleteAmenities(int id){ amenitiesRepository.deleteById(id);}
+
+
+
+
+
+
+
     public Structure createStructure(Structure structure) {
         return structureRepository.save(structure);
     }
@@ -129,6 +124,16 @@ public class HomestayService {
     }
 
 
+    public void approveHomestay(int homestayId) {
+        Homestay homestay = homestayRepository.findById(homestayId)
+                .orElseThrow(() -> new RuntimeException("Homestay not found with id: " + homestayId));
+
+        homestay.setIsapproved(true);
+
+        homestayRepository.save(homestay);
+    }
+
+
     public Homestay createHomestay(HomestayDTO homestayDTO) {
 
         Homestay homestay = new Homestay();
@@ -138,13 +143,13 @@ public class HomestayService {
 
             Homestay savedHomestay = homestayRepository.save(homestay);
             LocalDate today = LocalDate.now();
-            LocalDate endDate = today.plusDays(30);
+            LocalDate endDate = today.plusDays(365);
 
             while (!today.isAfter(endDate)) {
                 HomestayAvailability availability = new HomestayAvailability();
                 availability.setHomestay(savedHomestay);
                 availability.setDate(Timestamp.valueOf(today.atStartOfDay(ZoneId.systemDefault()).toLocalDateTime()));
-                availability.setStatus("available");
+                availability.setStatus("Available");
                 availability.setPricepernight(homestayDTO.getPricePerNight());
 
                 homestayAvailabilityRepository.save(availability);
@@ -160,10 +165,90 @@ public class HomestayService {
 
     }
 
+
+    public void confirmBooking(int bookingId) {
+        BookingHomestay booking = bookingHomestayRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+        booking.setStatus("Booked");
+
+
+        bookingHomestayRepository.save(booking);
+    }
+
+
+    public void cancelBooking(int bookingId) {
+        BookingHomestay booking = bookingHomestayRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+
+
+        LocalDate checkinDate = booking.getCheckin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate checkoutDate = booking.getCheckout().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+
+        List<LocalDate> dateList = new ArrayList<>();
+        LocalDate currentDate = checkinDate;
+        while (!currentDate.isAfter(checkoutDate)) {
+            dateList.add(currentDate);
+            currentDate = currentDate.plusDays(1);
+        }
+
+        List<HomestayAvailability> availabilities = homestayAvailabilityRepository.findAll();
+
+
+        for (HomestayAvailability availabiliti : availabilities) {
+            LocalDate availabilityDate = availabiliti.getDate().toInstant()
+                    .atZone(ZoneId.systemDefault()).toLocalDate();
+
+            if (dateList.contains(availabilityDate) && availabiliti.getHomestay().getHomestayid() == booking.getHomestayavailability().getHomestay().getHomestayid()) {
+                availabiliti.setStatus("Available");
+
+                homestayAvailabilityRepository.save(availabiliti);
+            }
+        }
+
+
+
+
+
+
+            booking.setStatus("Available");
+
+
+        bookingHomestayRepository.save(booking);
+    }
+
     public void createBooking(BookingHomestayDTO bookingDTO) {
         HomestayAvailability availability = homestayAvailabilityRepository.findById(bookingDTO.getHomestayavailabilityId())
                 .orElseThrow(() -> new ResourceNotFoundException("HomestayAvailability not found"));
 
+        LocalDate checkinDate = bookingDTO.getCheckin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate checkoutDate = bookingDTO.getCheckout().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+
+        List<LocalDate> dateList = new ArrayList<>();
+        LocalDate currentDate = checkinDate;
+        while (!currentDate.isAfter(checkoutDate)) {
+            dateList.add(currentDate);
+            currentDate = currentDate.plusDays(1);
+        }
+
+        List<HomestayAvailability> availabilities = homestayAvailabilityRepository.findAll();
+
+
+        for (HomestayAvailability availabiliti : availabilities) {
+            LocalDate availabilityDate = availabiliti.getDate().toInstant()
+                    .atZone(ZoneId.systemDefault()).toLocalDate();
+          var s =   availability.getHomestay().getHomestayid();
+            var a =  availabiliti.getHomestay().getHomestayid();
+            System.out.println(s +  " " + a);
+            if (dateList.contains(availabilityDate) && availabiliti.getHomestay().getHomestayid() == availability.getHomestay().getHomestayid()) {
+                availabiliti.setStatus("Booked");
+
+                homestayAvailabilityRepository.save(availabiliti);
+            }
+        }
         User user = userRepository.findById(bookingDTO.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -177,7 +262,12 @@ public class HomestayService {
         booking.setCheckin(bookingDTO.getCheckin());
         booking.setCheckout(bookingDTO.getCheckout());
         booking.setFeeamount(bookingDTO.getFeeamount());
-        booking.setStatus("Available");
+        if(availability.getHomestay().isInstant()){
+            booking.setStatus("Booked");
+
+        }else{
+            booking.setStatus("Pending");
+        }
         booking.setNumberofguest(bookingDTO.getNumberofguest());
         booking.setTotalprice(totalPrice);
         booking.setBookingdate(Timestamp.valueOf(LocalDateTime.now()));
@@ -262,14 +352,76 @@ public class HomestayService {
     }
 
 
+    public List<BookingHomestayDTO> listPendingBookingHomestays() {
+        List<BookingHomestay> bookinghomestay = bookingHomestayRepository.findByStatus("Pending");
+        return bookinghomestay.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
 
 
+public HomestayDTO getHomestayHomestayAvailabilityById(int id){
+    Optional<HomestayAvailability> ava = homestayAvailabilityRepository.findById(id);
+    HomestayDTO homestay = convertToDTO(ava.get().getHomestay());
+    return homestay;
+}
+
+    public HomestayAvailabilityDTO getHomestayAvailabilityById(int id){
+        Optional<HomestayAvailability> ava = homestayAvailabilityRepository.findById(id);
+        HomestayAvailabilityDTO homestay = convertToDTO(ava.get());
+        return homestay;
+    }
+
+
+
+    public List<BookingHomestayDTO> listBookedBookingHomestays() {
+        List<BookingHomestay> bookinghomestay = bookingHomestayRepository.findByStatus("Booked");
+        return bookinghomestay.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+
+    public List<BookingHomestayDTO> listBookedBookingHomestaysId(int userId) {
+        List<BookingHomestay> bookingHomestays = bookingHomestayRepository.findByStatusAndUserUserId("Booked", userId);
+        return bookingHomestays.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+    private HomestayAvailabilityDTO convertToDTO(HomestayAvailability homestay) {
+        HomestayAvailabilityDTO dto = new HomestayAvailabilityDTO();
+        dto.setDate(homestay.getDate());
+        dto.setStatus(homestay.getStatus());
+        dto.setHomestayid(homestay.getHomestay().getHomestayid());
+        dto.setHomestayavailabilityid(homestay.getHomestayavailabilityid());
+        dto.setPricepernight(homestay.getPricepernight());
+        return dto;
+    }
+
+    private BookingHomestayDTO convertToDTO(BookingHomestay homestay) {
+        BookingHomestayDTO dto = new BookingHomestayDTO();
+        dto.setHomestayavailabilityId(homestay.getHomestayavailability().getHomestayavailabilityid());
+        dto.setUserId(homestay.getUser().getUserId());
+        dto.setCheckin(homestay.getCheckin());
+        dto.setCheckout(homestay.getCheckout());
+        dto.setBookingdate(homestay.getBookingdate());
+        dto.setFeeamount(homestay.getFeeamount());
+        dto.setStatus(homestay.getStatus());
+        dto.setNumberofguest(homestay.getNumberofguest());
+        dto.setTotalPrice(homestay.getTotalprice());
+        dto.setBookinghomestayid(homestay.getBookinghomestayid());
+        return dto;
+    }
 
 
     public void  deleteHomestay(int id) {
+       List<HomestayAvailability>  ava =  homestayAvailabilityRepository.findByHomestay_Homestayid(id);
+        homestayAvailabilityRepository.deleteAll(ava);
         homestayRepository.deleteById(id);
     }
 
+
+    public List<HomestayDTO> getAllApproved() {
+        List<Homestay> homestays = homestayRepository.findAll();
+        return homestays.stream()
+                .filter(Homestay::isIsapproved)
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
     public List<HomestayDTO> getAll() {
         List<Homestay> homestays = homestayRepository.findAll();
@@ -289,6 +441,7 @@ public class HomestayService {
         );
 
         return homestays.stream()
+                .filter(Homestay::isIsapproved)
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -410,6 +563,7 @@ public class HomestayService {
 
         );
         return homestays.stream()
+                .filter(Homestay::isIsapproved)
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
