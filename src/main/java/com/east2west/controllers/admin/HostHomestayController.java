@@ -1,8 +1,6 @@
-
 package com.east2west.controllers.admin;
 
 import com.east2west.models.DTO.PhotoDeleteDTO;
-import com.east2west.models.Entity.Structure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +14,13 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/homestays/host")
 public class HostHomestayController {
+
     private final HomestayService homestayService;
 
-
-
     @Autowired
-    public HostHomestayController(HomestayService homestayService) {
+    public HostHomestayController(HomestayService homestayService ) {
         this.homestayService = homestayService;
+
     }
     @PutMapping("/{id}")
     public ResponseEntity<Homestay> updateHomestay(@PathVariable int id , @RequestBody HomestayDTO homestayDTO) {
@@ -60,47 +58,6 @@ public class HostHomestayController {
         }
     }
 
-
-
-
-
-
-
-    @PutMapping("/structure")
-    public ResponseEntity<Structure> updateStructure(@RequestBody Structure structure) {
-        Structure homestay = homestayService.updateStructure(structure);
-        return ResponseEntity.ok(homestay);
-    }
-
-    @PostMapping("/structure")
-    public ResponseEntity<Structure> createStructure(@RequestBody Structure structure) {
-        Structure homestay = homestayService.createStructure(structure);
-        return ResponseEntity.ok(homestay);
-    }
-
-    @GetMapping("/structure/{id}")
-    public ResponseEntity<Optional<Structure>> getStructureById(@PathVariable int id){
-        Optional<Structure> structures = homestayService.getByIdStructure(id);
-        return ResponseEntity.ok(structures);
-    }
-
-    @GetMapping("/structure")
-    public ResponseEntity<List<Structure>> getAllStructure(){
-        List<Structure> structures= homestayService.getStructureAll();
-        return ResponseEntity.ok(structures);
-    }
-
-
-    @DeleteMapping("/structure/{id}")
-    public void deleteStructure(@PathVariable int id) {
-        homestayService.deleteStructure(id);
-    }
-
-
-
-
-
-
     @GetMapping("/user/{id}")
     public ResponseEntity<List<HomestayDTO>> getAllHomestaysByIdUser(@PathVariable int id){
         List<HomestayDTO> homestay = homestayService.getAllByIdUser(id);
@@ -117,8 +74,6 @@ public class HostHomestayController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the price");
         }
     }
-
-
 
     @PostMapping("/weekendprice")
     public ResponseEntity<?> updateWeekendPrice(@RequestBody HomestayDTO homestayDTO){

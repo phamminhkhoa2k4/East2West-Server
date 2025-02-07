@@ -105,7 +105,7 @@ public class AmenitiesController {
         }
     }
 
-    // Endpoint: Get a amenities by id
+    // Endpoint: Get an amenities by id
     @GetMapping("/{id}")
     public ResponseEntity<ModelResponse<Optional<Amenities>>> getAmenitiesById(@PathVariable int id){
         try {

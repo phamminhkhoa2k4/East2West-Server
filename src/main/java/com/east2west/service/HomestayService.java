@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
-import com.east2west.constans.AvailabilityStatus;
 import com.east2west.models.DTO.*;
 import com.east2west.models.Entity.*;
 import com.east2west.repository.*;
@@ -23,7 +22,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import com.east2west.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKBWriter;
 
 @Service
@@ -59,30 +57,6 @@ public class HomestayService {
     private BookingHomestayRepository bookingHomestayRepository;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public Structure createStructure(Structure structure) {
-        return structureRepository.save(structure);
-    }
-    public Structure updateStructure(Structure structure) {
-        return structureRepository.save(structure);
-    }
-
-    public Optional<Structure>  getByIdStructure(int id){
-        return structureRepository.findById(id);
-    }
-
     public List<HomestayDTO> getHomestaysByStructureId(int structureId) {
 
         List<Homestay> homestays  =      homestayRepository.findByStructure_Structureid(structureId);
@@ -90,17 +64,6 @@ public class HomestayService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    public List<Structure> getStructureAll(){
-        return structureRepository.findAll();
-    }
-
-    public void deleteStructure(int id){
-        structureRepository.deleteById(id);
-    }
-
-
-
-
 
     public void deletePhotos(String url, int id) {
         Optional<Homestay> homestay = homestayRepository.findById(id);
