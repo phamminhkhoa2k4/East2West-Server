@@ -1,8 +1,14 @@
 package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "suitabletour")
 public class SuitableTour {
 
@@ -14,22 +20,5 @@ public class SuitableTour {
     @Column(name = "suitablename")
     private String suitableName;
 
-    // Getters and setters
-
-    public int getSuitableTourId() {
-        return suitableTourId;
-    }
-
-    public void setSuitableTourId(int suitableTourId) {
-        this.suitableTourId = suitableTourId;
-    }
-
-    public String getSuitableName() {
-        return suitableName;
-    }
-
-    public void setSuitableName(String suitableName) {
-        this.suitableName = suitableName;
-    }
 
 }

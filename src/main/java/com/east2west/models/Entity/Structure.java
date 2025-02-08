@@ -1,9 +1,15 @@
 package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "structures")
 public class Structure {
 
@@ -13,25 +19,7 @@ public class Structure {
     @Column(name = "structureid")
     private int structureid;
 
-    public int getStructureid() {
-        return this.structureid;
-    }
-
-    public void setStructureid(int structureid) {
-        this.structureid = structureid;
-    }
-
-
     @Column(name = "structurename")
     private String structurename;
-
-    public String getStructurename() {
-        return this.structurename;
-    }
-
-    public void setStructurename(String structurename) {
-        this.structurename = structurename;
-    }
-
 
 }

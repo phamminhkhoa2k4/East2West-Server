@@ -129,7 +129,7 @@ public class PackTourService {
         dto.setItineraries(itineraries);
         dto.setCategoryTours(tourPackage.getCategoryTours());
         dto.setThemeTours(tourPackage.getThemeTours());
-        dto.setDepartureDates(tourPackage.getDepartureDate());
+        dto.setDepartureDates(tourPackage.getDepartureDates());
         dto.setSuitableTours(tourPackage.getSuitableTours());
         return dto;
     }
@@ -182,7 +182,7 @@ public class PackTourService {
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
                 .toFormatter();
 
-        tourPackage.getDepartureDate().clear();
+        tourPackage.getCategoryTours().clear();
         List<DepartureDate> existingDepartureDates = new ArrayList<>();
 
         for (TourPackageDTO.DepartureDateDTO departureDateDTO : tourPackageDTO.getDepartureDates()) {
@@ -204,7 +204,7 @@ public class PackTourService {
             }
         }
 
-        tourPackage.setDepartureDate(existingDepartureDates);
+        tourPackage.setDepartureDates(existingDepartureDates);
 
         return tourPackage;
     }
@@ -267,13 +267,13 @@ public class PackTourService {
             }
         }
 
-        tourPackage.setDepartureDate(existingDepartureDates);
+        tourPackage.setDepartureDates(existingDepartureDates);
 
         TourPackage savedTourPackage = tourPackageRepository.save(tourPackage);
 
         List<Itinerary> itineraries = new ArrayList<>();
 
-        for (ItineraryDTO itineraryDTO : tourPackageDTO.getItinerary()) {
+        for (ItineraryDTO itineraryDTO : tourPackageDTO.getItineraries()) {
             Itinerary itinerary = new Itinerary();
             itinerary.setAccommodations(new ArrayList<>());
             itinerary.setMeals(new ArrayList<>());

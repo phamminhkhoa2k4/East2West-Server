@@ -7,9 +7,15 @@ import jakarta.persistence.Id;
 
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
+import lombok.*;
 
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "Models")
 public class Model {
 
@@ -18,24 +24,7 @@ public class Model {
     @Column(name = "modelid")
     private int modelId;
 
-    public int getModelId() {
-        return this.modelId;
-    }
-
-    public void setModelId(int modelId) {
-        this.modelId = modelId;
-    }
-
     @Column(name = "modelname")
     private String modelName;
 
-    public String getModelName() {
-        return this.modelName;
-    }
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
-    }
-
-    // Constructors, getters, setters, etc.
 }

@@ -18,27 +18,9 @@ public class HomestayAmenities {
     @Column(name = "homestayamenitiesid")
     private Integer homestayAmenitiesID;
 
-    public Integer getHomestayAmenitiesID() {
-        return this.homestayAmenitiesID;
-    }
-
-    public void setHomestayAmenitiesID(Integer homestayAmenitiesID) {
-        this.homestayAmenitiesID = homestayAmenitiesID;
-    }
-
-   
-
     @ManyToOne
     @JoinColumn(name = "homestayid", referencedColumnName = "homestayid")
     private Homestay homestay;
-
-    public Homestay getHomestay() {
-        return this.homestay;
-    }
-
-    public void setHomestay(Homestay homestay) {
-        this.homestay = homestay;
-    }
 
     @ManyToOne
     @JoinColumn(name = "amenitiesid", referencedColumnName = "amenitiesid")

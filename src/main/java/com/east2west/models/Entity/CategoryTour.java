@@ -1,8 +1,15 @@
 package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "categorytour")
 public class CategoryTour {
     @Id
@@ -13,19 +20,4 @@ public class CategoryTour {
     @Column(name = "categorytourname")
     private String categoryTourName;
 
-    public int getCategoryTourId() {
-        return categoryTourId;
-    }
-
-    public void setCategoryTourId(int categoryTourId) {
-        this.categoryTourId = categoryTourId;
-    }
-
-    public String getCategoryTourName() {
-        return categoryTourName;
-    }
-
-    public void setCategoryTourName(String categoryTourName) {
-        this.categoryTourName = categoryTourName;
-    }
 }

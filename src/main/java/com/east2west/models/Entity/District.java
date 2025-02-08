@@ -1,12 +1,14 @@
 package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "districts")
 public class District {
 
@@ -19,9 +21,9 @@ public class District {
     private String districtname;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cityid", referencedColumnName = "cityprovinceid")
+    @JoinColumn(name = "cityprovinceid", referencedColumnName = "cityprovinceid")
     private CityProvince cityprovince;
 
-    // Getters and Setters
+
 
 }

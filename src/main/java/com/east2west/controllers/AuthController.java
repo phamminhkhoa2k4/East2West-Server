@@ -118,13 +118,19 @@ public class AuthController {
             errors.put("phone", "Phone number is already in use!");
             return ResponseEntity.badRequest().body(errors);
         }
-        User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()),
-                signUpRequest.getFirstname(),
-                signUpRequest.getLastname(),
-                signUpRequest.getPhone(),
-                signUpRequest.getAddress());
+        User user = User.builder()
+                .username(signUpRequest.getUsername())
+                .email(signUpRequest.getEmail())
+                .password(encoder.encode(signUpRequest.getPassword()))
+                .firstname(signUpRequest.getFirstname())
+                .lastname(signUpRequest.getLastname())
+                .phone(signUpRequest.getPhone())
+                .address(signUpRequest.getAddress())
+                .build();
+
+
+
+
 
         Set<String> strRoles = signUpRequest.getRole();
         Role role;

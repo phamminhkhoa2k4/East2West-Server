@@ -1,12 +1,14 @@
 package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "citiesprovinces")
 public class CityProvince {
 
@@ -17,7 +19,5 @@ public class CityProvince {
 
     @Column(name = "cityname")
     private String cityname;
-
-    // Getters and Setters
 
 }

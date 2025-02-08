@@ -16,10 +16,7 @@ public class Amenities {
     @Column(name = "amenitiesid")
     private int amenitiesid;
 
-
     @Column(name = "amenitiesname")
     private String amenitiesname;
-
-
 
 }

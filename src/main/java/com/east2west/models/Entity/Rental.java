@@ -8,12 +8,18 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.*;
 
 
 import java.sql.Date;
 
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "Rentals")
 public class Rental {
 
@@ -21,14 +27,6 @@ public class Rental {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "rentalid")
     private int rentalid;
-
-    public int getRentalid() {
-        return this.rentalid;
-    }
-
-    public void setRentalid(int rentalid) {
-        this.rentalid = rentalid;
-    }
 
     //  @ManyToOne(fetch = FetchType.EAGER)
     // @JoinColumn(name = "userid", referencedColumnName = "userid")
@@ -44,84 +42,24 @@ public class Rental {
     @Column(name = "userid")
     private int userid;
 
-    public int getUserid() {
-        return this.userid;
-    }
-
-    public void setUserid(int userid) {
-        this.userid = userid;
-    }
-
-   
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "carid", referencedColumnName = "carid")
     private Car car;
-
-    public Car getCar() {
-        return this.car;
-    }
-
-    public void setCar(Car car) {
-        this.car = car;
-    }
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "paymentid", referencedColumnName = "paymentid")
     private Payment payment;
 
-    public Payment getPayment() {
-        return this.payment;
-    }
-
-    public void setPayment(Payment payment) {
-        this.payment = payment;
-    }
-
     @Column(name = "rentaldate")
     private Date rentalDate;
-
-    public Date getRentalDate() {
-        return this.rentalDate;
-    }
-
-    public void setRentalDate(Date rentalDate) {
-        this.rentalDate = rentalDate;
-    }
 
     @Column(name = "returndate")
     private Date returnDate;
 
-    public Date getReturnDate() {
-        return this.returnDate;
-    }
-
-    public void setReturnDate(Date returnDate) {
-        this.returnDate = returnDate;
-    }
-
     @Column(name = "totalamount")
     private double totalAmount;
 
-    public double getTotalAmount() {
-        return this.totalAmount;
-    }
-
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
-    }
     @Column(name = "status")
     private String status;
-
-    public String getStatus() {
-        return this.status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    
-
    
 }

@@ -1,17 +1,16 @@
 package com.east2west.models.Entity;
 
-import java.sql.Timestamp;
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "itinerary")
 public class Itinerary {
     @Id

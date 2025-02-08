@@ -6,9 +6,15 @@ import jakarta.persistence.Id;
 
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
+import lombok.*;
 
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "Makes")
 public class Make {
 
@@ -17,24 +23,7 @@ public class Make {
     @Column(name = "makeid")
     private int makeId;
 
-    public int getMakeId() {
-        return this.makeId;
-    }
-
-    public void setMakeId(int makeId) {
-        this.makeId = makeId;
-    }
-
     @Column(name = "makename")
     private String makeName;
 
-    public String getMakeName() {
-        return this.makeName;
-    }
-
-    public void setMakeName(String makeName) {
-        this.makeName = makeName;
-    }
-
-    // Constructors, getters, setters, etc.
 }

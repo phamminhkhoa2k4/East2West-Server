@@ -1,12 +1,14 @@
 package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "accommodations")
 public class Accommodation {
 
@@ -15,11 +17,8 @@ public class Accommodation {
     @Column(name = "accommodationid")
     private int accommodationid;
 
-
-
     @Column(name = "accommodationname")
     private String accommodationname;
-
 
     @Column(name = "accommodationthumbnail")
     private String accommodationthumbnail;
@@ -30,20 +29,10 @@ public class Accommodation {
     @Column(name = "isbreadkfast")
     private boolean isbreadkfast;
 
-
-
     @Column(name = "durationaccommodation")
     private String durationaccommodation;
 
-
-
     @Column(name = "accommodationtype")
     private String accommodationtype;
-
-
-
-    
-    
-
    
 }

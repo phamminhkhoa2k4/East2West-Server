@@ -1,12 +1,14 @@
 package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "wards")
 public class Ward {
@@ -23,6 +25,5 @@ public class Ward {
     @JoinColumn(name = "districtid", referencedColumnName = "districtid")
     private District district;
 
-    // Getters and Setters
 
 }

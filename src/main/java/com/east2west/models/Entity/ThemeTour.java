@@ -1,8 +1,14 @@
 package com.east2west.models.Entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "themetour")
 public class ThemeTour {
 
@@ -14,20 +20,4 @@ public class ThemeTour {
     @Column(name = "themetourname")
     private String themeTourName;
 
-    // Getters and setters
-    public int getThemeTourId() {
-        return themeTourId;
-    }
-
-    public void setThemeTourId(int themeTourId) {
-        this.themeTourId = themeTourId;
-    }
-
-    public String getThemeTourName() {
-        return themeTourName;
-    }
-
-    public void setThemeTourName(String themeTourName) {
-        this.themeTourName = themeTourName;
-    }
 }
