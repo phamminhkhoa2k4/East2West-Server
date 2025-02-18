@@ -21,9 +21,9 @@ public class Role {
     @Id
     @Column(name = "roleid")
     private Long roleid;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "rolename")
     private ERole roleName;
 
-    
 }

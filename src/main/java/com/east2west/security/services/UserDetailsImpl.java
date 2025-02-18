@@ -1,16 +1,20 @@
 package com.east2west.security.services;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
-
+import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import com.east2west.models.Entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+
+@Getter
+@Setter
 public class UserDetailsImpl implements UserDetails {
   private static final long serialVersionUID = 1L;
 
@@ -27,7 +31,6 @@ public class UserDetailsImpl implements UserDetails {
 
   private Collection<? extends GrantedAuthority> authorities;
 
-  // Constructor
   public UserDetailsImpl(int userId, String username, String firstname, String lastname, String email, 
                          String phone, String address, String password,
                          Collection<? extends GrantedAuthority> authorities) {
@@ -42,9 +45,9 @@ public class UserDetailsImpl implements UserDetails {
       this.authorities = authorities;
   }
 
-  // Static method to build UserDetailsImpl from User entity
   public static UserDetailsImpl build(User user) {
-    GrantedAuthority authority = new SimpleGrantedAuthority(user.getRoles().getRoleName().toString());
+
+    List<GrantedAuthority> authorities = user.getRoles().stream().map((role -> new SimpleGrantedAuthority(role.getRoleName().name()))).collect(Collectors.toList());
 
 
       return new UserDetailsImpl(
@@ -55,9 +58,9 @@ public class UserDetailsImpl implements UserDetails {
           user.getEmail(),
           user.getPhone(),
           user.getAddress(),
-          user.getPassword(), 
-          Collections.singletonList(authority)
-      );
+          user.getPassword(),
+              authorities);
+
   }
 
   @Override
@@ -65,29 +68,7 @@ public class UserDetailsImpl implements UserDetails {
       return authorities;
   }
 
-  public int getUserId() {
-      return userId;
-  }
 
-  public String getFirstname() {
-      return firstname;
-  }
-
-  public String getLastname() {
-      return lastname;
-  }
-
-  public String getEmail() {
-      return email;
-  }
-
-  public String getPhone() {
-      return phone;
-  }
-
-  public String getAddress() {
-      return address;
-  }
 
   @Override
   public String getPassword() {

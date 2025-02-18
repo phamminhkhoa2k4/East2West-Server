@@ -6,5 +6,5 @@ import com.east2west.models.Entity.ERole;
 import com.east2west.models.Entity.Role;
 
 public interface RoleRepository  extends JpaRepository<Role, Integer>{
-Optional<Role> findByRoleName(ERole roleName);
+    Optional<Role> findByRoleName(ERole roleName);
 }
