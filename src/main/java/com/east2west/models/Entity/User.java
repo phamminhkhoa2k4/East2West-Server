@@ -19,7 +19,7 @@ public class User {
     @Column(name = "userid")
     private int userId;
 
-    @Column(name = "username")
+    @Column(name = "username",unique = true)
     private String username;
 
     @Column(name = "password")
@@ -31,7 +31,7 @@ public class User {
     @Column(name = "lastname")
     private String lastname;
 
-    @Column(name = "email")
+    @Column(name = "email",nullable = false,unique = true)
     private String email;
 
     @Column(name = "phone")
@@ -39,6 +39,12 @@ public class User {
 
     @Column(name = "address")
     private String address;
+
+    @Column(name = "avatarurl")
+    private String avatarUrl;
+
+    @Column(name = "googleid")
+    private String googleId;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",joinColumns = @JoinColumn(name = "userid"),inverseJoinColumns = @JoinColumn(name = "roleid"))

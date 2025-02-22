@@ -3,15 +3,16 @@ package com.east2west.controllers;
 import java.util.*;
 import java.util.stream.Collectors;
 import com.east2west.models.DTO.*;
+import com.east2west.models.Entity.ERole;
+import com.east2west.models.Entity.Role;
 import com.east2west.models.payload.request.UpdateProfileRequest;
 import com.east2west.models.payload.response.JwtResponse;
 import com.east2west.security.services.UserDetailsServiceImpl;
 import com.east2west.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,12 +22,17 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import com.east2west.models.Entity.User;
 import com.east2west.security.jwt.JwtUtils;
 import com.east2west.security.services.UserDetailsImpl;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 
 
 @RestController
@@ -40,6 +46,13 @@ public class AuthController {
 
     private final JwtUtils jwtUtils;
 
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String GOOGLE_CLIENT_ID;
+
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    private String GOOGLE_CLIENT_SECRET;
+
+
     @Autowired
     public AuthController (AuthenticationManager authenticationManager, UserService userService, UserDetailsServiceImpl userDetailsService, JwtUtils jwtUtils){
         this.authenticationManager = authenticationManager;
@@ -52,6 +65,135 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return (UserDetailsImpl) authentication.getPrincipal();
+    }
+
+
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @PostMapping("/google")
+    public ResponseEntity<?> authenticateWithGoogle(@RequestBody Map<String, String> body) {
+        String code = body.get("code");
+        String tokenUrl = "https://oauth2.googleapis.com/token";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("client_id", GOOGLE_CLIENT_ID);
+        params.add("client_secret", GOOGLE_CLIENT_SECRET);
+        params.add("code", code);
+        params.add("grant_type", "authorization_code");
+        params.add("redirect_uri", "http://localhost:3999/api/auth/callback");
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+        // Gửi yêu cầu và bắt lỗi
+        try {
+            ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, request, Map.class);
+            System.out.println("Access Token Response: " + response.getBody());
+                    if (!response.getStatusCode().is2xxSuccessful()) {
+            System.out.println("Google OAuth Error: " + response.getBody());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed: " + response.getBody());
+        }
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            Map<String, Object> responseBody = response.getBody();
+            String accessToken = (String) responseBody.get("access_token");
+            String idToken = (String) responseBody.get("id_token");
+
+            // Lấy thông tin người dùng từ Google API
+            HttpHeaders userInfoHeaders = new HttpHeaders();
+            userInfoHeaders.setBearerAuth(accessToken);
+
+
+            HttpEntity<String> userInfoRequest = new HttpEntity<>(userInfoHeaders);
+            ResponseEntity<Map> userInfoResponse = restTemplate.exchange(
+                    "https://www.googleapis.com/oauth2/v2/userinfo",
+                    HttpMethod.GET,
+                    userInfoRequest,
+                    Map.class
+            );
+
+
+            if (userInfoResponse.getStatusCode().is2xxSuccessful()) {
+                Map<String, Object> userInfo = userInfoResponse.getBody();
+
+                String email = (String) userInfo.get("email");
+                String givenName = (String) userInfo.get("given_name");
+                String familyName = (String) userInfo.get("family_name");
+                String googleId = (String) userInfo.get("id");
+
+                String username = givenName.toLowerCase().replaceAll("\\s+", "") + "." + familyName.toLowerCase().replaceAll("\\s+", "");
+
+                if (userService.existsByUsername(username)) {
+                    username = username + "." + googleId;
+                }
+
+
+                String finalUsername = username;
+                Set<Role> roles = new HashSet<>();
+                Role userRole = userService.findByRoleName(ERole.USER);
+                roles.add(userRole);
+                    User user = userService.findByEmail(email)
+                            .orElseGet(() -> {
+                                User.UserBuilder builder = User.builder();
+                                builder.email(email);
+                                builder.username(finalUsername);
+                                builder.phone(null);
+                                builder.address(null);
+                                builder.firstname(givenName);
+                                builder.lastname(familyName);
+                                builder.password(null);
+                                builder.roles(roles);
+                                User newUser = builder
+                                        .build();
+
+                                return userService.save(newUser);
+                            });
+                List<String> roleNames = roles.stream()
+                        .map(role -> role.getRoleName().name())
+                        .collect(Collectors.toList());
+
+           
+                String jwt = jwtUtils.generateJwtToken(user.getUsername(),roleNames.toString(), idToken);
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(
+                        ModelResponse.builder()
+                                .status(201)
+                                .message("OK")
+                                .data(
+                                        JwtResponse.builder()
+                                                .token(jwt)
+                                                .userId(user.getUserId())
+                                                .username(user.getUsername())
+                                                .firstname(user.getFirstname())
+                                                .lastname(user.getLastname())
+                                                .password(user.getPassword())
+                                                .email(user.getEmail())
+                                                .phone(user.getPhone())
+                                                .address(user.getAddress())
+                                                .roles(roleNames)
+                                                .build())
+                                .build());
+
+            }
+
+        }
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            System.out.println("Status Code: " + e.getStatusCode());
+            System.out.println("Response Body: " + e.getResponseBodyAsString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
+    }
+
+    private String createJwtToken(String idToken) {
+        // TODO: Tạo JWT token dựa trên idToken từ Google
+        return "your-jwt-token";
     }
 
     @PostMapping("/signin")
@@ -143,7 +285,7 @@ public class AuthController {
 
         userService.registerUser(signUpRequest);
         try {
-            UserDetailsImpl userDetails =  authentication( signUpRequest.getUsername(), signUpRequest.getPassword());
+            UserDetailsImpl userDetails =  authentication(signUpRequest.getUsername(), signUpRequest.getPassword());
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());

@@ -110,4 +110,20 @@ public class UserService {
         existingUser.setAddress(updateRequest.getAddress());
         userRepository.save(existingUser);
     }
+
+    public  Optional<User> findByEmail(String email) {
+       return userRepository.findByEmail(email);
+    }
+
+    public Role findByRoleName(ERole eRole) {
+        Optional<Role> role = roleRepository.findByRoleName(eRole);
+        return role.orElse(null);
+    }
+
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
+
+
 }
