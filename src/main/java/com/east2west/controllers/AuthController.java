@@ -5,11 +5,13 @@ import java.util.stream.Collectors;
 import com.east2west.models.DTO.*;
 import com.east2west.models.Entity.ERole;
 import com.east2west.models.Entity.Role;
-import com.east2west.models.payload.request.UpdateProfileRequest;
+import com.east2west.models.payload.request.*;
+import com.east2west.models.payload.response.ErrorResponse;
 import com.east2west.models.payload.response.JwtResponse;
 import com.east2west.security.services.UserDetailsServiceImpl;
 import com.east2west.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -22,6 +24,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.FieldError;
@@ -37,12 +40,15 @@ import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     private final UserService userService;
 
     private final UserDetailsServiceImpl userDetailsService;
+
+    private final PasswordEncoder encoder;
 
     private final JwtUtils jwtUtils;
 
@@ -52,12 +58,20 @@ public class AuthController {
     @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String GOOGLE_CLIENT_SECRET;
 
+    @Value("${app.oauth2.redirectUri}")
+    private String GOOGLE_REDIRECT_URI;
+    private final RestTemplate restTemplate = new RestTemplate();
+
+
+
+
 
     @Autowired
-    public AuthController (AuthenticationManager authenticationManager, UserService userService, UserDetailsServiceImpl userDetailsService, JwtUtils jwtUtils){
+    public AuthController (AuthenticationManager authenticationManager, UserService userService, UserDetailsServiceImpl userDetailsService, PasswordEncoder encoder, JwtUtils jwtUtils){
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.userDetailsService = userDetailsService;
+        this.encoder = encoder;
         this.jwtUtils = jwtUtils;
     }
 
@@ -68,8 +82,161 @@ public class AuthController {
     }
 
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        try {
+            userService.sendVerificationCode(request.getEmail());
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.builder()
+                            .status(200)
+                            .message("Sent authenticate code !!!")
+                            .data("OK")
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    ModelResponse.builder()
+                            .status(400)
+                            .message("Can't send authenticate code !!!")
+                            .data("null")
+                            .build()
+            );
+        }
+    }
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @PostMapping("/verify-code")
+    public ResponseEntity<?> verifyCode(@RequestBody VerifyCodeRequest request) {
+        boolean isValid = userService.verifyCode(request.getEmail(), request.getVerificationCode());
+        if (isValid) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.builder()
+                            .status(200)
+                            .message("Authenticate code valid !!!")
+                            .data("OK")
+                            .build()
+            );
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ModelResponse.builder()
+                        .status(400)
+                        .message("Authenticate code invalid !!!")
+                        .data("OK")
+                        .build()
+        );
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        try {
+            Optional<User> user = userService.findByEmail(request.getEmail());
+            if(user.isPresent()){
+                userService.resetPassword(request.getEmail(), request.getVerificationCode(), request.getNewPassword(),user.get());
+                UserDetailsImpl  authenticatedUserDetails = authentication(user.get().getUsername(),request.getNewPassword());
+                List<String> roles = authenticatedUserDetails.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .toList();
+                String jwt = jwtUtils.generateJwtToken(authenticatedUserDetails.getUsername(),roles.toString(), request.getNewPassword());
+
+                return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt).body(ModelResponse.builder().status(HttpStatus.OK.value()).message("Authentication successful").data(JwtResponse.builder()
+                                .token(jwt)
+                                .userId(authenticatedUserDetails.getUserId())
+                                .username(authenticatedUserDetails.getUsername())
+                                .firstname(authenticatedUserDetails.getFirstname())
+                                .lastname(authenticatedUserDetails.getLastname())
+                                .password(authenticatedUserDetails.getPassword())
+                                .email(authenticatedUserDetails.getEmail())
+                                .phone(authenticatedUserDetails.getPhone()).address(authenticatedUserDetails.getAddress())
+                                .roles(roles)
+                                .build())
+                        .build());
+            }
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    ModelResponse.builder()
+                            .status(404)
+                            .message("User not found !!!")
+                            .data(null)
+                            .build()
+            );
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    ModelResponse.builder()
+                            .status(400)
+                            .message("Can not reset password !!!")
+                            .data("OK")
+                            .build()
+            );
+        }
+    }
+
+
+
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> savePassword(@RequestBody ChangePasswordRequest request) {
+        String result = userService.validatePasswordResetToken(request.getToken());
+        if (result != null) {
+            return ResponseEntity.badRequest().body("Invalid token");
+        }
+
+        User user = userService.getUserByPasswordResetToken(request.getToken());
+        userService.changeUserPassword(user, request.getNewPassword());
+        return ResponseEntity.ok("Password updated successfully");
+    }
+    // change password
+
+    @PostMapping("/change-password-request")
+    public ResponseEntity<?> resetPassword(@RequestBody ForgotPasswordRequest request) {
+        Optional<User> user = userService.findByEmail(request.getEmail());
+        if (user.isEmpty()) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
+        userService.createPasswordResetTokenForUser(user.get());
+        return ResponseEntity.ok("Email sent successfully");
+    }
+
+    // sms
+    // TODO : complete sms change-password
+    @PostMapping("/send-otp")
+    public String sendOtp(@RequestBody ChangePasswordSMSRequest request) {
+        String otp = generateOtp();
+        try {
+            userService.storeOtp(request.getPhoneNumber(), otp);
+            userService.sendOtp(request.getPhoneNumber(), otp);
+
+        }catch (Exception ex){
+            System.out.println(ex);
+        }
+
+        return "OTP sent successfully";
+    }
+
+    @PostMapping("/verify-otp")
+    public String verifyOtp(@RequestParam String phoneNumber, @RequestParam String otp, @RequestParam String newPassword) {
+        String storedOtp = userService.getOtp(phoneNumber);
+
+        if (storedOtp != null && storedOtp.equals(otp)) {
+            // OTP hợp lệ, đổi mật khẩu
+            User user = userService.findByPhoneNumber(phoneNumber);
+            if (user != null) {
+                user.setPassword(encoder.encode(newPassword));
+                userService.save(user);
+                userService.clearOtp(phoneNumber);
+                return "Password changed successfully";
+            } else {
+                return "User not found";
+            }
+        } else {
+            return "Invalid OTP";
+        }
+    }
+
+    private String generateOtp() {
+        // Tạo OTP ngẫu nhiên 6 chữ số
+        return String.valueOf((int) (Math.random() * 900000) + 100000);
+    }
+
 
     @PostMapping("/google")
     public ResponseEntity<?> authenticateWithGoogle(@RequestBody Map<String, String> body) {
