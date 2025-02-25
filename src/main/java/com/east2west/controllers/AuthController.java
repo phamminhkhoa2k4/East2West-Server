@@ -172,6 +172,17 @@ public class AuthController {
 
 
 
+    // change password
+
+    @PostMapping("/change-password-request")
+    public ResponseEntity<?> resetPassword(@RequestBody ForgotPasswordRequest request) {
+        Optional<User> user = userService.findByEmail(request.getEmail());
+        if (user.isEmpty()) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
+        userService.createPasswordResetTokenForUser(user.get());
+        return ResponseEntity.ok("Email sent successfully");
+    }
 
     @PostMapping("/change-password")
     public ResponseEntity<?> savePassword(@RequestBody ChangePasswordRequest request) {
@@ -184,17 +195,7 @@ public class AuthController {
         userService.changeUserPassword(user, request.getNewPassword());
         return ResponseEntity.ok("Password updated successfully");
     }
-    // change password
 
-    @PostMapping("/change-password-request")
-    public ResponseEntity<?> resetPassword(@RequestBody ForgotPasswordRequest request) {
-        Optional<User> user = userService.findByEmail(request.getEmail());
-        if (user.isEmpty()) {
-            return ResponseEntity.badRequest().body("User not found");
-        }
-        userService.createPasswordResetTokenForUser(user.get());
-        return ResponseEntity.ok("Email sent successfully");
-    }
 
     // sms
     // TODO : complete sms change-password
@@ -251,7 +252,7 @@ public class AuthController {
         params.add("client_secret", GOOGLE_CLIENT_SECRET);
         params.add("code", code);
         params.add("grant_type", "authorization_code");
-        params.add("redirect_uri", "http://localhost:3999/api/auth/callback");
+        params.add("redirect_uri",GOOGLE_REDIRECT_URI);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         // Gửi yêu cầu và bắt lỗi

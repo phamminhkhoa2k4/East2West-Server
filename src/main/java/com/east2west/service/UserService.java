@@ -3,12 +3,20 @@ package com.east2west.service;
 import com.east2west.models.DTO.SignupRequest;
 import com.east2west.models.DTO.VerificationCodeData;
 import com.east2west.models.Entity.ERole;
+import com.east2west.models.Entity.PasswordResetToken;
 import com.east2west.models.Entity.Role;
 import com.east2west.models.payload.request.UpdateProfileRequest;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Call;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -61,7 +69,7 @@ public class UserService {
     private String twilioPhoneNumber;
 
     @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, PasswordResetTokenRepository tokenRepository, JavaMailSender mailSender) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.encoder = encoder;
@@ -111,11 +119,38 @@ public class UserService {
     }
 
     private void sendVerificationEmail(String email, String code) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("Mã xác thực đặt lại mật khẩu");
-        message.setText("Mã xác thực của bạn là: " + code + "\nMã này sẽ hết hạn sau " + codeExpiryMinutes + " phút.");
-        mailSender.send(message);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(email);
+            helper.setSubject("🔒 Forgot password authentication code");
+
+            String logoUrl = "https://res.cloudinary.com/djddnvjpi/image/upload/c_thumb,w_200,g_face/v1740496148/Logo__awwzi5.png";
+
+            String htmlContent = """
+            <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5;">
+                <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img src="%s" alt="Logo" style="max-width: 150px; height: auto;"/>
+                    </div>
+                    <h2 style="color: #333; text-align: center;">Forgot password authentication code</h2>
+                    <p style="font-size: 16px; color: #555;">Hi,</p>
+                    <p style="font-size: 16px; color: #555;">You have just requested a password reset. Here is your verification code:</p>
+                    <div style="text-align: center; margin: 20px 0;">
+                         <span style="display: inline-block; padding: 10px 20px; font-size: 35px; font-weight: bold; color: #000; border-radius: 5px;letter-spacing: 8px;">%s</span>
+                    </div>
+                    <p style="font-size: 16px; color: #555;">This code will expire in <strong>%d minute</strong>.</p>
+                    <p style="font-size: 14px; color: #999;">If you did not request a password reset, please ignore this email.</p>
+                </div>
+            </div>
+        """.formatted(logoUrl, code, 5);
+
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -314,7 +349,7 @@ public class UserService {
     }
 
     public  Optional<User> findByEmail(String email) {
-       return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email);
     }
 
     public Role findByRoleName(ERole eRole) {
