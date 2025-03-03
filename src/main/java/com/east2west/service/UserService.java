@@ -157,6 +157,9 @@ public class UserService {
 
     // change password
 
+    public Optional<PasswordResetToken> findTokenByUserId(int userid){
+        return tokenRepository.findByUser_UserId( userid);
+    }
 
     public void createPasswordResetTokenForUser(User user) {
         String token = UUID.randomUUID().toString();
@@ -165,13 +168,39 @@ public class UserService {
         myToken.setToken(token);
         tokenRepository.save(myToken);
 
-        // Gửi email
-        SimpleMailMessage email = new SimpleMailMessage();
-        email.setTo(user.getEmail());
-        email.setSubject("Đặt lại mật khẩu");
-        email.setText("Để đặt lại mật khẩu, vui lòng nhấp vào link sau:\n"
-                + appUrl + "/reset-password?token=" + token);
-        mailSender.send(email);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(user.getEmail());
+            helper.setSubject("🔒 Change password !!!");
+
+            String logoUrl = "https://res.cloudinary.com/djddnvjpi/image/upload/c_thumb,w_200,g_face/v1740496148/Logo__awwzi5.png";
+            String resetLink = appUrl + "/change-password/" + token;
+
+            String htmlContent = """
+            <div style="font-family: Arial, sans-serif; padding: 30px; background-color: #f5f5f5;">
+                <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img src="%s" alt="Logo" style="max-width: 150px; height: auto;"/>
+                    </div>
+                    <h2 style="color: #333; text-align: center;">Password change request</h2>
+                    <p style="font-size: 16px; color: #555;">Hello %s,</p>
+                    <p style="font-size: 16px; color: #555;">We have received your request to change the password for your account.</p>
+                    <p style="font-size: 16px; color: #555; text-align: center; margin: 30px 0;">
+                        <a href="%s" style="display: inline-block; padding: 12px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;">Click to change password</a>
+                    </p>
+                    <p style="font-size: 14px; color: #999;">If you did not request a password reset, please ignore this email.</p>
+                    <p style="font-size: 14px; color: #999; text-align: center;">Thank you for using our service.!</p>
+                </div>
+            </div>
+        """.formatted(logoUrl, user.getUsername(), resetLink);
+
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 
     public String validatePasswordResetToken(String token) {

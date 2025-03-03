@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import com.east2west.models.DTO.*;
 import com.east2west.models.Entity.ERole;
+import com.east2west.models.Entity.PasswordResetToken;
 import com.east2west.models.Entity.Role;
 import com.east2west.models.payload.request.*;
 import com.east2west.models.payload.response.ErrorResponse;
@@ -178,22 +179,75 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@RequestBody ForgotPasswordRequest request) {
         Optional<User> user = userService.findByEmail(request.getEmail());
         if (user.isEmpty()) {
-            return ResponseEntity.badRequest().body("User not found");
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.builder()
+                            .status(HttpStatus.NOT_FOUND.value())
+                            .message("User not exist !!!")
+                            .data(null)
+                            .build()
+            );
         }
-        userService.createPasswordResetTokenForUser(user.get());
-        return ResponseEntity.ok("Email sent successfully");
+        try{
+            Optional<PasswordResetToken> Token = userService.findTokenByUserId(user.get().getUserId());
+            if (Token.isPresent()){
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        ModelResponse.builder()
+                                .status(400)
+                                .message("Please check this request email was sent earlier !!!")
+                                .data(null)
+                                .build()
+                );
+            }
+            userService.createPasswordResetTokenForUser(user.get());
+
+
+        }catch (Exception ex){
+            System.out.println(ex);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ModelResponse.builder()
+                        .status(200)
+                        .message("Ok")
+                        .data(null)
+                        .build()
+        );
     }
 
     @PostMapping("/change-password")
     public ResponseEntity<?> savePassword(@RequestBody ChangePasswordRequest request) {
         String result = userService.validatePasswordResetToken(request.getToken());
         if (result != null) {
-            return ResponseEntity.badRequest().body("Invalid token");
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.builder()
+                            .status(400)
+                            .message("Invalid Token")
+                            .data(null)
+                            .build()
+            );
         }
 
         User user = userService.getUserByPasswordResetToken(request.getToken());
         userService.changeUserPassword(user, request.getNewPassword());
-        return ResponseEntity.ok("Password updated successfully");
+
+        UserDetailsImpl authenticatedUserDetails = authentication(user.getUsername(),request.getNewPassword());
+        List<String> roles = authenticatedUserDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        String jwt = jwtUtils.generateJwtToken(authenticatedUserDetails.getUsername(),roles.toString(), request.getNewPassword());
+
+        return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt).body(ModelResponse.builder().status(HttpStatus.OK.value()).message("Authentication successful").data(JwtResponse.builder()
+                        .token(jwt)
+                        .userId(authenticatedUserDetails.getUserId())
+                        .username(authenticatedUserDetails.getUsername())
+                        .firstname(authenticatedUserDetails.getFirstname())
+                        .lastname(authenticatedUserDetails.getLastname())
+                        .password(authenticatedUserDetails.getPassword())
+                        .email(authenticatedUserDetails.getEmail())
+                        .phone(authenticatedUserDetails.getPhone()).address(authenticatedUserDetails.getAddress())
+                        .roles(roles)
+                        .build())
+                .build());
     }
 
 
@@ -234,7 +288,6 @@ public class AuthController {
     }
 
     private String generateOtp() {
-        // Tạo OTP ngẫu nhiên 6 chữ số
         return String.valueOf((int) (Math.random() * 900000) + 100000);
     }
 
