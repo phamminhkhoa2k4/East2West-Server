@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtUtils {
@@ -24,36 +25,19 @@ public class JwtUtils {
 
   }
 
-  public String generateJwtToken(String username, String role,String password) {
+  public String generateJwtToken(String username, List<String> role,String password) {
 
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
     return Jwts.builder()
-            .setSubject(username + ":" + role + ":" + password)
+            .setSubject(username)
+            .claim("roles", role)
+            .claim("password", password)
             .setIssuedAt(now)
             .setExpiration(expiryDate)
             .signWith(key, SignatureAlgorithm.HS256)
             .compact();
   }
-
-  public String getUserNameFromJwtToken(String token) {
-    String subject = Jwts.parserBuilder().setSigningKey(key).build()
-            .parseClaimsJws(token).getBody().getSubject();
-    return subject.split(":")[0];
-  }
-
-  public String getPasswordFromJwtToken(String token) {
-    String subject = Jwts.parserBuilder().setSigningKey(key).build()
-            .parseClaimsJws(token).getBody().getSubject();
-    return subject.split(":")[2];
-  }
-
-  public String getRoleFromJwtToken(String token) {
-    String subject = Jwts.parserBuilder().setSigningKey(key).build()
-            .parseClaimsJws(token).getBody().getSubject();
-    return subject.split(":")[1];
-  }
-
   public boolean validateJwtToken(String authToken) {
     try {
       Jwts.parserBuilder().setSigningKey(key).build().parse(authToken);
@@ -69,4 +53,23 @@ public class JwtUtils {
     }
     return false;
   }
+
+  public List<?> getRolesFromJwtToken(String token) {
+    Claims claims = Jwts.parserBuilder().setSigningKey(key).build()
+            .parseClaimsJws(token).getBody();
+    return claims.get("roles", List.class);
+  }
+
+  public String getPasswordFromJwtToken(String token) {
+    Claims claims = Jwts.parserBuilder().setSigningKey(key).build()
+            .parseClaimsJws(token).getBody();
+    return claims.get("password", String.class);
+  }
+  public String getUserNameFromJwtToken(String token) {
+    return Jwts.parserBuilder().setSigningKey(key).build()
+            .parseClaimsJws(token).getBody().getSubject();
+  }
+
+
+
 }

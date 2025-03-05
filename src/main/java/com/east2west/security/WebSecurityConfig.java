@@ -3,8 +3,10 @@ package com.east2west.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -54,18 +56,26 @@ public class WebSecurityConfig {
     return new BCryptPasswordEncoder();
   }
 
-  
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
-        .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(auth -> 
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//            .authorizeHttpRequests(auth ->
+//                    auth.requestMatchers("/auth/**").permitAll() // API công khai (login, register)
+//                            .requestMatchers(HttpMethod.POST, "/api/homestays/host/amenities").hasAuthority("MODERATOR")
+//                            .requestMatchers(HttpMethod.GET, "/api/homestays/host/**").hasAuthority("BUSINESS")
+//                            .anyRequest().authenticated()
+//            );
+            .authorizeHttpRequests(auth ->
           auth.requestMatchers("/**").permitAll()
                   .anyRequest().authenticated()
         );
+//    http.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
     http.authenticationProvider(authenticationProvider());
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
     return http.build();
   }
+
 }

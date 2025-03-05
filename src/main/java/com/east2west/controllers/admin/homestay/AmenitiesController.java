@@ -10,14 +10,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
 
+
 @RestController
 @RequestMapping("/api/homestays/host/amenities")
+@PreAuthorize("hasAuthority('MODERATOR')")
 public class AmenitiesController {
     private final AmenitiesService amenitiesService;
 

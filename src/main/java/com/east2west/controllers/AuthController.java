@@ -136,7 +136,7 @@ public class AuthController {
                 List<String> roles = authenticatedUserDetails.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .toList();
-                String jwt = jwtUtils.generateJwtToken(authenticatedUserDetails.getUsername(),roles.toString(), request.getNewPassword());
+                String jwt = jwtUtils.generateJwtToken(authenticatedUserDetails.getUsername(),roles, request.getNewPassword());
 
                 return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt).body(ModelResponse.builder().status(HttpStatus.OK.value()).message("Authentication successful").data(JwtResponse.builder()
                                 .token(jwt)
@@ -376,7 +376,7 @@ public class AuthController {
                         .collect(Collectors.toList());
 
            
-                String jwt = jwtUtils.generateJwtToken(user.getUsername(),roleNames.toString(), idToken);
+                String jwt = jwtUtils.generateJwtToken(user.getUsername(),roleNames, idToken);
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(
                         ModelResponse.builder()
@@ -426,7 +426,7 @@ public class AuthController {
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
 
-            String jwt = jwtUtils.generateJwtToken(authenticatedUserDetails.getUsername(),roles.toString(), loginRequest.getPassword());
+            String jwt = jwtUtils.generateJwtToken(authenticatedUserDetails.getUsername(),roles, loginRequest.getPassword());
 
             return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt).body(ModelResponse.builder().status(HttpStatus.OK.value()).message("Authentication successful").data(JwtResponse.builder()
                     .token(jwt)
@@ -511,7 +511,7 @@ public class AuthController {
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
 
-            String jwt = jwtUtils.generateJwtToken(userDetails.getUsername(),roles.toString(), signUpRequest.getPassword());
+            String jwt = jwtUtils.generateJwtToken(userDetails.getUsername(),roles, signUpRequest.getPassword());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(
                     ModelResponse.builder()
@@ -610,7 +610,7 @@ public class AuthController {
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
-            String jwt = jwtUtils.generateJwtToken(userDetails.getUsername(),roles.toString(),passwordFromToken);
+            String jwt = jwtUtils.generateJwtToken(userDetails.getUsername(),roles,passwordFromToken);
 
             return ResponseEntity.status(HttpStatus.OK).body(
                     ModelResponse.builder()
