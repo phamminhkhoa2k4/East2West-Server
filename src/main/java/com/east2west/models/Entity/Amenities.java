@@ -19,4 +19,7 @@ public class Amenities {
     @Column(name = "amenitiesname")
     private String amenitiesname;
 
+    @Column(name = "amenitiesicon",columnDefinition = "Text")
+    private String amenitiesicon;
+
 }

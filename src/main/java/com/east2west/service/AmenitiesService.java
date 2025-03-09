@@ -68,17 +68,19 @@ public class AmenitiesService {
                     }
 
                     String[] data = line.split(",");
-                    if (data.length < 1) {
+                    if (data.length < 2) {
                         continue;
                     }
 
 
                     String amenitiesName = data[0].trim();
+                    String amenitiesIcon = data[1].trim();
                     System.out.println("Đang xử lý tiện ích: " + amenitiesName);
 
                     Amenities amenities = new Amenities();
                     amenities.setAmenitiesid(idCounter++);
                     amenities.setAmenitiesname(amenitiesName);
+                    amenities.setAmenitiesicon(amenitiesIcon);
                     amenitiesList.add(amenities);
                 }
             }
