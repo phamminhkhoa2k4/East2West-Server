@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/homestays/host/structure")
+@PreAuthorize("hasAuthority('MODERATOR')")
 public class StructureController {
 
     private final StructureService structureService;
@@ -24,7 +26,7 @@ public class StructureController {
     public StructureController(StructureService structureService){
         this.structureService = structureService;
     }
-    //
+
     @PutMapping
     public ResponseEntity<ModelResponse<Structure>> updateStructure(@RequestBody Structure structure) {
         try {

@@ -5,6 +5,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.east2west.models.Entity.Type;
+import org.springframework.stereotype.Repository;
+
+@Repository
 public interface TypeRepository  extends JpaRepository<Type, Integer>{
     Optional<Type> findByTypeName(String typeName);
     Optional<Type> findByTypeNameAndTypeIdNot(String typeName, int excludeTypeId);

@@ -22,4 +22,6 @@ public class Structure {
     @Column(name = "structurename")
     private String structurename;
 
+    @Column(name = "structureicon")
+    private String structureicon;
 }

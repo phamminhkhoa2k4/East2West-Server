@@ -7,7 +7,6 @@ import com.east2west.models.Entity.ERole;
 import com.east2west.models.Entity.PasswordResetToken;
 import com.east2west.models.Entity.Role;
 import com.east2west.models.payload.request.*;
-import com.east2west.models.payload.response.ErrorResponse;
 import com.east2west.models.payload.response.JwtResponse;
 import com.east2west.security.services.UserDetailsServiceImpl;
 import com.east2west.service.UserService;
@@ -234,7 +233,7 @@ public class AuthController {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        String jwt = jwtUtils.generateJwtToken(authenticatedUserDetails.getUsername(),roles.toString(), request.getNewPassword());
+        String jwt = jwtUtils.generateJwtToken(authenticatedUserDetails.getUsername(),roles, request.getNewPassword());
 
         return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt).body(ModelResponse.builder().status(HttpStatus.OK.value()).message("Authentication successful").data(JwtResponse.builder()
                         .token(jwt)

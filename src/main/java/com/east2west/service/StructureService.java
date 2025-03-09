@@ -1,7 +1,6 @@
 package com.east2west.service;
 
 
-import com.east2west.models.Entity.Amenities;
 import com.east2west.models.Entity.Structure;
 import com.east2west.repository.StructureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,7 @@ public class StructureService {
         return structureRepository.findById(id);
     }
 
-    public List<Structure> getStructureAll(){
+    public List<Structure> getAllStructure(){
         return structureRepository.findAll();
     }
 
@@ -90,17 +89,19 @@ public class StructureService {
                     }
 
                     String[] data = line.split(",");
-                    if (data.length < 1) {
+                    if (data.length < 2) {
                         continue;
                     }
 
 
                     String structureName = data[0].trim();
+                    String structureIcon = data[1].trim();
                     System.out.println("Đang xử lý : " + structureName);
 
                     Structure structure = new Structure();
                     structure.setStructureid(idCounter++);
                     structure.setStructurename(structureName);
+                    structure.setStructureicon(structureIcon);
                     structureList.add(structure);
                 }
             }

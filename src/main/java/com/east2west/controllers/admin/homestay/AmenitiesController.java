@@ -142,20 +142,13 @@ public class AmenitiesController {
 
     }
 
-    // TODO: add model Response
-    // Endpoint: Get multi amenities by multi ids
-    @GetMapping("/multi")
-    public ResponseEntity<List<Amenities>> getAmenitiesByIds(@RequestParam List<Integer> ids) {
-        List<Amenities> amenities = amenitiesService.getByIdsAmenities(ids);
-        return ResponseEntity.ok(amenities);
-    }
 
     // Endpoint: Get all amenities
-//    @GetMapping("/amenities")
-//    public ResponseEntity<List<Amenities>> getAllAmenities(){
-//        List<Amenities> amenities= homestayService.getAmenitiesAll();
-//        return ResponseEntity.ok(amenities);
-//    }
+    @GetMapping("/amenities")
+    public ResponseEntity<List<Amenities>> getAllAmenities(){
+        List<Amenities> amenities= amenitiesService.getAmenitiesAll();
+        return ResponseEntity.ok(amenities);
+    }
 
     // Endpoint: Search amenities
     @GetMapping("/search")
@@ -171,7 +164,7 @@ public class AmenitiesController {
         return amenitiesService.getAllAmenities(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC,"amenitiesid")));
     }
 
-    // Endpoint: Delete a amenities by id
+    // Endpoint: Delete amenities by id
     @DeleteMapping("/{id}")
     public ResponseEntity<ModelResponse<Amenities>> deleteAmenities(@PathVariable int id) {
         try {
