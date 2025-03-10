@@ -1,13 +1,10 @@
 package com.east2west.repository;
 
-import com.east2west.models.Entity.Amenities;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.east2west.models.Entity.Homestay;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -50,6 +47,72 @@ public interface HomestayRepository extends JpaRepository<Homestay,Integer>{
 
 
 
+//    @Modifying
+//    @Transactional
+//    @Query(value = """
+//    DECLARE @latitude FLOAT = :latitude;
+//    DECLARE @longitude FLOAT = :longitude;
+//    DECLARE @radius FLOAT = :radius;
+//
+//    SELECT hs.homestayid,
+//           hs.title,
+//           CAST(hs.description AS NVARCHAR(MAX)) AS description,
+//           CAST(hs.photos AS VARCHAR(MAX)) AS photos,
+//           hs.wardid,
+//           hs.structureid,
+//           hs.type,
+//           hs.userid,
+//           hs.isapproved,
+//           hs.maxguest,
+//           hs.beds,
+//           hs.bathroom,
+//           hs.address,
+//           hs.longitude,
+//           hs.latitude,
+//           hs.cleaningfee,
+//           hs.instant,
+//           hs.room,
+//           CAST(hs.extrainfo AS NVARCHAR(MAX)) AS extrainfo,
+//           hs.geom
+//    FROM homestays hs
+//    INNER JOIN homestayavailability ha ON hs.homestayid = ha.homestayid
+//    WHERE 6371 * acos(cos(radians(@latitude)) * cos(radians(hs.latitude)) * cos(radians(hs.longitude) - radians(@longitude))
+//          + sin(radians(@latitude)) * sin(radians(hs.latitude))) <= @radius
+//      AND hs.maxguest >= :guests
+//      AND ha.date BETWEEN :checkinDate AND :checkoutDate
+//      AND ha.status = :status
+//    GROUP BY hs.homestayid,
+//             hs.title,
+//             hs.description,
+//             hs.photos,
+//             hs.wardid,
+//             hs.structureid,
+//             hs.type,
+//             hs.userid,
+//             hs.isapproved,
+//             hs.maxguest,
+//             hs.beds,
+//             hs.bathroom,
+//             hs.address,
+//             hs.longitude,
+//             hs.latitude,
+//             hs.cleaningfee,
+//             hs.instant,
+//             hs.room,
+//             hs.extrainfo,
+//             hs.geom
+//    HAVING COUNT(ha.date) = :nights;
+//""", nativeQuery = true)
+//    List<Homestay> searchHomestay(@Param("latitude") Double latitude,
+//                                  @Param("longitude") Double longitude,
+//                                  @Param("radius") Double radius,
+//                                  @Param("checkinDate") LocalDate checkinDate,
+//                                  @Param("checkoutDate") LocalDate checkoutDate,
+//                                  @Param("nights") Integer nights,
+//                                  @Param("guests") Integer guests,
+//                                  @Param("status") String status);
+
+
 
 
 
@@ -58,7 +121,11 @@ public interface HomestayRepository extends JpaRepository<Homestay,Integer>{
 
     List<Homestay> findByStructure_Structureid(int structureid);
 
+    List<Homestay> findByTitleContainingIgnoreCase(String keyword);
 
+    @Query("SELECT h FROM Homestay h WHERE h.userid = :userId " +
+            "AND LOWER(h.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<Homestay> searchByUserIdAndKeyword(@Param("userId") int userId, @Param("keyword") String keyword);
 
     @Query("SELECT h FROM Homestay h JOIN h.amenities a WHERE " +
             "(:minBeds IS NULL OR h.beds >= :minBeds) AND " +
@@ -66,7 +133,7 @@ public interface HomestayRepository extends JpaRepository<Homestay,Integer>{
             "(:minMaxGuest IS NULL OR h.maxguest >= :minMaxGuest) AND " +
             "(:maxMaxGuest IS NULL OR h.maxguest <= :maxMaxGuest) AND " +
             "(:type IS NULL OR h.type = :type) AND " +
-            "(:amenityIds IS NULL OR a.id IN :amenityIds)")
+            "(:amenityIds IS NULL OR a.amenitiesid IN :amenityIds)")
     List<Homestay> findByFilter(
             @Param("minBeds") Integer minBeds,
             @Param("maxBeds") Integer maxBeds,

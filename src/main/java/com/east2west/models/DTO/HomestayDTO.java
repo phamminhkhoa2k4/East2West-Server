@@ -16,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class  HomestayDTO {
+    @Null
     private Integer homestayid;
     private Integer structureId;
     private Integer userId;

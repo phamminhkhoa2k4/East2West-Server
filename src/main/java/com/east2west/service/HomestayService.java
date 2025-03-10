@@ -59,7 +59,7 @@ public class HomestayService {
 
     public List<HomestayDTO> getHomestaysByStructureId(int structureId) {
 
-        List<Homestay> homestays  =      homestayRepository.findByStructure_Structureid(structureId);
+        List<Homestay> homestays  =  homestayRepository.findByStructure_Structureid(structureId);
         return homestays.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -119,13 +119,20 @@ public class HomestayService {
                 today = today.plusDays(1);
 
             }
-
-
         return savedHomestay;
+    }
 
+    public List<HomestayDTO> search(String keyword,int userId) {
 
-
-
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return homestayRepository.findByUserid(userId).stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        }
+        List<Homestay> homestays = homestayRepository.searchByUserIdAndKeyword(userId, keyword);
+        return homestays.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
 
@@ -456,12 +463,29 @@ public HomestayDTO getHomestayHomestayAvailabilityById(int id){
         dto.setWardName(homestay.getWard().getWardname());
         dto.setDistrictName(homestay.getWard().getDistrict().getDistrictname());
         dto.setCityProvinceName(homestay.getWard().getDistrict().getCityprovince().getCityname());
+        // TODO: Check data type here
         if (homestay.getGeom() != null) {
             WKBWriter wkbWriter = new WKBWriter();
             byte[] wkb = wkbWriter.write(homestay.getGeom());
             String wkbHex = bytesToHex(wkb);
             dto.setGeom(wkbHex);
         }
+
+        //        if (homestay.getGeom() != null) {
+//            try {
+//                WKTReader wktReader = new WKTReader();
+//                Geometry geometry = wktReader.read(homestay.getGeom());
+//
+//                WKBWriter wkbWriter = new WKBWriter();
+//                byte[] wkb = wkbWriter.write(geometry);
+//                String wkbHex = bytesToHex(wkb);
+//                dto.setGeom(wkbHex);
+//            } catch (ParseException e) {
+//
+//                System.err.println("Error parsing WKT for geometry: " + e.getMessage());
+//
+//            }
+//        }
         return dto;
     }
     private String bytesToHex(byte[] bytes) {
@@ -493,12 +517,12 @@ public HomestayDTO getHomestayHomestayAvailabilityById(int id){
 
 
     public BigDecimal getMinPriceForToday() {
-        Timestamp today = Timestamp.from(Instant.now());
+        LocalDate today = LocalDate.now();
         return homestayAvailabilityRepository.findMinPriceByDate(today);
     }
 
     public BigDecimal getMaxPriceForToday() {
-        Timestamp today = Timestamp.from(Instant.now());
+        LocalDate today = LocalDate.now();
         return homestayAvailabilityRepository.findMaxPriceByDate(today);
     }
 

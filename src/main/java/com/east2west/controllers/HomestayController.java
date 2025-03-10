@@ -3,11 +3,13 @@ package com.east2west.controllers;
 import com.east2west.models.DTO.HomestayDTO;
 import com.east2west.models.DTO.HomestayFilterDTO;
 import com.east2west.models.DTO.HomestaySearchDTO;
-import com.east2west.models.DTO.HomestaySearchRequest;
-import com.east2west.models.Entity.Homestay;
+import com.east2west.models.Entity.Amenities;
 import com.east2west.models.Entity.Structure;
+import com.east2west.service.AmenitiesService;
 import com.east2west.service.HomestayService;
+import com.east2west.service.StructureService;
 import com.east2west.util.DateUtil;
+import org.locationtech.jts.io.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,15 +22,20 @@ import java.util.List;
 public class HomestayController {
 
     private final HomestayService homestayService;
+    private final StructureService structureService;
+
+    private final AmenitiesService amenitiesService;
 
     @Autowired
-    public HomestayController(HomestayService homestayService) {
+    public HomestayController(HomestayService homestayService, StructureService structureService, AmenitiesService amenitiesService) {
         this.homestayService = homestayService;
+        this.structureService = structureService;
+        this.amenitiesService = amenitiesService;
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<HomestayDTO> getById(@PathVariable int id) {
+    public ResponseEntity<HomestayDTO> getById(@PathVariable int id) throws ParseException {
         HomestayDTO homestay = homestayService.getById(id);
         return ResponseEntity.ok(homestay);
     }
@@ -42,6 +49,12 @@ public class HomestayController {
         return homestayService.getMinPriceForToday();
     }
     @GetMapping
+    public ResponseEntity<List<HomestayDTO>> getAllApproved() {
+        List<HomestayDTO> homestays = homestayService.getAllApproved();
+        return ResponseEntity.ok(homestays);
+    }
+
+    @GetMapping("/admin")
     public ResponseEntity<List<HomestayDTO>> getAll() {
         List<HomestayDTO> homestays = homestayService.getAll();
         return ResponseEntity.ok(homestays);
@@ -52,7 +65,7 @@ public class HomestayController {
 
     @GetMapping("/structure")
     public ResponseEntity<List<Structure>> getAllStructure(){
-        List<Structure> structures = homestayService.getStructureAll();
+        List<Structure> structures = structureService.getAllStructure();
         return ResponseEntity.ok(structures);
     }
 
@@ -70,7 +83,7 @@ public class HomestayController {
                                             @RequestParam(value = "status") String status,
                                       @RequestParam(value = "guests") Integer guests) {
 
-        var request = HomestaySearchDTO.builder()
+            var request = HomestaySearchDTO.builder()
                 .longitude(longitude)
                 .latitude(latitude)
                 .radius(radius)
@@ -100,4 +113,22 @@ public class HomestayController {
         filterDTO.setAmenityIds(amenityIds);
         return ResponseEntity.ok(homestayService.filterHomestays(filterDTO));
     }
+
+    // Endpoint: Get all amenities
+    @GetMapping("/amenities")
+    public ResponseEntity<List<Amenities>> getAllAmenities(){
+        List<Amenities> amenities= amenitiesService.getAmenitiesAll();
+        return ResponseEntity.ok(amenities);
+    }
+
+    // TODO: add model Response
+    // Endpoint: Get multi amenities by multi ids
+    @GetMapping("/amenities/multi")
+    public ResponseEntity<List<Amenities>> getAmenitiesByIds(@RequestParam List<Integer> ids) {
+        List<Amenities> amenities = amenitiesService.getByIdsAmenities(ids);
+        return ResponseEntity.ok(amenities);
+    }
+
+
+
 }

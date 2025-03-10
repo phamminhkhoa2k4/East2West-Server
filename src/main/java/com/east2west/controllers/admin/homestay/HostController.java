@@ -7,16 +7,19 @@ import com.east2west.models.DTO.PhotoDeleteDTO;
 import com.east2west.models.Entity.Amenities;
 import com.east2west.models.Entity.Homestay;
 import com.east2west.models.Entity.Structure;
+import com.east2west.models.Entity.User;
+import com.east2west.security.jwt.JwtUtils;
 import com.east2west.service.AmenitiesService;
 import com.east2west.service.HomestayService;
 import com.east2west.service.StructureService;
+import com.east2west.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/homestays/host")
@@ -27,11 +30,17 @@ public class HostController {
     private final AmenitiesService amenitiesService;
 
     private final StructureService structureService;
+
+    private final JwtUtils jwtUtils;
+
+    private final UserService userService;
     @Autowired
-    public HostController(HomestayService homestayService, AmenitiesService amenitiesService , StructureService structureService) {
+    public HostController(HomestayService homestayService, AmenitiesService amenitiesService , StructureService structureService, JwtUtils jwtUtils, UserService userService) {
         this.homestayService = homestayService;
         this.amenitiesService = amenitiesService;
         this.structureService = structureService;
+        this.jwtUtils = jwtUtils;
+        this.userService = userService;
     }
 
     @PutMapping("/{id}")
@@ -134,5 +143,16 @@ public class HostController {
                             .build()
             );
         }
+    }
+
+    @GetMapping("/search")
+    public List<HomestayDTO> search(@RequestHeader("Authorization") String authorizationHeader,@RequestParam(name = "query", required = false) String keyword){
+        String token = authorizationHeader != null && authorizationHeader.startsWith("Bearer ")
+                ? authorizationHeader.substring(7)
+                : null;
+        String usernameFromToken = jwtUtils.getUserNameFromJwtToken(token);
+        Optional<User> user =  userService.findByUsername(usernameFromToken);
+
+        return user.map(value -> homestayService.search(keyword, value.getUserId())).orElse(null);
     }
 }
