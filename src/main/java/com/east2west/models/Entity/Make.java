@@ -1,11 +1,6 @@
 package com.east2west.models.Entity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
 import lombok.*;
 
 
@@ -21,9 +16,11 @@ public class Make {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "makeid")
-    private int makeId;
+    private int makeid;
 
     @Column(name = "makename")
-    private String makeName;
+    private String makename;
+
+
 
 }

@@ -34,9 +34,9 @@ public class Car {
     private String carName;
 
 
-     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "modelid", referencedColumnName = "modelid")
-    private Model model;
+//     @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "modelid", referencedColumnName = "modelid")
+//    private Model model;
 
 
 

@@ -1,26 +1,17 @@
 package com.east2west.controllers;
 
-import com.east2west.models.Entity.Make;
-
+import com.east2west.models.Entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.east2west.models.DTO.CarDTO;
-import com.east2west.models.Entity.Car;
-import com.east2west.models.Entity.LocationType;
-import com.east2west.models.Entity.Model;
-import com.east2west.models.Entity.TourPackage;
-import com.east2west.models.Entity.Type;
 import com.east2west.service.*;
-
 import jakarta.validation.Valid;
-
 import java.util.List;
 import java.util.Optional;
 
-// @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/cars")
 public class CarController {
@@ -28,14 +19,12 @@ public class CarController {
     private CarService carService;
 
     @GetMapping
-    // @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     public List<Car> getAllCars() {
         return carService.getAllCars();
     }
     @GetMapping("/search")
     public List<Car> searchCars(
             @RequestParam(required = false) String carName,
-            @RequestParam(required = false) String modelName,
             @RequestParam(required = false) String makeName,
             @RequestParam(required = false) String typeName,
             @RequestParam(required = false) Boolean airConditioned,
@@ -45,7 +34,7 @@ public class CarController {
             @RequestParam(required = false) Long minMiles,
             @RequestParam(required = false) Long maxMiles) {
         
-        return carService.searchCars(carName, modelName, makeName, typeName, airConditioned, minPrice, maxPrice, location, minMiles, maxMiles);
+        return carService.searchCars(carName, makeName, typeName, airConditioned, minPrice, maxPrice, location, minMiles, maxMiles);
     }
     @GetMapping("/{id}")
     public Car getCarById(@PathVariable int id) {
@@ -71,49 +60,31 @@ public class CarController {
     public boolean checkCarNameExists(@RequestParam String carName) {
         return carService.doesCarNameExist(carName);
     }
-    // {
-    // "carName": "Accordcc",
-    // "modelName": "Civic",
-    // "makeName": "Honda",
-    // "typeName": "Sedan",
-    // "year": 2021,
-    // "seatCapacity": 5,
-    // "airConditioned": true,
-    // "pricePerDay": 50.0,
-    // "status": "Available"
-    // }
-    // @DeleteMapping("/{id}")
-    // public void deletecar(@PathVariable int id) {
-    // carService.;
-    // }
 
     @GetMapping("/model")
-    public List<Model> getCarModel() {
+    public List<Model> getModel() {
         return carService.getAllModel();
     }
 
     @PostMapping("/model")
-    public Model addCarModel(@RequestBody Model model) {
+    public Model createModel(@RequestBody Model model) {
         return carService.saveModel(model);
     }
 
-    @GetMapping("/make")
-    public List<Make> getCarMake() {
-        return carService.getAllMake();
-    }
+//    @GetMapping("/make")
+//    public List<Make> getMake() {
+//        return carService.getAllMake();
+//    }
 
-    @PostMapping("/make")
-    public Make addCarMake(@RequestBody Make make) {
-        return carService.saveMake(make);
-    }
+
 
     @GetMapping("/type")
-    public List<Type> getCarType() {
+    public List<Type> getType() {
         return carService.getAllType();
     }
 
     @PostMapping("/type")
-    public Type addCarType(@RequestBody Type type) {
+    public Type createType(@RequestBody Type type) {
         return carService.saveType(type);
     }
 
@@ -123,8 +94,8 @@ public class CarController {
     }
 
     @PostMapping("/locationtypes")
-    public LocationType setLocationType(@RequestBody LocationType locationtypeType) {
-        return carService.saveLocationType(locationtypeType);
+    public LocationType createLocationType(@RequestBody LocationType locationtype) {
+        return carService.saveLocationType(locationtype);
     }
 
     @GetMapping("/type/{id}")
@@ -163,23 +134,6 @@ public class CarController {
             return ResponseEntity.notFound().build();
         }
     }
-    @GetMapping("/make/{id}")
-    public ResponseEntity<Make> getMakeById(@PathVariable int id) {
-        Optional<Make> make = carService.getAllMake().stream().filter(m -> m.getMakeId() == id).findFirst();
-        return make.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-    @PutMapping("/make/{id}")
-    public ResponseEntity<Make> updateMake(@PathVariable int id, @RequestBody Make make) {
-        Optional<Make> existingMake = carService.getAllMake().stream().filter(m -> m.getMakeId() == id).findFirst();
-        if (existingMake.isPresent()) {
-            Make updatedMake = existingMake.get();
-            updatedMake.setMakeName(make.getMakeName()); // Assuming Make has a setMakeName method
-            carService.saveMake(updatedMake);
-            return ResponseEntity.ok(updatedMake);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
     @GetMapping("/locationtype/{id}")
     public ResponseEntity<LocationType> getLocationTypeById(@PathVariable int id) {
         Optional<LocationType> locationtype = carService.getAllLocationType().stream().filter(m -> m.getLocationtypeid() == id).findFirst();
@@ -203,15 +157,6 @@ public class CarController {
     //     return ResponseEntity.noContent().build();
     // }
 
-    @DeleteMapping("/makes/{id}")
-    public ResponseEntity<String> deleteMake(@PathVariable int id) {
-        try {
-            carService.deleteMake(id);
-            return new ResponseEntity<>("Make deleted successfully.", HttpStatus.OK);
-        } catch (DataIntegrityViolationException ex) {
-            return new ResponseEntity<>("Cannot delete make: This make is referenced by other records. Please handle those dependencies first.", HttpStatus.CONFLICT);
-        }
-    }
 
     @DeleteMapping("/types/{id}")
     public ResponseEntity<String> deleteType(@PathVariable int id) {

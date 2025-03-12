@@ -25,8 +25,8 @@ public interface CarRepository extends JpaRepository<Car, Integer> {
     Optional<Car> findByCarNameAndCarIdNot(String carName, int carId);
     @Query("SELECT c FROM Car c " +
             "WHERE (:carName IS NULL OR c.carName LIKE %:carName%) " +
-            "AND (:modelName IS NULL OR c.model.modelName = :modelName) " +
-            "AND (:makeName IS NULL OR c.make.makeName = :makeName) " +
+//            "AND (:modelName IS NULL OR c.model.modelName = :modelName) " +
+            "AND (:makeName IS NULL OR c.make.makename = :makeName) " +
             "AND (:typeName IS NULL OR c.type.typeName = :typeName) " +
             "AND (:airConditioned IS NULL OR c.airConditioned = :airConditioned) " +
             "AND (:minPrice IS NULL OR c.pricePerDay >= :minPrice) " +

@@ -1,15 +1,10 @@
 package com.east2west.service;
 
+import com.east2west.models.Entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.east2west.repository.*;
 import com.east2west.models.DTO.CarDTO;
-import com.east2west.models.Entity.Car;
-import com.east2west.models.Entity.LocationType;
-import com.east2west.models.Entity.Make;
-import com.east2west.models.Entity.Model;
-import com.east2west.models.Entity.TourPackage;
-import com.east2west.models.Entity.Type;
 import java.util.Optional;
 import java.util.List;
 
@@ -58,7 +53,7 @@ public class CarService {
         car.setFuel(carDTO.getFuel());
         car.setLocation(carDTO.getLocation());
         car.setThumbnail(carDTO.getThumbnail());
-        modelRepository.findById(carDTO.getModelId()).ifPresent(car::setModel);
+//        modelRepository.findById(carDTO.getModelId()).ifPresent(car::setModel);
         makeRepository.findById(carDTO.getMakeId()).ifPresent(car::setMake);
         typeRepository.findById(carDTO.getTypeId()).ifPresent(car::setType);
         locationTypeRepository.findById(carDTO.getLocationTypeId()).ifPresent(car::setLocationtype);
@@ -93,9 +88,7 @@ public class CarService {
         return modelRepository.findAll();
     }
 
-    public List<Make> getAllMake() {
-        return makeRepository.findAll();
-    }
+
 
     public List<Type> getAllType() {
         return typeRepository.findAll();
@@ -121,17 +114,8 @@ public class CarService {
         return modelRepository.findByModelNameAndModelIdNot(modelName, excludeModelId).isPresent();
     }
 
-    // Make-related methods
-    public Make saveMake(Make make) {
-        if (doesMakeNameExist(make.getMakeName(), make.getMakeId())) {
-            throw new IllegalArgumentException("Make name already exists.");
-        }
-        return makeRepository.save(make);
-    }
 
-    private boolean doesMakeNameExist(String makeName, int excludeMakeId) {
-        return makeRepository.findByMakeNameAndMakeIdNot(makeName, excludeMakeId).isPresent();
-    }
+
 
     // Type-related methods
     public Type saveType(Type type) {
@@ -159,12 +143,10 @@ public class CarService {
     public List<LocationType> getAllLocationType(){
         return locationTypeRepository.findAll();
     }
-    
 
-    // Method to delete a make by ID
-    public void deleteMake(int makeId) {
-        makeRepository.deleteById(makeId);
-    }
+
+
+
 
     // Method to delete a type by ID
     public void deleteType(int typeId) {
@@ -185,10 +167,10 @@ public class CarService {
     public List<Car> findByName(String name) {
         return carRepository.findByTitleContainingIgnoreCase(name);
     }
-    public List<Car> searchCars(String carName, String modelName, String makeName, String typeName,
+    public List<Car> searchCars(String carName, String makeName, String typeName,
                                    Boolean airConditioned, Double minPrice, Double maxPrice,
                                    String location, Long minMiles, Long maxMiles) {
         
-        return carRepository.findByFilters(carName, modelName, makeName, typeName, airConditioned, minPrice, maxPrice, location, minMiles, maxMiles);
+        return carRepository.findByFilters(carName, makeName, typeName, airConditioned, minPrice, maxPrice, location, minMiles, maxMiles);
     }
 }
