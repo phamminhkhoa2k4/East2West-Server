@@ -61,23 +61,6 @@ public class CarController {
         return carService.doesCarNameExist(carName);
     }
 
-    @GetMapping("/model")
-    public List<Model> getModel() {
-        return carService.getAllModel();
-    }
-
-    @PostMapping("/model")
-    public Model createModel(@RequestBody Model model) {
-        return carService.saveModel(model);
-    }
-
-//    @GetMapping("/make")
-//    public List<Make> getMake() {
-//        return carService.getAllMake();
-//    }
-
-
-
     @GetMapping("/type")
     public List<Type> getType() {
         return carService.getAllType();
@@ -108,7 +91,7 @@ public class CarController {
         Optional<Type> existingType = carService.getAllType().stream().filter(t -> t.getTypeId() == id).findFirst();
         if (existingType.isPresent()) {
             Type updatedType = existingType.get();
-            updatedType.setTypeName(type.getTypeName()); // Assuming Type has a setTypeName method
+            updatedType.setTypeName(type.getTypeName());
             carService.saveType(updatedType);
             return ResponseEntity.ok(updatedType);
         } else {
@@ -116,24 +99,6 @@ public class CarController {
         }
     }
 
-    @GetMapping("/model/{id}")
-    public Optional<Model> getModelById(@PathVariable int id) {
-        return carService.getAllModel().stream().filter(m -> m.getModelId() == id).findFirst();
-
-    }
-
-    @PutMapping("/model/{id}")
-    public ResponseEntity<Model> updateModel(@PathVariable int id, @RequestBody Model model) {
-        Optional<Model> existingModel = carService.getAllModel().stream().filter(m -> m.getModelId() == id).findFirst();
-        if (existingModel.isPresent()) {
-            Model updatedModel = existingModel.get();
-            updatedModel.setModelName(model.getModelName()); // Assuming Model has a setModelName method
-            carService.saveModel(updatedModel);
-            return ResponseEntity.ok(updatedModel);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
     @GetMapping("/locationtype/{id}")
     public ResponseEntity<LocationType> getLocationTypeById(@PathVariable int id) {
         Optional<LocationType> locationtype = carService.getAllLocationType().stream().filter(m -> m.getLocationtypeid() == id).findFirst();
@@ -156,8 +121,6 @@ public class CarController {
     //     carService.deleteCar(carId);
     //     return ResponseEntity.noContent().build();
     // }
-
-
     @DeleteMapping("/types/{id}")
     public ResponseEntity<String> deleteType(@PathVariable int id) {
         try {
@@ -165,16 +128,6 @@ public class CarController {
             return new ResponseEntity<>("Type deleted successfully.", HttpStatus.OK);
         } catch (DataIntegrityViolationException ex) {
             return new ResponseEntity<>("Cannot delete type: This type is referenced by other records. Please handle those dependencies first.", HttpStatus.CONFLICT);
-        }
-    }
-
-    @DeleteMapping("/models/{id}")
-    public ResponseEntity<String> deleteModel(@PathVariable int id) {
-        try {
-            carService.deleteModel(id);
-            return new ResponseEntity<>("Model deleted successfully.", HttpStatus.OK);
-        } catch (DataIntegrityViolationException ex) {
-            return new ResponseEntity<>("Cannot delete model: This model is referenced by other records. Please handle those dependencies first.", HttpStatus.CONFLICT);
         }
     }
 

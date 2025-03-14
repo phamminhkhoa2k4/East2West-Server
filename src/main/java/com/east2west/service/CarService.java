@@ -103,19 +103,6 @@ public class CarService {
     }
 
 
-    public Model saveModel(Model model) {
-        if (doesModelNameExist(model.getModelName(), model.getModelId())) {
-            throw new IllegalArgumentException("Model name already exists.");
-        }
-        return modelRepository.save(model);
-    }
-
-    private boolean doesModelNameExist(String modelName, int excludeModelId) {
-        return modelRepository.findByModelNameAndModelIdNot(modelName, excludeModelId).isPresent();
-    }
-
-
-
 
     // Type-related methods
     public Type saveType(Type type) {

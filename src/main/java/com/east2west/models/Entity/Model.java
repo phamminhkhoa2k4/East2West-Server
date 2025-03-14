@@ -1,12 +1,6 @@
 package com.east2west.models.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import lombok.*;
 
 
@@ -22,9 +16,13 @@ public class Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "modelid")
-    private int modelId;
+    private int modelid;
 
     @Column(name = "modelname")
-    private String modelName;
+    private String modelname;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "makeid", referencedColumnName = "makeid")
+    private Make make;
 
 }

@@ -12,8 +12,8 @@ import com.east2west.models.Entity.Car;
 import com.east2west.models.Entity.TourPackage;
 
 public interface CarRepository extends JpaRepository<Car, Integer> {
-   @Query("SELECT c FROM Car c LEFT JOIN FETCH c.model LEFT JOIN FETCH c.make LEFT JOIN FETCH c.type WHERE c.carId = :id")
-    Optional<Car> findById(@Param("id") int id);
+//   @Query("SELECT c FROM Car c LEFT JOIN FETCH c.model LEFT JOIN FETCH c.make LEFT JOIN FETCH c.type WHERE c.carId = :id")
+//    Optional<Car> findById(@Param("id") int id);
     //  @Query("SELECT r.car FROM Rental r WHERE r.user.id = :userId")
     // List<Car> findCarsByUserId(@Param("userId") int userId);
     boolean existsByCarName(String carName);
@@ -36,7 +36,7 @@ public interface CarRepository extends JpaRepository<Car, Integer> {
             "AND (:maxMiles IS NULL OR c.miles <= :maxMiles)")
     List<Car> findByFilters(
             @Param("carName") String carName,
-            @Param("modelName") String modelName,
+//            @Param("modelName") String modelName,
             @Param("makeName") String makeName,
             @Param("typeName") String typeName,
             @Param("airConditioned") Boolean airConditioned,

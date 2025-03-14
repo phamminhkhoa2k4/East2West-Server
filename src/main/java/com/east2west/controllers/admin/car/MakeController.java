@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/cars/make")
+@PreAuthorize("hasAuthority('MODERATOR')")
 public class MakeController {
 
     private final MakeService makeService;
@@ -33,7 +35,7 @@ public class MakeController {
             Optional<Make> makes = makeService.findByMakeName(make.getMakename());
 
             if(makes.isPresent()){
-                return ResponseEntity.status(HttpStatus.CREATED).body(
+                return ResponseEntity.status(HttpStatus.OK).body(
                         ModelResponse.<Make>builder()
                                 .status(400)
                                 .message("Make name " + make.getMakename() + " already exists.")
@@ -61,7 +63,7 @@ public class MakeController {
     }
 
 
-    // Endpoint: Update amenities
+    // Endpoint: Update make
     @PutMapping
     public ResponseEntity<ModelResponse<Make>> updateAmenities(@RequestBody Make make) {
         try {
@@ -97,7 +99,7 @@ public class MakeController {
     }
 
 
-    // Endpoint: Get an amenities by id
+    // Endpoint: Get a make by id
     @GetMapping("/{id}")
     public ResponseEntity<ModelResponse<Optional<Make>>> getMakeById(@PathVariable int id){
         try {
@@ -196,9 +198,22 @@ public class MakeController {
     public Page<Make> getMakes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<Make> result = makeService.getAllMakes(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "makeid")));
-        System.out.println(result);
-        return result;
+        return makeService.getAllMakes(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "makeid")));
+    }
+
+    // Endpoint: List make
+    @GetMapping("/list")
+    public ResponseEntity<ModelResponse<List<Make>>> listMake(){
+        try{
+            List<Make> data = makeService.getAllMake();
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<List<Make>>builder().status(200).message("OK").data(data).build()
+            );
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ModelResponse.<List<Make>>builder().status(200).message("INTERNAL SERVER ERROR").data(null).build()
+            );
+        }
     }
 
 
