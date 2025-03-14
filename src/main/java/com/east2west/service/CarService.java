@@ -89,11 +89,6 @@ public class CarService {
     }
 
 
-
-    public List<Type> getAllType() {
-        return typeRepository.findAll();
-    }
-
     public List<Car> getAllCars() {
         return carRepository.findAll();
     }
@@ -102,21 +97,6 @@ public class CarService {
         return carRepository.findById(id).orElse(null);
     }
 
-
-
-    // Type-related methods
-    public Type saveType(Type type) {
-        if (doesTypeNameExist(type.getTypeName(), type.getTypeId())) {
-            throw new IllegalArgumentException("Type name already exists.");
-        }
-        return typeRepository.save(type);
-    }
-
-    private boolean doesTypeNameExist(String typeName,int excludeTypeId) {
-        return typeRepository.findByTypeNameAndTypeIdNot(typeName, excludeTypeId).isPresent();
-    }
-
-    // LocationType-related methods
     public LocationType saveLocationType(LocationType locationType) {
         if (doesLocationTypeNameExist(locationType.getLocationtypename(), locationType.getLocationtypeid())) {
             throw new IllegalArgumentException("Location type name already exists.");
@@ -131,21 +111,6 @@ public class CarService {
         return locationTypeRepository.findAll();
     }
 
-
-
-
-
-    // Method to delete a type by ID
-    public void deleteType(int typeId) {
-        typeRepository.deleteById(typeId);
-    }
-
-    // Method to delete a model by ID
-    public void deleteModel(int modelId) {
-        modelRepository.deleteById(modelId);
-    }
-
-    // Method to delete a location type by ID
     public void deleteLocationType(int locationTypeId) {
         locationTypeRepository.deleteById(locationTypeId);
     }

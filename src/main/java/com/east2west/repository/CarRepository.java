@@ -27,7 +27,7 @@ public interface CarRepository extends JpaRepository<Car, Integer> {
             "WHERE (:carName IS NULL OR c.carName LIKE %:carName%) " +
 //            "AND (:modelName IS NULL OR c.model.modelName = :modelName) " +
             "AND (:makeName IS NULL OR c.make.makename = :makeName) " +
-            "AND (:typeName IS NULL OR c.type.typeName = :typeName) " +
+            "AND (:typeName IS NULL OR c.type.typename = :typeName) " +
             "AND (:airConditioned IS NULL OR c.airConditioned = :airConditioned) " +
             "AND (:minPrice IS NULL OR c.pricePerDay >= :minPrice) " +
             "AND (:maxPrice IS NULL OR c.pricePerDay <= :maxPrice) " +
@@ -36,7 +36,6 @@ public interface CarRepository extends JpaRepository<Car, Integer> {
             "AND (:maxMiles IS NULL OR c.miles <= :maxMiles)")
     List<Car> findByFilters(
             @Param("carName") String carName,
-//            @Param("modelName") String modelName,
             @Param("makeName") String makeName,
             @Param("typeName") String typeName,
             @Param("airConditioned") Boolean airConditioned,

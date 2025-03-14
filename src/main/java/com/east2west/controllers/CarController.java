@@ -61,15 +61,7 @@ public class CarController {
         return carService.doesCarNameExist(carName);
     }
 
-    @GetMapping("/type")
-    public List<Type> getType() {
-        return carService.getAllType();
-    }
 
-    @PostMapping("/type")
-    public Type createType(@RequestBody Type type) {
-        return carService.saveType(type);
-    }
 
     @GetMapping("/locationtypes")
     public List<LocationType> getLocationType() {
@@ -79,24 +71,6 @@ public class CarController {
     @PostMapping("/locationtypes")
     public LocationType createLocationType(@RequestBody LocationType locationtype) {
         return carService.saveLocationType(locationtype);
-    }
-
-    @GetMapping("/type/{id}")
-    public Optional<Type> getTypeById(@PathVariable int id) {
-        return carService.getAllType().stream().filter(t -> t.getTypeId() == id).findFirst();
-    }
-
-    @PutMapping("/type/{id}")
-    public ResponseEntity<Type> updateType(@PathVariable int id, @RequestBody Type type) {
-        Optional<Type> existingType = carService.getAllType().stream().filter(t -> t.getTypeId() == id).findFirst();
-        if (existingType.isPresent()) {
-            Type updatedType = existingType.get();
-            updatedType.setTypeName(type.getTypeName());
-            carService.saveType(updatedType);
-            return ResponseEntity.ok(updatedType);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
     }
 
     @GetMapping("/locationtype/{id}")
@@ -121,15 +95,7 @@ public class CarController {
     //     carService.deleteCar(carId);
     //     return ResponseEntity.noContent().build();
     // }
-    @DeleteMapping("/types/{id}")
-    public ResponseEntity<String> deleteType(@PathVariable int id) {
-        try {
-            carService.deleteType(id);
-            return new ResponseEntity<>("Type deleted successfully.", HttpStatus.OK);
-        } catch (DataIntegrityViolationException ex) {
-            return new ResponseEntity<>("Cannot delete type: This type is referenced by other records. Please handle those dependencies first.", HttpStatus.CONFLICT);
-        }
-    }
+   
 
     @DeleteMapping("/locationtypes/{id}")
     public ResponseEntity<String> deleteLocationType(@PathVariable int id) {

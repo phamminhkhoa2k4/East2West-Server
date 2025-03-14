@@ -20,9 +20,13 @@ public class Type {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "typeid")
-    private int typeId;
+    private int typeid;
 
     @Column(name = "typename")
-    private String typeName;
+    private String typename;
+
+
+    @Column(name = "typeicon",columnDefinition = "Text")
+    private String typeicon;
 
 }

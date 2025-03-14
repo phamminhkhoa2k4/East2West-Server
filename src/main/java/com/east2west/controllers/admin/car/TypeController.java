@@ -1,8 +1,8 @@
 package com.east2west.controllers.admin.car;
 
 import com.east2west.models.DTO.ModelResponse;
-import com.east2west.models.Entity.Make;
-import com.east2west.service.MakeService;
+import com.east2west.models.Entity.Type;
+import com.east2west.service.TypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,50 +10,52 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/cars/make")
+@Controller
+@RequestMapping("/api/cars/type")
 @PreAuthorize("hasAuthority('MODERATOR')")
-public class MakeController {
+public class TypeController {
 
-    private final MakeService makeService;
+    private final TypeService typeService;
+
 
     @Autowired
-    public MakeController(MakeService makeService) {
-        this.makeService = makeService;
+    public TypeController(TypeService typeService) {
+        this.typeService = typeService;
     }
 
-    // Endpoint: Create make
-    @PostMapping
-    public ResponseEntity<ModelResponse<Make>> createMake(@RequestBody Make make) {
-        try {
-            Optional<Make> makes = makeService.findByMakeName(make.getMakename());
 
-            if(makes.isPresent()){
+    // Endpoint: Create type
+    @PostMapping
+    public ResponseEntity<ModelResponse<Type>> createType(@RequestBody Type type) {
+        try {
+            Optional<Type> types = typeService.findByTypeName(type.getTypename());
+
+            if(types.isPresent()){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Make>builder()
+                        ModelResponse.<Type>builder()
                                 .status(400)
-                                .message("Make name " + make.getMakename() + " already exists.")
+                                .message("Make name " + type.getTypename() + " already exists.")
                                 .data(null)
                                 .build()
                 );
             }
-            Make data = makeService.saveMake(make);
+            Type data = typeService.saveType(type);
             return ResponseEntity.status(HttpStatus.CREATED).body(
-                    ModelResponse.<Make>builder()
+                    ModelResponse.<Type>builder()
                             .status(201)
-                            .message(data.getMakename() + " make created successfully !!!")
+                            .message(data.getTypename() + " type created successfully !!!")
                             .data(data)
                             .build()
             );
         }catch (Exception ex){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    ModelResponse.<Make>builder()
+                    ModelResponse.<Type>builder()
                             .status(400)
                             .message("Error Internal Server !!!")
                             .data(null)
@@ -62,25 +64,24 @@ public class MakeController {
         }
     }
 
-
-    // Endpoint: Update make
+    // Endpoint: Update type
     @PutMapping
-    public ResponseEntity<ModelResponse<Make>> updateMake(@RequestBody Make make) {
+    public ResponseEntity<ModelResponse<Type>> updateType(@RequestBody Type type) {
         try {
-            Make data = makeService.updateMake(make);
+            Type data = typeService.updateType(type);
             if(data != null){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Make>builder()
+                        ModelResponse.<Type>builder()
                                 .status(200)
-                                .message(data.getMakename() +" make updated successfully !!!")
+                                .message(data.getTypename() +" type updated successfully !!!")
                                 .data(data)
                                 .build()
                 );
             }else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Make>builder()
+                        ModelResponse.<Type>builder()
                                 .status(404)
-                                .message("Make not found !!!")
+                                .message("Type not found !!!")
                                 .data(null)
                                 .build()
                 );
@@ -88,9 +89,9 @@ public class MakeController {
 
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Make>builder()
+                    ModelResponse.<Type>builder()
                             .status(500)
-                            .message("INTERNAL SERVER ERROR")
+                            .message("INTERNAL SERVER ERROR !!!")
                             .data(null)
                             .build()
             );
@@ -99,14 +100,14 @@ public class MakeController {
     }
 
 
-    // Endpoint: Get a make by id
+    // Endpoint: Get a type by id
     @GetMapping("/{id}")
-    public ResponseEntity<ModelResponse<Optional<Make>>> getMakeById(@PathVariable int id){
+    public ResponseEntity<ModelResponse<Optional<Type>>> getTypeById(@PathVariable int id){
         try {
-            Optional<Make> data = makeService.getByIdMake(id);
+            Optional<Type> data = typeService.getByIdType(id);
             if(data.isPresent()){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Optional<Make>>builder()
+                        ModelResponse.<Optional<Type>>builder()
                                 .status(200)
                                 .message("OK")
                                 .data(data)
@@ -114,18 +115,18 @@ public class MakeController {
                 );
             }else{
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Optional<Make>>builder()
+                        ModelResponse.<Optional<Type>>builder()
                                 .status(404)
-                                .message("Not found make !!!")
+                                .message("Not found type !!!")
                                 .data(null)
                                 .build()
                 );
             }
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Optional<Make>>builder()
+                    ModelResponse.<Optional<Type>>builder()
                             .status(500)
-                            .message("INTERNAL SERVER ERROR")
+                            .message("INTERNAL SERVER ERROR !!!")
                             .data(null)
                             .build()
             );
@@ -133,14 +134,14 @@ public class MakeController {
 
     }
 
-    // Endpoint: Delete make by id
+    // Endpoint: Delete type by id
     @DeleteMapping("/{id}")
-    public ResponseEntity<ModelResponse<Make>> deleteMake(@PathVariable int id) {
+    public ResponseEntity<ModelResponse<Type>> deleteType(@PathVariable int id) {
         try {
-            String data = makeService.deleteMake(id);
+            String data = typeService.deleteType(id);
             if(data.startsWith("Deleted")){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Make>builder()
+                        ModelResponse.<Type>builder()
                                 .status(200)
                                 .message(data)
                                 .data(null)
@@ -148,7 +149,7 @@ public class MakeController {
                 );
             }else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Make>builder()
+                        ModelResponse.<Type>builder()
                                 .status(404)
                                 .message(data)
                                 .data(null)
@@ -158,9 +159,9 @@ public class MakeController {
 
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Make>builder()
+                    ModelResponse.<Type>builder()
                             .status(500)
-                            .message("Failed to deleted amenities !!!")
+                            .message("INTERNAL SERVER ERROR !!!")
                             .data(null)
                             .build()
             );
@@ -168,10 +169,10 @@ public class MakeController {
         }
     }
 
-    // Endpoint: Search make
+    // Endpoint: Search type
     @GetMapping("/search")
-    public List<Make> searchMake(@RequestParam String keyword) {
-        return makeService.searchMake(keyword);
+    public ResponseEntity<List<Type>> searchType(@RequestParam String keyword) {
+        return ResponseEntity.status(HttpStatus.OK).body(typeService.searchType(keyword));
     }
 
     // Endpoint: Create make by file csv
@@ -179,15 +180,15 @@ public class MakeController {
     public ResponseEntity<ModelResponse<?>> uploadFile(@RequestParam("file") MultipartFile[] file) {
         try {
 
-            String data = makeService.saveMakeFromCSV(file);
+            String data = typeService.saveTypeFromCSV(file);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(
-                    ModelResponse.<Make>builder()
+                    ModelResponse.<Type>builder()
                             .status(201)
-                            .message("Create successfully " + data +" make !!!").data(null).build());
+                            .message("Create successfully " + data +" type !!!").data(null).build());
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Make>builder()
+                    ModelResponse.<Type>builder()
                             .status(500)
                             .message(String.valueOf(e)).data(null).build());
         }
@@ -195,26 +196,11 @@ public class MakeController {
 
     // Endpoint: Pagination
     @GetMapping
-    public Page<Make> getMakes(
+    public ResponseEntity<Page<Type>> getTypes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return makeService.getAllMakes(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "makeid")));
+        Page<Type> types = typeService.getAllTypes(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "typeid")));
+        return ResponseEntity.ok(types);
     }
-
-    // Endpoint: List make
-    @GetMapping("/list")
-    public ResponseEntity<ModelResponse<List<Make>>> listMake(){
-        try{
-            List<Make> data = makeService.getAllMake();
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    ModelResponse.<List<Make>>builder().status(200).message("OK").data(data).build()
-            );
-        }catch (Exception ex){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<List<Make>>builder().status(200).message("INTERNAL SERVER ERROR").data(null).build()
-            );
-        }
-    }
-
 
 }
