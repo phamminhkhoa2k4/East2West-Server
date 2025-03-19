@@ -10,7 +10,6 @@ import com.east2west.models.DTO.CarDTO;
 import com.east2west.service.*;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/cars")
@@ -61,51 +60,12 @@ public class CarController {
         return carService.doesCarNameExist(carName);
     }
 
-
-
-    @GetMapping("/locationtypes")
-    public List<LocationType> getLocationType() {
-        return carService.getAllLocationType();
-    }
-
-    @PostMapping("/locationtypes")
-    public LocationType createLocationType(@RequestBody LocationType locationtype) {
-        return carService.saveLocationType(locationtype);
-    }
-
-    @GetMapping("/locationtype/{id}")
-    public ResponseEntity<LocationType> getLocationTypeById(@PathVariable int id) {
-        Optional<LocationType> locationtype = carService.getAllLocationType().stream().filter(m -> m.getLocationtypeid() == id).findFirst();
-        return locationtype.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-    @PutMapping("/locationtype/{id}")
-    public ResponseEntity<LocationType> updateLocationType(@PathVariable int id, @RequestBody LocationType locationType) {
-        Optional<LocationType> existingMake = carService.getAllLocationType().stream().filter(m -> m.getLocationtypeid() == id).findFirst();
-        if (existingMake.isPresent()) {
-            LocationType updatedMake = existingMake.get();
-            updatedMake.setLocationtypename(locationType.getLocationtypename());
-            carService.saveLocationType(updatedMake);
-            return ResponseEntity.ok(updatedMake);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
     // @DeleteMapping("/{carId}")
     // public ResponseEntity<Void> deleteCar(@PathVariable int carId) {
     //     carService.deleteCar(carId);
     //     return ResponseEntity.noContent().build();
     // }
-   
 
-    @DeleteMapping("/locationtypes/{id}")
-    public ResponseEntity<String> deleteLocationType(@PathVariable int id) {
-        try {
-            carService.deleteLocationType(id);
-            return new ResponseEntity<>("Location type deleted successfully.", HttpStatus.OK);
-        } catch (DataIntegrityViolationException ex) {
-            return new ResponseEntity<>("Cannot delete location type: This location type is referenced by other records. Please handle those dependencies first.", HttpStatus.CONFLICT);
-        }
-    }
     @GetMapping("/search/name")
     public List<Car> searchToursByTitle(@RequestParam("name") String name) {
         return  carService.findByName(name);

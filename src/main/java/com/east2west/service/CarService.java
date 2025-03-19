@@ -14,9 +14,6 @@ public class CarService {
     private CarRepository carRepository;
 
     @Autowired
-    private ModelRepository modelRepository;
-
-    @Autowired
     private MakeRepository makeRepository;
 
     @Autowired
@@ -83,12 +80,6 @@ public class CarService {
             return false;
         }
     }
-
-    public List<Model> getAllModel() {
-        return modelRepository.findAll();
-    }
-
-
     public List<Car> getAllCars() {
         return carRepository.findAll();
     }
@@ -97,23 +88,7 @@ public class CarService {
         return carRepository.findById(id).orElse(null);
     }
 
-    public LocationType saveLocationType(LocationType locationType) {
-        if (doesLocationTypeNameExist(locationType.getLocationtypename(), locationType.getLocationtypeid())) {
-            throw new IllegalArgumentException("Location type name already exists.");
-        }
-        return locationTypeRepository.save(locationType);
-    }
 
-    private boolean doesLocationTypeNameExist(String locationTypeName, int excludeLocationTypeId) {
-        return locationTypeRepository.findByLocationtypenameAndLocationtypeidNot(locationTypeName, excludeLocationTypeId).isPresent();
-    }
-    public List<LocationType> getAllLocationType(){
-        return locationTypeRepository.findAll();
-    }
-
-    public void deleteLocationType(int locationTypeId) {
-        locationTypeRepository.deleteById(locationTypeId);
-    }
 
 
     public List<Car> findByName(String name) {

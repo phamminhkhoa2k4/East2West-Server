@@ -1,59 +1,57 @@
 package com.east2west.controllers.admin.car;
 
 import com.east2west.models.DTO.ModelResponse;
-import com.east2west.models.Entity.Make;
-import com.east2west.service.MakeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.east2west.models.Entity.LocationType;
+import com.east2west.service.LocationTypeService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/cars/make")
+@Controller
+@RequestMapping("/api/cars/locationtype")
 @PreAuthorize("hasAuthority('MODERATOR')")
-public class MakeController {
+public class LocationTypeController {
 
-    private final MakeService makeService;
+    private final LocationTypeService locationTypeService;
 
-    @Autowired
-    public MakeController(MakeService makeService) {
-        this.makeService = makeService;
+    public LocationTypeController(LocationTypeService locationTypeService) {
+        this.locationTypeService = locationTypeService;
     }
 
-    // Endpoint: Create make
+    // Endpoint: Create location type
     @PostMapping
-    public ResponseEntity<ModelResponse<Make>> createMake(@RequestBody Make make) {
+    public ResponseEntity<ModelResponse<LocationType>> createLocationType(@RequestBody LocationType locationType) {
         try {
-            Optional<Make> makes = makeService.findByMakeName(make.getMakename());
+            Optional<LocationType> locationTypes = locationTypeService.findByLocationTypeName(locationType.getLocationtypename());
 
-            if(makes.isPresent()){
+            if(locationTypes.isPresent()){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Make>builder()
+                        ModelResponse.<LocationType>builder()
                                 .status(400)
-                                .message("Make name " + make.getMakename() + " already exists.")
+                                .message("Location type name " + locationType.getLocationtypename() + " already exists.")
                                 .data(null)
                                 .build()
                 );
             }
-            Make data = makeService.saveMake(make);
+            LocationType data = locationTypeService.saveLocationType(locationType);
             return ResponseEntity.status(HttpStatus.CREATED).body(
-                    ModelResponse.<Make>builder()
+                    ModelResponse.<LocationType>builder()
                             .status(201)
-                            .message(data.getMakename() + " make created successfully !!!")
+                            .message(data.getLocationtypename() + " location type created successfully !!!")
                             .data(data)
                             .build()
             );
         }catch (Exception ex){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    ModelResponse.<Make>builder()
+                    ModelResponse.<LocationType>builder()
                             .status(400)
                             .message("Error Internal Server !!!")
                             .data(null)
@@ -63,24 +61,24 @@ public class MakeController {
     }
 
 
-    // Endpoint: Update make
+    // Endpoint: Update location type
     @PutMapping
-    public ResponseEntity<ModelResponse<Make>> updateMake(@RequestBody Make make) {
+    public ResponseEntity<ModelResponse<LocationType>> updateLocationType(@RequestBody LocationType locationType) {
         try {
-            Make data = makeService.updateMake(make);
+            LocationType data = locationTypeService.updateLocationType(locationType);
             if(data != null){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Make>builder()
+                        ModelResponse.<LocationType>builder()
                                 .status(200)
-                                .message(data.getMakename() +" make updated successfully !!!")
+                                .message(data.getLocationtypename() +" location type updated successfully !!!")
                                 .data(data)
                                 .build()
                 );
             }else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Make>builder()
+                        ModelResponse.<LocationType>builder()
                                 .status(404)
-                                .message("Make not found !!!")
+                                .message("Location type not found !!!")
                                 .data(null)
                                 .build()
                 );
@@ -88,7 +86,7 @@ public class MakeController {
 
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Make>builder()
+                    ModelResponse.<LocationType>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR")
                             .data(null)
@@ -99,14 +97,14 @@ public class MakeController {
     }
 
 
-    // Endpoint: Get a make by id
+    // Endpoint: Get a location type by id
     @GetMapping("/{id}")
-    public ResponseEntity<ModelResponse<Optional<Make>>> getMakeById(@PathVariable int id){
+    public ResponseEntity<ModelResponse<Optional<LocationType>>> getLocationTypeById(@PathVariable int id){
         try {
-            Optional<Make> data = makeService.getByIdMake(id);
+            Optional<LocationType> data = locationTypeService.getLocationTypeById(id);
             if(data.isPresent()){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Optional<Make>>builder()
+                        ModelResponse.<Optional<LocationType>>builder()
                                 .status(200)
                                 .message("OK")
                                 .data(data)
@@ -114,16 +112,16 @@ public class MakeController {
                 );
             }else{
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Optional<Make>>builder()
+                        ModelResponse.<Optional<LocationType>>builder()
                                 .status(404)
-                                .message("Not found make !!!")
+                                .message("Not found location type !!!")
                                 .data(null)
                                 .build()
                 );
             }
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Optional<Make>>builder()
+                    ModelResponse.<Optional<LocationType>>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR")
                             .data(null)
@@ -133,14 +131,14 @@ public class MakeController {
 
     }
 
-    // Endpoint: Delete make by id
+    // Endpoint: Delete location type by id
     @DeleteMapping("/{id}")
-    public ResponseEntity<ModelResponse<Make>> deleteMake(@PathVariable int id) {
+    public ResponseEntity<ModelResponse<LocationType>> deleteLocationType(@PathVariable int id) {
         try {
-            String data = makeService.deleteMake(id);
+            String data = locationTypeService.deleteLocationType(id);
             if(data.startsWith("Deleted")){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Make>builder()
+                        ModelResponse.<LocationType>builder()
                                 .status(200)
                                 .message(data)
                                 .data(null)
@@ -148,7 +146,7 @@ public class MakeController {
                 );
             }else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Make>builder()
+                        ModelResponse.<LocationType>builder()
                                 .status(404)
                                 .message(data)
                                 .data(null)
@@ -158,7 +156,7 @@ public class MakeController {
 
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Make>builder()
+                    ModelResponse.<LocationType>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR !!!")
                             .data(null)
@@ -168,26 +166,26 @@ public class MakeController {
         }
     }
 
-    // Endpoint: Search make
+    // Endpoint: Search location type
     @GetMapping("/search")
-    public List<Make> searchMake(@RequestParam String keyword) {
-        return makeService.searchMake(keyword);
+    public ResponseEntity<List<LocationType>> searchLocationType(@RequestParam String keyword) {
+        return ResponseEntity.status(HttpStatus.OK).body(locationTypeService.searchLocationType(keyword));
     }
 
-    // Endpoint: Create make by file csv
+    // Endpoint: Create location type by file csv
     @PostMapping("/uploadfromcsv")
     public ResponseEntity<ModelResponse<?>> uploadFile(@RequestParam("file") MultipartFile[] file) {
         try {
 
-            String data = makeService.saveMakeFromCSV(file);
+            String data = locationTypeService.saveLocationFromCSV(file);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(
-                    ModelResponse.<Make>builder()
+                    ModelResponse.<LocationType>builder()
                             .status(201)
-                            .message("Create successfully " + data +" make !!!").data(null).build());
+                            .message("Create successfully " + data +" location type !!!").data(null).build());
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Make>builder()
+                    ModelResponse.<LocationType>builder()
                             .status(500)
                             .message(String.valueOf(e)).data(null).build());
         }
@@ -195,26 +193,10 @@ public class MakeController {
 
     // Endpoint: Pagination
     @GetMapping
-    public Page<Make> getMakes(
+    public ResponseEntity<Page<LocationType>> getLocationTypes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return makeService.getAllMakes(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "makeid")));
+        return ResponseEntity.status(HttpStatus.OK).body(locationTypeService.getAllLocationTypes(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "locationtypeid"))));
     }
-
-    // Endpoint: List make
-    @GetMapping("/list")
-    public ResponseEntity<ModelResponse<List<Make>>> listMake(){
-        try{
-            List<Make> data = makeService.getAllMake();
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    ModelResponse.<List<Make>>builder().status(200).message("OK").data(data).build()
-            );
-        }catch (Exception ex){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<List<Make>>builder().status(200).message("INTERNAL SERVER ERROR").data(null).build()
-            );
-        }
-    }
-
 
 }
