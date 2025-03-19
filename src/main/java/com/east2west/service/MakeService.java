@@ -76,17 +76,19 @@ public class MakeService {
                     }
 
                     String[] data = line.split(",");
-                    if (data.length < 1) {
+                    if (data.length < 2) {
                         continue;
                     }
 
 
                     String MakeName = data[0].trim();
+                    String MakeLogo = data[1].trim();
                     System.out.println("Đang xử lý tiện ích: " + MakeName);
 
                     Make make = new Make();
                     make.setMakeid(idCounter++);
                     make.setMakename(MakeName);
+                    make.setLogo(MakeLogo);
                     makesList.add(make);
                 }
             }

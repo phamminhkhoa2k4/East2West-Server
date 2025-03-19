@@ -1,12 +1,9 @@
 package com.east2west.models.Entity;
 import jakarta.persistence.*;
-
 import lombok.*;
-
-
-@Entity
 @Getter
 @Setter
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -18,9 +15,11 @@ public class Make {
     @Column(name = "makeid")
     private int makeid;
 
+    @Column(name = "logo")
+    private String logo;
+
     @Column(name = "makename")
     private String makename;
-
 
 
 }
