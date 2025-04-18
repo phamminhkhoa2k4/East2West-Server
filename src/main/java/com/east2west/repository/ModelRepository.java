@@ -10,13 +10,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ModelRepository extends JpaRepository<Model, Integer>{
-    Optional<Model> findByModelname(String modelName);
+
+    List<Model> findByMake_Makeid(int makeid);
+
 
     Optional<Model> findByMake_MakeidAndModelname(int makeid, String modelname);
 
-    Page<Model> findAll(Pageable pageable);
+    Optional<Model> findByMake_MakenameAndModelname(String makename, String modelname);
 
-//    List<Model> findByModelnameContainingIgnoreCase(String keyword);
+
+    Page<Model> findAll(Pageable pageable);
 
     @Query("SELECT m FROM Model m " +
             "JOIN m.make mk " +

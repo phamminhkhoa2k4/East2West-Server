@@ -2,13 +2,11 @@ package com.east2west.service;
 
 
 import com.east2west.models.Entity.LocationType;
-import com.east2west.models.Entity.Make;
 import com.east2west.repository.LocationTypeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -37,6 +35,10 @@ public class LocationTypeService {
     }
     public Page<LocationType> getAllLocationTypes(Pageable pageable) {
         return locationTypeRepository.findAll(pageable);
+    }
+
+    public List<LocationType> getAllLocationType() {
+        return locationTypeRepository.findAll();
     }
     public Optional<LocationType>  getLocationTypeById(int id){
         return locationTypeRepository.findById(id);

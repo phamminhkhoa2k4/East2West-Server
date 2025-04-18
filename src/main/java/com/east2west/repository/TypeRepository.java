@@ -1,5 +1,4 @@
 package com.east2west.repository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TypeRepository  extends JpaRepository<Type, Integer>{
     Optional<Type> findByTypename(String typeName);
-
-
     Page<Type> findAll(Pageable pageable);
     List<Type> findByTypenameContainingIgnoreCase(String keyword);
 }

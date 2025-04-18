@@ -87,7 +87,7 @@ private UserRepository userRepository;
     
     public boolean isCarAlreadyRented(int carId, int userId, Date rentalDate, Date returnDate) {
         // Get all active rentals for the specific car and user with statuses "Waiting" and "Confirmed"
-        List<Rental> rentals = rentalCarRepository.findByCar_CarIdAndUseridAndStatusIn(
+        List<Rental> rentals = rentalCarRepository.findByCar_CaridAndUseridAndStatusIn(
             carId, 
             userId, 
             Arrays.asList("Waiting", "Confirmed")

@@ -1,11 +1,10 @@
 package com.east2west.repository;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
 import com.east2west.models.Entity.Rental;
-
-
 public interface RentalRepository extends JpaRepository<Rental, Integer> {
-    List<Rental> findByUserid(int userid);
 
-    List<Rental> findByCar_CarIdAndUseridAndStatusIn(int carId,int userId, List<String> statuses);
+
+    List<Rental> findByCar_CaridAndUseridAndStatusIn(int carId,int userId, List<String> statuses);
+    List<Rental> findByUserid(int userid);
 }

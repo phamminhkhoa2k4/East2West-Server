@@ -199,4 +199,19 @@ public class LocationTypeController {
         return ResponseEntity.status(HttpStatus.OK).body(locationTypeService.getAllLocationTypes(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "locationtypeid"))));
     }
 
+    // Endpoint: List type
+    @GetMapping("/list")
+    public ResponseEntity<ModelResponse<List<LocationType>>> listType(){
+        try{
+            List<LocationType> data = locationTypeService.getAllLocationType();
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<List<LocationType>>builder().status(200).message("OK").data(data).build()
+            );
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ModelResponse.<List<LocationType>>builder().status(200).message("INTERNAL SERVER ERROR").data(null).build()
+            );
+        }
+    }
+
 }

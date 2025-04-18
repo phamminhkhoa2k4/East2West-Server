@@ -118,4 +118,8 @@ public class TypeService {
         return typeRepository.findAll(pageable);
     }
 
+    public List<Type> getAllType() {
+        return typeRepository.findAll();
+    }
+
 }

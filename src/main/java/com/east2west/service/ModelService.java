@@ -38,6 +38,10 @@ public class ModelService {
         return modelRepository.findByMake_MakeidAndModelname(makeId,modelName);
     }
 
+    public List<Model> findAllModelByMakeId(int makeId){
+        return  modelRepository.findByMake_Makeid(makeId);
+    }
+
     public Page<Model> getAllModels(Pageable pageable) {
         return modelRepository.findAll(pageable);
     }

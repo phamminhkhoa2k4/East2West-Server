@@ -203,4 +203,20 @@ public class TypeController {
         return ResponseEntity.ok(types);
     }
 
+    // Endpoint: List type
+    @GetMapping("/list")
+    public ResponseEntity<ModelResponse<List<Type>>> listType(){
+        try{
+            List<Type> data = typeService.getAllType();
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<List<Type>>builder().status(200).message("OK").data(data).build()
+            );
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ModelResponse.<List<Type>>builder().status(200).message("INTERNAL SERVER ERROR").data(null).build()
+            );
+        }
+    }
+
+
 }

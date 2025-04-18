@@ -3,6 +3,7 @@ package com.east2west.service;
 
 import com.east2west.models.Entity.Make;
 import com.east2west.repository.MakeRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,7 +49,7 @@ public class MakeService {
         return makeRepository.findByMakenameContainingIgnoreCase(keyword);
     }
 
-    public String saveMakeFromCSV(MultipartFile[] files) {
+    public String saveMakeFromCSV(@NotNull MultipartFile[] files) {
         if (files.length == 0) {
             return "Chưa chọn file!";
         }

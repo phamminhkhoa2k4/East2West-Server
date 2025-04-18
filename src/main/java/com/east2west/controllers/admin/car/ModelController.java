@@ -166,6 +166,28 @@ public class ModelController {
         return modelService.searchModel(keyword);
     }
 
+    // Endpoint: Find all model by make id
+    @GetMapping("make/{id}")
+    public ResponseEntity<ModelResponse<List<Model>>> getAllModelByMakeId(@PathVariable int id){
+        try {
+            List<Model> data = modelService.findAllModelByMakeId(id);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<List<Model>>builder()
+                            .status(200)
+                            .message("OK")
+                            .data(data)
+                            .build()
+            );
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ModelResponse.<List<Model>>builder()
+                            .status(500)
+                            .message("INTERNAL SERVER ERROR !!!")
+                            .data(null)
+                            .build()
+            );
+        }
+    }
 
     // Endpoint: Create model
     @PostMapping

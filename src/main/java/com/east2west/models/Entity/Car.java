@@ -13,6 +13,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import lombok.*;
 import lombok.Setter;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
@@ -27,22 +28,34 @@ public class Car {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "carid")
-    private int carId;
+    private int carid;
 
 
     @Column(name = "carname")
     private String carName;
 
 
-//     @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "modelid", referencedColumnName = "modelid")
-//    private Model model;
-
-
-
      @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "makeid", referencedColumnName = "makeid")
-    private Make make;
+    @JoinColumn(name = "modelid", referencedColumnName = "modelid")
+    private Model model;
+
+
+    @Column(name = "longitude")
+    private double longitude;
+
+
+    @Column(name = "latitude")
+    private double latitude;
+
+    @Column(name="location",columnDefinition = "Text")
+    private String location;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "wardid", referencedColumnName = "wardid")
+    private Ward ward;
+
+    @Column(columnDefinition = "geometry(Point, 3857)")
+    private Point geom;
 
 
      @ManyToOne(fetch = FetchType.EAGER)
@@ -61,6 +74,9 @@ public class Car {
 
     @Column(name = "airconditioned")
     private boolean airConditioned;
+
+    @Column(name = "fourdoorsormore")
+    private boolean fourDoorsOrMore;
 
 
     @Column(name = "priceperday")
@@ -89,8 +105,10 @@ public class Car {
     @Column(name="fuel")
     private String fuel;
 
-    @Column(name="location")
-    private String location;
+    @Column(name="enginesystem")
+    private String enginesystem;
+
+
 
 
     @Convert(converter = StringListConverter.class)
