@@ -3,7 +3,6 @@ package com.east2west.controllers.admin.tour;
 
 import com.east2west.models.DTO.MealDTO;
 import com.east2west.models.DTO.ModelResponse;
-import com.east2west.models.Entity.Make;
 import com.east2west.models.Entity.Meal;
 import com.east2west.service.MealService;
 import org.springframework.data.domain.Page;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -151,7 +149,7 @@ public class MealController {
 
     // Endpoint: Update meal
     @PutMapping
-    public ResponseEntity<ModelResponse<MealDTO>> updateMake(@RequestBody MealDTO meal) {
+    public ResponseEntity<ModelResponse<MealDTO>> updateTransfer(@RequestBody MealDTO meal) {
         try {
             MealDTO data = mealService.updateMeal(meal);
             if(data != null){

@@ -2,6 +2,7 @@ package com.east2west.controllers.admin.homestay;
 
 
 import com.east2west.models.DTO.ModelResponse;
+import com.east2west.models.DTO.StructureDTO;
 import com.east2west.models.Entity.Structure;
 import com.east2west.service.StructureService;
 import org.springframework.data.domain.Page;
@@ -28,30 +29,31 @@ public class StructureController {
     }
 
     @PutMapping
-    public ResponseEntity<ModelResponse<Structure>> updateStructure(@RequestBody Structure structure) {
+    public ResponseEntity<ModelResponse<StructureDTO>> updateStructure(@RequestBody StructureDTO structure) {
         try {
-            Structure data = structureService.updateStructure(structure);
-            if(data != null){
-                return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Structure>builder()
-                                .status(200)
-                                .message(data.getStructurename() +" structure updated successfully !!!")
-                                .data(data)
-                                .build()
-                );
-            }else {
+            StructureDTO data = structureService.updateStructure(structure);
+            if(data == null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Structure>builder()
+                        ModelResponse.<StructureDTO>builder()
                                 .status(404)
                                 .message("Structure not found !!!")
                                 .data(null)
                                 .build()
                 );
+
             }
+
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<StructureDTO>builder()
+                            .status(200)
+                            .message(data.getStructurename() +" structure updated successfully !!!")
+                            .data(data)
+                            .build()
+            );
 
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Structure>builder()
+                    ModelResponse.<StructureDTO>builder()
                             .status(500)
                             .message("Failed to updated structure !!!")
                             .data(null)
@@ -64,11 +66,11 @@ public class StructureController {
     }
 
     @PostMapping
-    public ResponseEntity<ModelResponse<Structure>> createStructure(@RequestBody Structure structure) {
+    public ResponseEntity<ModelResponse<StructureDTO>> createStructure(@RequestBody StructureDTO structure) {
         try {
-            Structure data = structureService.createStructure(structure);
+            StructureDTO data = structureService.createStructure(structure);
             return ResponseEntity.status(HttpStatus.CREATED).body(
-                    ModelResponse.<Structure>builder()
+                    ModelResponse.<StructureDTO>builder()
                             .status(201)
                             .message(data.getStructurename() + " structure created successfully !!!")
                             .data(data)
@@ -76,7 +78,7 @@ public class StructureController {
             );
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Structure>builder()
+                    ModelResponse.<StructureDTO>builder()
                             .status(500)
                             .message("Failed to create structure !!!")
                             .data(null)
@@ -88,29 +90,29 @@ public class StructureController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ModelResponse<Optional<Structure>>> getStructureById(@PathVariable int id){
+    public ResponseEntity<ModelResponse<Optional<StructureDTO>>> getStructureById(@PathVariable int id){
         try {
-            Optional<Structure> data = structureService.getByIdStructure(id);
-            if(data.isPresent()){
-                return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Optional<Structure>>builder()
-                                .status(200)
-                                .message("OK")
-                                .data(data)
-                                .build()
-                );
-            }else{
+            Optional<StructureDTO> data = structureService.getStructureById(id);
+            if(data.isEmpty()){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Optional<Structure>>builder()
+                        ModelResponse.<Optional<StructureDTO>>builder()
                                 .status(404)
                                 .message("Not found structure !!!")
                                 .data(null)
                                 .build()
                 );
+
             }
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<Optional<StructureDTO>>builder()
+                            .status(200)
+                            .message("OK")
+                            .data(data)
+                            .build()
+            );
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Optional<Structure>>builder()
+                    ModelResponse.<Optional<StructureDTO>>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR")
                             .data(null)
@@ -120,50 +122,45 @@ public class StructureController {
 
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<Structure>> getAllStructure(){
-//        List<Structure> structures= structureService.getStructureAll();
-//        return ResponseEntity.ok(structures);
-//    }
 
     @GetMapping("/search")
-    public List<Structure> searchStructure(@RequestParam String keyword) {
+    public List<StructureDTO> searchStructure(@RequestParam String keyword) {
         return structureService.searchStructure(keyword);
     }
 
     // Endpoint: Pagination
     @GetMapping
-    public Page<Structure> getStructure(
+    public Page<StructureDTO> getStructure(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return structureService.getAllStructure(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC,"structureid")));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ModelResponse<Structure>> deleteStructure(@PathVariable int id) {
+    public ResponseEntity<ModelResponse<StructureDTO>> deleteStructure(@PathVariable int id) {
         try {
             String data = structureService.deleteStructure(id);
             if(data.startsWith("Deleted")){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Structure>builder()
+                        ModelResponse.<StructureDTO>builder()
                                 .status(200)
                                 .message(data)
                                 .data(null)
                                 .build()
                 );
-            }else {
+            }
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Structure>builder()
+                        ModelResponse.<StructureDTO>builder()
                                 .status(404)
                                 .message(data)
                                 .data(null)
                                 .build()
                 );
-            }
+
 
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Structure>builder()
+                    ModelResponse.<StructureDTO>builder()
                             .status(500)
                             .message("Failed to deleted structure !!!")
                             .data(null)

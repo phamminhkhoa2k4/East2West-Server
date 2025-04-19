@@ -1,10 +1,10 @@
 package com.east2west.controllers.admin.homestay;
 
 
+import com.east2west.models.DTO.AmenitiesDTO;
 import com.east2west.models.DTO.HomestayDTO;
 import com.east2west.models.DTO.ModelResponse;
 import com.east2west.models.DTO.PhotoDeleteDTO;
-import com.east2west.models.Entity.Amenities;
 import com.east2west.models.Entity.Homestay;
 import com.east2west.models.Entity.Structure;
 import com.east2west.models.Entity.User;
@@ -102,11 +102,11 @@ public class HostController {
 
     // Endpoint: Get all amenities
     @GetMapping("/amenity")
-    public ResponseEntity<ModelResponse<List<Amenities>>> getAllAmenities(){
+    public ResponseEntity<ModelResponse<List<AmenitiesDTO>>> getAllAmenities(){
         try {
-            List<Amenities> data = amenitiesService.getAmenitiesAll();
+            List<AmenitiesDTO> data = amenitiesService.getAmenitiesAll();
             return ResponseEntity.status(HttpStatus.OK).body(
-                    ModelResponse.<List<Amenities>>builder()
+                    ModelResponse.<List<AmenitiesDTO>>builder()
                             .status(200)
                             .message("OK")
                             .data(data)
@@ -114,7 +114,7 @@ public class HostController {
             );
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<List<Amenities>>builder()
+                    ModelResponse.<List<AmenitiesDTO>>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR")
                             .data(null)

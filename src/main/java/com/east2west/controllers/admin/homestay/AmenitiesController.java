@@ -1,6 +1,7 @@
 package com.east2west.controllers.admin.homestay;
 
 
+import com.east2west.models.DTO.AmenitiesDTO;
 import com.east2west.models.DTO.ModelResponse;
 import com.east2west.models.Entity.Amenities;
 import com.east2west.service.AmenitiesService;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -31,11 +31,11 @@ public class AmenitiesController {
 
     // Endpoint: Create amenities
     @PostMapping
-    public ResponseEntity<ModelResponse<Amenities>> createAmenities(@RequestBody Amenities amenities) {
+    public ResponseEntity<ModelResponse<AmenitiesDTO>> createAmenities(@RequestBody AmenitiesDTO amenities) {
         try {
-            Amenities data = amenitiesService.createAmenities(amenities);
+            AmenitiesDTO data = amenitiesService.createAmenities(amenities);
             return ResponseEntity.status(HttpStatus.CREATED).body(
-                    ModelResponse.<Amenities>builder()
+                    ModelResponse.<AmenitiesDTO>builder()
                             .status(201)
                             .message(data.getAmenitiesname() + " amenities created successfully !!!")
                             .data(data)
@@ -43,7 +43,7 @@ public class AmenitiesController {
             );
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Amenities>builder()
+                    ModelResponse.<AmenitiesDTO>builder()
                             .status(500)
                             .message("Failed to create amenities !!!")
                             .data(null)
@@ -56,30 +56,29 @@ public class AmenitiesController {
 
     // Endpoint: Update amenities
     @PutMapping
-    public ResponseEntity<ModelResponse<Amenities>> updateAmenities(@RequestBody Amenities amenities) {
+    public ResponseEntity<ModelResponse<AmenitiesDTO>> updateAmenities(@RequestBody AmenitiesDTO amenities) {
         try {
-            Amenities data = amenitiesService.updateAmenities(amenities);
-            if(data != null){
-                return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Amenities>builder()
-                                .status(200)
-                                .message(data.getAmenitiesname() +" amenities updated successfully !!!")
-                                .data(data)
-                                .build()
-                );
-            }else {
+            AmenitiesDTO data = amenitiesService.updateAmenities(amenities);
+            if(data == null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Amenities>builder()
+                        ModelResponse.<AmenitiesDTO>builder()
                                 .status(404)
                                 .message("Amenities not found !!!")
                                 .data(null)
                                 .build()
                 );
             }
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<AmenitiesDTO>builder()
+                            .status(200)
+                            .message(data.getAmenitiesname() +" amenities updated successfully !!!")
+                            .data(data)
+                            .build()
+            );
 
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Amenities>builder()
+                    ModelResponse.<AmenitiesDTO>builder()
                             .status(500)
                             .message("Failed to updated amenities !!!")
                             .data(null)
@@ -110,29 +109,28 @@ public class AmenitiesController {
 
     // Endpoint: Get an amenities by id
     @GetMapping("/{id}")
-    public ResponseEntity<ModelResponse<Optional<Amenities>>> getAmenitiesById(@PathVariable int id){
+    public ResponseEntity<ModelResponse<Optional<AmenitiesDTO>>> getAmenitiesById(@PathVariable int id){
         try {
-            Optional<Amenities> data = amenitiesService.getByIdAmenities(id);
-            if(data.isPresent()){
-                return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Optional<Amenities>>builder()
-                                .status(200)
-                                .message("OK")
-                                .data(data)
-                                .build()
-                );
-            }else{
+            Optional<AmenitiesDTO> data = amenitiesService.getAmenitiesById(id);
+            if(data.isEmpty()){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Optional<Amenities>>builder()
+                        ModelResponse.<Optional<AmenitiesDTO>>builder()
                                 .status(404)
                                 .message("Not found amenities !!!")
                                 .data(null)
                                 .build()
                 );
             }
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<Optional<AmenitiesDTO>>builder()
+                            .status(200)
+                            .message("OK")
+                            .data(data)
+                            .build()
+            );
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Optional<Amenities>>builder()
+                    ModelResponse.<Optional<AmenitiesDTO>>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR")
                             .data(null)
@@ -145,20 +143,20 @@ public class AmenitiesController {
 
     // Endpoint: Get all amenities
     @GetMapping("/amenities")
-    public ResponseEntity<List<Amenities>> getAllAmenities(){
-        List<Amenities> amenities= amenitiesService.getAmenitiesAll();
+    public ResponseEntity<List<AmenitiesDTO>> getAllAmenities(){
+        List<AmenitiesDTO> amenities= amenitiesService.getAmenitiesAll();
         return ResponseEntity.ok(amenities);
     }
 
     // Endpoint: Search amenities
     @GetMapping("/search")
-    public List<Amenities> searchAmenities(@RequestParam String keyword) {
+    public List<AmenitiesDTO> searchAmenities(@RequestParam String keyword) {
         return amenitiesService.searchAmenities(keyword);
     }
 
     // Endpoint: Pagination
     @GetMapping
-    public Page<Amenities> getAmenities(
+    public Page<AmenitiesDTO> getAmenities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return amenitiesService.getAllAmenities(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC,"amenitiesid")));

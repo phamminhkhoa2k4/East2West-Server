@@ -1,7 +1,9 @@
 package com.east2west.service;
 
 
+import com.east2west.models.DTO.LocationTypeDTO;
 import com.east2west.models.Entity.LocationType;
+import com.east2west.models.mapper.LocationTypeMapper;
 import com.east2west.repository.LocationTypeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,28 +26,32 @@ public class LocationTypeService {
         this.locationTypeRepository = locationTypeRepository;
     }
 
-    public LocationType updateLocationType(LocationType locationType){
+    public LocationTypeDTO updateLocationType(LocationTypeDTO locationType){
         Optional<LocationType> locationTypes =  locationTypeRepository.findById(locationType.getLocationtypeid());
-        if(locationTypes.isPresent()){
-            return locationTypeRepository.save(locationType);
-        }
-
-        return null;
-
+        if(locationTypes.isEmpty()) return null;
+        LocationType data = LocationTypeMapper.INSTANCE.toEntity(locationType);
+        LocationType response = locationTypeRepository.save(data);
+        return LocationTypeMapper.INSTANCE.toDTO(response);
     }
-    public Page<LocationType> getAllLocationTypes(Pageable pageable) {
-        return locationTypeRepository.findAll(pageable);
-    }
-
-    public List<LocationType> getAllLocationType() {
-        return locationTypeRepository.findAll();
-    }
-    public Optional<LocationType>  getLocationTypeById(int id){
-        return locationTypeRepository.findById(id);
+    public Page<LocationTypeDTO> getAllLocationTypes(Pageable pageable) {
+        Page<LocationType> locationTypePage = locationTypeRepository.findAll(pageable);
+        return locationTypePage.map(LocationTypeMapper.INSTANCE::toDTO);
     }
 
-    public List<LocationType> searchLocationType(String keyword) {
-        return locationTypeRepository.searchByKeyword(keyword);
+    public List<LocationTypeDTO> getAllLocationType() {
+        List<LocationType> locationTypeList = locationTypeRepository.findAll();
+        return locationTypeList.stream().map(LocationTypeMapper.INSTANCE::toDTO).toList();
+    }
+    public Optional<LocationTypeDTO>  getLocationTypeById(int id){
+        Optional<LocationType> locationType = locationTypeRepository.findById(id);
+        if(locationType.isEmpty()) return  Optional.empty();
+        LocationTypeDTO response  = LocationTypeMapper.INSTANCE.toDTO(locationType.get());
+        return Optional.ofNullable(response);
+    }
+
+    public List<LocationTypeDTO> searchLocationType(String keyword) {
+        List<LocationType> locationTypeList = locationTypeRepository.searchByKeyword(keyword);
+        return locationTypeList.stream().map(LocationTypeMapper.INSTANCE::toDTO).toList();
     }
 
     public String saveLocationFromCSV(MultipartFile[] files) {
@@ -119,9 +125,9 @@ public class LocationTypeService {
     }
 
 
-    public LocationType saveLocationType(LocationType locationType) {
-
-        return locationTypeRepository.save(locationType);
+    public LocationTypeDTO createLocationType(LocationTypeDTO locationType) {
+        LocationType data = LocationTypeMapper.INSTANCE.toEntity(locationType);
+        return LocationTypeMapper.INSTANCE.toDTO(data);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.east2west.controllers;
 
+import com.east2west.models.DTO.AmenitiesDTO;
 import com.east2west.models.DTO.HomestayDTO;
 import com.east2west.models.DTO.HomestayFilterDTO;
 import com.east2west.models.DTO.HomestaySearchDTO;
@@ -116,16 +117,16 @@ public class HomestayController {
 
     // Endpoint: Get all amenities
     @GetMapping("/amenities")
-    public ResponseEntity<List<Amenities>> getAllAmenities(){
-        List<Amenities> amenities= amenitiesService.getAmenitiesAll();
+    public ResponseEntity<List<AmenitiesDTO>> getAllAmenities(){
+        List<AmenitiesDTO> amenities= amenitiesService.getAmenitiesAll();
         return ResponseEntity.ok(amenities);
     }
 
     // TODO: add model Response
     // Endpoint: Get multi amenities by multi ids
     @GetMapping("/amenities/multi")
-    public ResponseEntity<List<Amenities>> getAmenitiesByIds(@RequestParam List<Integer> ids) {
-        List<Amenities> amenities = amenitiesService.getByIdsAmenities(ids);
+    public ResponseEntity<List<AmenitiesDTO>> getAmenitiesByIds(@RequestParam List<Integer> ids) {
+        List<AmenitiesDTO> amenities = amenitiesService.getByIdsAmenities(ids);
         return ResponseEntity.ok(amenities);
     }
 

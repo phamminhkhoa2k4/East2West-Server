@@ -1,6 +1,8 @@
 package com.east2west.service;
 
+import com.east2west.models.DTO.TypeDTO;
 import com.east2west.models.Entity.Type;
+import com.east2west.models.mapper.TypeMapper;
 import com.east2west.repository.TypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,16 +31,17 @@ public class TypeService {
         return typeRepository.findByTypename(typeName);
     }
 
-    public Type saveType(Type type) {
-
-        return typeRepository.save(type);
+    public TypeDTO saveType(TypeDTO type) {
+        Type data = TypeMapper.INSTANCE.toEntity(type);
+        return TypeMapper.INSTANCE.toDTO(typeRepository.save(data));
     }
 
 
-    public Type updateType (Type type){
+    public TypeDTO updateType (TypeDTO type){
         Optional<Type> types =  typeRepository.findById(type.getTypeid());
         if(types.isPresent()){
-            return typeRepository.save(type);
+            Type data = TypeMapper.INSTANCE.toEntity(type);
+            return TypeMapper.INSTANCE.toDTO(typeRepository.save(data));
         }
         return null;
     }
@@ -54,12 +57,20 @@ public class TypeService {
         }
     }
 
-    public Optional<Type>  getByIdType(int id){
-        return typeRepository.findById(id);
+
+
+    public Optional<TypeDTO> getTypeById(int id) {
+        Optional<Type> type = typeRepository.findById(id);
+        if (type.isPresent()){
+            TypeDTO typeDTO  = TypeMapper.INSTANCE.toDTO(type.get());
+            return Optional.ofNullable(typeDTO);
+        }
+        return Optional.empty();
     }
 
-    public List<Type> searchType(String keyword) {
-        return typeRepository.findByTypenameContainingIgnoreCase(keyword);
+    public List<TypeDTO> searchType(String keyword) {
+        List<Type> typeList = typeRepository.findByTypenameContainingIgnoreCase(keyword);
+        return typeList.stream().map(TypeMapper.INSTANCE::toDTO).toList();
     }
 
     public String saveTypeFromCSV(MultipartFile[] files) {
@@ -114,12 +125,14 @@ public class TypeService {
         }
     }
 
-    public Page<Type> getAllTypes(Pageable pageable) {
-        return typeRepository.findAll(pageable);
+    public Page<TypeDTO> getAllTypes(Pageable pageable) {
+        Page<Type> typePage = typeRepository.findAll(pageable);
+        return typePage.map(TypeMapper.INSTANCE::toDTO);
     }
 
-    public List<Type> getAllType() {
-        return typeRepository.findAll();
+    public List<TypeDTO> getAllType() {
+        List<Type> typeList = typeRepository.findAll();
+        return typeList.stream().map(TypeMapper.INSTANCE::toDTO).toList();
     }
 
 }

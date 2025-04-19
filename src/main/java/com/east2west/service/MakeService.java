@@ -1,7 +1,9 @@
 package com.east2west.service;
 
 
+import com.east2west.models.DTO.MakeDTO;
 import com.east2west.models.Entity.Make;
+import com.east2west.models.mapper.MakeMapper;
 import com.east2west.repository.MakeRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -29,24 +30,32 @@ public class MakeService {
         this.makeRepository = makeRepository;
     }
 
-    public Make updateMake(Make make){
+    public MakeDTO updateMake(MakeDTO make){
         Optional<Make> makes =  makeRepository.findById(make.getMakeid());
-        if(makes.isPresent()){
-            return makeRepository.save(make);
-        }
+        if(makes.isEmpty()) return null;
+        Make data = MakeMapper.INSTANCE.toEntity(make);
+        Make response = makeRepository.save(data);
+        return MakeMapper.INSTANCE.toDTO(response);
 
-        return null;
+
 
     }
-    public Page<Make> getAllMakes(Pageable pageable) {
-        return makeRepository.findAll(pageable);
+    public Page<MakeDTO> getAllMakes(Pageable pageable) {
+        Page<Make> makePage = makeRepository.findAll(pageable);
+        return makePage.map(MakeMapper.INSTANCE::toDTO);
     }
-    public Optional<Make>  getByIdMake(int id){
-        return makeRepository.findById(id);
+    public Optional<MakeDTO>  getMakeById(int id){
+        Optional<Make> make = makeRepository.findById(id);
+        if(make.isEmpty()) return Optional.empty();
+        MakeDTO response = MakeMapper.INSTANCE.toDTO(make.get());
+        return Optional.ofNullable(response);
+
+
     }
 
-    public List<Make> searchMake(String keyword) {
-        return makeRepository.findByMakenameContainingIgnoreCase(keyword);
+    public List<MakeDTO> searchMake(String keyword) {
+        List<Make> makeList = makeRepository.findByMakenameContainingIgnoreCase(keyword);
+        return makeList.stream().map(MakeMapper.INSTANCE::toDTO).toList();
     }
 
     public String saveMakeFromCSV(@NotNull MultipartFile[] files) {
@@ -115,8 +124,8 @@ public class MakeService {
     }
 
 
-    public List<Make> getAllMake() {
-        return makeRepository.findAll();
+    public List<MakeDTO> getAllMake() {
+        return makeRepository.findAll().stream().map(MakeMapper.INSTANCE::toDTO).toList();
     }
 
 
@@ -125,9 +134,9 @@ public class MakeService {
     }
 
 
-    public Make saveMake(Make make) {
-
-        return makeRepository.save(make);
+    public MakeDTO createMake(MakeDTO make) {
+        Make response = makeRepository.save(MakeMapper.INSTANCE.toEntity(make));
+        return MakeMapper.INSTANCE.toDTO(response);
     }
 
 }

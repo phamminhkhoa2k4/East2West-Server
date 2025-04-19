@@ -1,5 +1,6 @@
 package com.east2west.controllers.admin.car;
 
+import com.east2west.models.DTO.ModelDTO;
 import com.east2west.models.DTO.ModelResponse;
 import com.east2west.models.Entity.Model;
 import com.east2west.service.ModelService;
@@ -29,30 +30,31 @@ public class ModelController {
 
     // Endpoint: Update model
     @PutMapping
-    public ResponseEntity<ModelResponse<Model>> updateModel(@RequestBody Model model) {
+    public ResponseEntity<ModelResponse<ModelDTO>> updateModel(@RequestBody Model model) {
         try {
-            Model data = modelService.updateModel(model);
-            if(data != null){
-                return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Model>builder()
-                                .status(200)
-                                .message(data.getModelname() +" model updated successfully !!!")
-                                .data(data)
-                                .build()
-                );
-            }else {
+            ModelDTO data = modelService.updateModel(model);
+            if(data == null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Model>builder()
+                        ModelResponse.<ModelDTO>builder()
                                 .status(404)
                                 .message("Model not found !!!")
                                 .data(null)
                                 .build()
                 );
+
             }
+
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<ModelDTO>builder()
+                            .status(200)
+                            .message(data.getModelname() +" model updated successfully !!!")
+                            .data(data)
+                            .build()
+            );
 
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Model>builder()
+                    ModelResponse.<ModelDTO>builder()
                             .status(500)
                             .message("Failed to updated model !!!")
                             .data(null)
@@ -64,29 +66,28 @@ public class ModelController {
 
     // Endpoint: Get a model by id
     @GetMapping("/{id}")
-    public ResponseEntity<ModelResponse<Optional<Model>>> getModelById(@PathVariable int id){
+    public ResponseEntity<ModelResponse<Optional<ModelDTO>>> getModelById(@PathVariable int id){
         try {
-            Optional<Model> data = modelService.getByIdModel(id);
-            if(data.isPresent()){
-                return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Optional<Model>>builder()
-                                .status(200)
-                                .message("OK")
-                                .data(data)
-                                .build()
-                );
-            }else{
+            Optional<ModelDTO> data = modelService.getModelById(id);
+            if(data.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Optional<Model>>builder()
+                        ModelResponse.<Optional<ModelDTO>>builder()
                                 .status(404)
                                 .message("Not found model !!!")
                                 .data(null)
                                 .build()
                 );
             }
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<Optional<ModelDTO>>builder()
+                            .status(200)
+                            .message("OK")
+                            .data(data)
+                            .build()
+            );
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Optional<Model>>builder()
+                    ModelResponse.<Optional<ModelDTO>>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR")
                             .data(null)
@@ -129,7 +130,7 @@ public class ModelController {
                                 .data(null)
                                 .build()
                 );
-            }else {
+            }
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                         ModelResponse.<Model>builder()
                                 .status(404)
@@ -137,7 +138,7 @@ public class ModelController {
                                 .data(null)
                                 .build()
                 );
-            }
+
 
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
@@ -153,7 +154,7 @@ public class ModelController {
 
     // Endpoint: Pagination
     @GetMapping
-    public Page<Model> getModels(
+    public Page<ModelDTO> getModels(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return modelService.getAllModels(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modelid")));
@@ -162,17 +163,17 @@ public class ModelController {
 
     // Endpoint: Search model
     @GetMapping("/search")
-    public List<Model> searchModel(@RequestParam String keyword) {
+    public List<ModelDTO> searchModel(@RequestParam String keyword) {
         return modelService.searchModel(keyword);
     }
 
     // Endpoint: Find all model by make id
     @GetMapping("make/{id}")
-    public ResponseEntity<ModelResponse<List<Model>>> getAllModelByMakeId(@PathVariable int id){
+    public ResponseEntity<ModelResponse<List<ModelDTO>>> getAllModelByMakeId(@PathVariable int id){
         try {
-            List<Model> data = modelService.findAllModelByMakeId(id);
+            List<ModelDTO> data = modelService.findAllModelByMakeId(id);
             return ResponseEntity.status(HttpStatus.OK).body(
-                    ModelResponse.<List<Model>>builder()
+                    ModelResponse.<List<ModelDTO>>builder()
                             .status(200)
                             .message("OK")
                             .data(data)
@@ -180,7 +181,7 @@ public class ModelController {
             );
         }catch (Exception ex){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<List<Model>>builder()
+                    ModelResponse.<List<ModelDTO>>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR !!!")
                             .data(null)
@@ -191,30 +192,30 @@ public class ModelController {
 
     // Endpoint: Create model
     @PostMapping
-    public ResponseEntity<ModelResponse<Model>> createModel(@RequestBody Model model) {
+    public ResponseEntity<ModelResponse<ModelDTO>> createModel(@RequestBody ModelDTO model) {
         try{
 
             Optional<Model> models = modelService.findByMakeIdAndModelName(model.getMake().getMakeid(),model.getModelname());
             if(models.isPresent()){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Model>builder()
+                        ModelResponse.<ModelDTO>builder()
                                 .status(400)
                                 .message("Model name " + model.getModelname() + " already exists.")
                                 .data(null)
                                 .build()
                 );
             }
-            Model data = modelService.createModel(model);
+            ModelDTO data = modelService.createModel(model);
             return ResponseEntity.status(HttpStatus.CREATED).body(
-                    ModelResponse.<Model>builder()
+                    ModelResponse.<ModelDTO>builder()
                             .status(201)
-                            .message(model.getModelname() + " make created successfully !!!")
+                            .message(model.getModelname() + " model created successfully !!!")
                             .data(data)
                             .build()
             );
         }catch (Exception ex){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Model>builder()
+                    ModelResponse.<ModelDTO>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR !!!")
                             .data(null)

@@ -1,13 +1,14 @@
 package com.east2west.service;
 
+import com.east2west.models.DTO.AmenitiesDTO;
 import com.east2west.models.Entity.Amenities;
+import com.east2west.models.mapper.AmenitiesMapper;
 import com.east2west.repository.AmenitiesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -21,23 +22,24 @@ public class AmenitiesService {
 
     @Autowired
     private AmenitiesRepository amenitiesRepository;
-    public Page<Amenities> getAllAmenities(Pageable pageable) {
-        return amenitiesRepository.findAll(pageable);
+    public Page<AmenitiesDTO> getAllAmenities(Pageable pageable) {
+        Page<Amenities> amenitiesPage =  amenitiesRepository.findAll(pageable);
+        return amenitiesPage.map(AmenitiesMapper.INSTANCE::toDTO);
     }
 
-    public Amenities updateAmenities(Amenities amenities){
+    public AmenitiesDTO updateAmenities(AmenitiesDTO amenities){
        Optional<Amenities> amenity =  amenitiesRepository.findById(amenities.getAmenitiesid());
-        if(amenity.isPresent()){
-            return amenitiesRepository.save(amenities);
-        }
-
-        return null;
-
+        if(amenity.isEmpty()) return null;
+        Amenities data = AmenitiesMapper.INSTANCE.toEntity(amenities);
+        Amenities response = amenitiesRepository.save(data);
+        return AmenitiesMapper.INSTANCE.toDTO(response);
     }
 
 
-    public Amenities createAmenities(Amenities amenities) {
-        return amenitiesRepository.save(amenities);
+    public AmenitiesDTO createAmenities(AmenitiesDTO amenities) {
+        Amenities data = AmenitiesMapper.INSTANCE.toEntity(amenities);
+        Amenities response = amenitiesRepository.save(data);
+        return AmenitiesMapper.INSTANCE.toDTO(response);
     }
 
     public String saveAmenitiesFromCSV(MultipartFile[] files) {
@@ -93,18 +95,26 @@ public class AmenitiesService {
         }
     }
 
-    public List<Amenities> searchAmenities(String keyword) {
-        return amenitiesRepository.findByAmenitiesnameContainingIgnoreCase(keyword);
+    public List<AmenitiesDTO> searchAmenities(String keyword) {
+        List<Amenities> amenitiesList = amenitiesRepository.findByAmenitiesnameContainingIgnoreCase(keyword);
+        return amenitiesList.stream().map(AmenitiesMapper.INSTANCE::toDTO).toList();
     }
 
-    public Optional<Amenities>  getByIdAmenities(int id){
-        return amenitiesRepository.findById(id);
+    public Optional<AmenitiesDTO>  getAmenitiesById(int id){
+        Optional<Amenities> amenities = amenitiesRepository.findById(id);
+        if(amenities.isEmpty()) return Optional.empty();
+        AmenitiesDTO response = AmenitiesMapper.INSTANCE.toDTO(amenities.get());
+        return Optional.ofNullable(response);
     }
 
-    public List<Amenities> getAmenitiesAll(){return  amenitiesRepository.findAll();}
+    public List<AmenitiesDTO> getAmenitiesAll(){
+        List<Amenities> amenitiesList = amenitiesRepository.findAll();
+        return  amenitiesList.stream().map(AmenitiesMapper.INSTANCE::toDTO).toList();
+    }
 
-    public List<Amenities> getByIdsAmenities(List<Integer> ids) {
-        return amenitiesRepository.findAllById(ids);
+    public List<AmenitiesDTO> getByIdsAmenities(List<Integer> ids) {
+        List<Amenities> amenitiesList = amenitiesRepository.findAllById(ids);
+        return  amenitiesList.stream().map(AmenitiesMapper.INSTANCE::toDTO).toList();
     }
     public String deleteAmenities(int id){
 

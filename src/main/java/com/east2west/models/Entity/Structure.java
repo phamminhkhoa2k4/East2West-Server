@@ -14,7 +14,6 @@ import lombok.*;
 public class Structure {
 
     @Id
- 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "structureid")
     private int structureid;

@@ -1,7 +1,9 @@
 package com.east2west.service;
 
+import com.east2west.models.DTO.ModelDTO;
 import com.east2west.models.Entity.Make;
 import com.east2west.models.Entity.Model;
+import com.east2west.models.mapper.ModelMapper;
 import com.east2west.repository.MakeRepository;
 import com.east2west.repository.ModelRepository;
 import org.springframework.data.domain.Page;
@@ -28,9 +30,16 @@ public class ModelService {
         this.makeRepository = makeRepository;
     }
 
-    public Model createModel(Model model) {
+    public ModelDTO createModel(ModelDTO model) {
         Optional<Make> make  = makeRepository.findById(model.getMake().getMakeid());
-        return make.map(value -> modelRepository.save(Model.builder().modelname(model.getModelname()).make(value).build())).orElse(null);
+        return ModelMapper.INSTANCE.toDTO(
+                make.map(value -> modelRepository.save(
+                        Model.builder()
+                                .modelname(model.getModelname()).
+                                make(value)
+                                .build()
+                )).orElse(null)
+        );
     }
 
 
@@ -38,45 +47,44 @@ public class ModelService {
         return modelRepository.findByMake_MakeidAndModelname(makeId,modelName);
     }
 
-    public List<Model> findAllModelByMakeId(int makeId){
-        return  modelRepository.findByMake_Makeid(makeId);
+    public List<ModelDTO> findAllModelByMakeId(int makeId){
+        List<Model> modelList  = modelRepository.findByMake_Makeid(makeId);
+        return  modelList.stream().map(ModelMapper.INSTANCE::toDTO).toList();
     }
 
-    public Page<Model> getAllModels(Pageable pageable) {
-        return modelRepository.findAll(pageable);
+    public Page<ModelDTO> getAllModels(Pageable pageable) {
+        Page<Model> modelPage = modelRepository.findAll(pageable);
+        return modelPage.map(ModelMapper.INSTANCE::toDTO);
     }
 
-    public List<Model> searchModel(String keyword) {
-        return modelRepository.searchByKeyword(keyword);
+    public List<ModelDTO> searchModel(String keyword) {
+        List<Model> modelList = modelRepository.searchByKeyword(keyword);
+        return modelList.stream().map(ModelMapper.INSTANCE::toDTO).toList();
     }
 
-    public Model updateModel(Model model){
+    public ModelDTO updateModel(Model model){
         Optional<Model> models =  modelRepository.findById(model.getModelid());
-        if(models.isPresent()){
-            Optional<Make> make = makeRepository.findById(model.getMake().getMakeid());
-            if (make.isPresent()){
-                model.setMake(make.get());
-                return modelRepository.save(model);
-            }
-        }
-
-        return null;
-
+        if(models.isEmpty()) return null;
+        Optional<Make> make = makeRepository.findById(model.getMake().getMakeid());
+        if (make.isEmpty()) return null;
+        model.setMake(make.get());
+        Model response =  modelRepository.save(model);
+        return ModelMapper.INSTANCE.toDTO(response);
     }
 
     public String deleteModel(int id){
-
         Optional<Model> model = modelRepository.findById(id);
-        if(model.isPresent()){
-            modelRepository.deleteById(id);
-            return "Deleted " + model.get().getModelname() + " model successfully  !!!";
-        }else{
-            return "Not found model";
-        }
+        if(model.isEmpty()) return "Not found model";
+        modelRepository.deleteById(id);
+        return "Deleted " + model.get().getModelname() + " model successfully  !!!";
+
     }
 
-    public Optional<Model>  getByIdModel(int id){
-        return modelRepository.findById(id);
+    public Optional<ModelDTO>  getModelById(int id){
+        Optional<Model> model = modelRepository.findById(id);
+        if(model.isEmpty()) return Optional.empty();
+        ModelDTO modelDTO = ModelMapper.INSTANCE.toDTO(model.get());
+        return Optional.ofNullable(modelDTO);
     }
 
     public String saveModelFromCSV(MultipartFile[] files) {

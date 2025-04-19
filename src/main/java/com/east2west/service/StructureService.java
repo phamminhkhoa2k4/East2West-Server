@@ -1,7 +1,9 @@
 package com.east2west.service;
 
 
+import com.east2west.models.DTO.StructureDTO;
 import com.east2west.models.Entity.Structure;
+import com.east2west.models.mapper.StructureMapper;
 import com.east2west.repository.StructureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,19 +26,25 @@ public class StructureService {
     private StructureRepository structureRepository;
 
 
-    public Structure createStructure(Structure structure) {
-        return structureRepository.save(structure);
+    public StructureDTO createStructure(StructureDTO structure) {
+         Structure data = StructureMapper.INSTANCE.toEntity(structure);
+         Structure response = structureRepository.save(data);
+        return StructureMapper.INSTANCE.toDTO(response);
     }
-    public Structure updateStructure(Structure structure) {
+    public StructureDTO updateStructure(StructureDTO structure) {
         Optional<Structure> struct =  structureRepository.findById(structure.getStructureid());
-        if(struct.isPresent()){
-            return structureRepository.save(structure);
-        }
-        return null;
+        if(struct.isEmpty()) return null;
+        Structure data = StructureMapper.INSTANCE.toEntity(structure);
+        Structure response = structureRepository.save(data);
+        return StructureMapper.INSTANCE.toDTO(response);
+
     }
 
-    public Optional<Structure> getByIdStructure(int id){
-        return structureRepository.findById(id);
+    public Optional<StructureDTO> getStructureById(int id){
+        Optional<Structure> structure = structureRepository.findById(id);
+        if(structure.isEmpty()) return Optional.empty();
+        StructureDTO response = StructureMapper.INSTANCE.toDTO(structure.get());
+        return Optional.ofNullable(response);
     }
 
     public List<Structure> getAllStructure(){
@@ -53,12 +61,14 @@ public class StructureService {
         }
     }
 
-    public List<Structure> searchStructure(String keyword) {
-        return structureRepository.findByStructurenameContainingIgnoreCase(keyword);
+    public List<StructureDTO> searchStructure(String keyword) {
+        List<Structure> structureList = structureRepository.findByStructurenameContainingIgnoreCase(keyword);
+        return structureList.stream().map(StructureMapper.INSTANCE::toDTO).toList();
     }
 
-    public Page<Structure> getAllStructure(Pageable pageable) {
-        return structureRepository.findAll(pageable);
+    public Page<StructureDTO> getAllStructure(Pageable pageable) {
+        Page<Structure> structurePage = structureRepository.findAll(pageable);
+        return structurePage.map(StructureMapper.INSTANCE::toDTO);
     }
 
     public String saveStructureFromCSV(MultipartFile[] files) {
