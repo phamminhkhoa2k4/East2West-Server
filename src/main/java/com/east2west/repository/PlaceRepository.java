@@ -1,15 +1,20 @@
 package com.east2west.repository;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.east2west.models.Entity.Transfer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.east2west.models.Entity.Place;
 
 
 public interface PlaceRepository extends JpaRepository<Place, Integer>{
-    List<Place> findByPlacenameContainingIgnoreCase(String name);
+    Optional<Place> findByPlacename(String placeName);
+
     boolean existsByPlacename(String placename);
+
+    List<Place> findByPlacenameContainingIgnoreCase(String name);
 }
     
 

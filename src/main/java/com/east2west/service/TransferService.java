@@ -1,11 +1,8 @@
 package com.east2west.service;
 
 
-import com.east2west.models.DTO.MealDTO;
 import com.east2west.models.DTO.TransferDTO;
-import com.east2west.models.Entity.Meal;
 import com.east2west.models.Entity.Transfer;
-import com.east2west.models.mapper.MealMapper;
 import com.east2west.models.mapper.TransferMapper;
 import com.east2west.repository.TransferRepository;
 import org.jetbrains.annotations.NotNull;
