@@ -20,7 +20,7 @@ public interface TourPackageRepository extends JpaRepository<TourPackage, Intege
     @Query("SELECT tp FROM TourPackage tp JOIN tp.themes tt WHERE tt.themeName = :themeTourName")
     List<TourPackage> findByThemeTourName(@Param("themeTourName") String themeTourName);
 
-    @Query("SELECT tp FROM TourPackage tp JOIN tp.suitableTours st WHERE st.suitableName = :suitableName")
+    @Query("SELECT tp FROM TourPackage tp JOIN tp.suitable st WHERE st.suitableName = :suitableName")
     List<TourPackage> findBySuitableName(@Param("suitableName") String suitableName);
 
     boolean existsByTitle(String title);
@@ -33,7 +33,7 @@ public interface TourPackageRepository extends JpaRepository<TourPackage, Intege
             "(:maxPrice IS NULL OR t.price <= :maxPrice) OR " +
             "(:categoryId IS NULL OR :categoryId IN (SELECT c.categoryTourId FROM t.categoryTours c)) OR " +
             "(:themeId IS NULL OR :themeId IN (SELECT th.themeId FROM t.themes th)) OR " +
-            "(:suitableId IS NULL OR :suitableId IN (SELECT s.suitableTourId FROM t.suitableTours s))")
+            "(:suitableId IS NULL OR :suitableId IN (SELECT s.suitableId FROM t.suitable s))")
     List<TourPackage> findByCriteria(@Param("title") String title,
                                      @Param("minPrice") Integer minPrice,
                                      @Param("maxPrice") Integer maxPrice,

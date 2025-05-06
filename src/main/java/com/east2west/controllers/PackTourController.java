@@ -18,10 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.east2west.models.DTO.ApiResponse;
 
 import com.east2west.models.DTO.TourPackageDetailDTO;
-import com.east2west.models.DTO.TourPackageFilterDTO;
 import com.east2west.models.Entity.CategoryTour;
 import com.east2west.models.Entity.DepartureDate;
-import com.east2west.models.Entity.SuitableTour;
+import com.east2west.models.Entity.Suitable;
 import com.east2west.models.Entity.Theme;
 import com.east2west.models.Entity.TourPackage;
 import com.east2west.service.PackTourService;
@@ -76,10 +75,10 @@ public class PackTourController {
         return packTourService.getAllTourPackagesTheme();
     }
 
-    @GetMapping("/suitable")
-    public List<SuitableTour> getAllToursSuitable() {
+    /*@GetMapping("/suitable")
+    public List<Suitable> getAllToursSuitable() {
         return packTourService.getAllTourPackagesSuitable();
-    }
+    }*/
 
     @GetMapping("/departuredate")
     public List<DepartureDate> getAllToursDepartureDate() {
@@ -103,20 +102,20 @@ public class PackTourController {
         return new ResponseEntity<>(createdTheme, HttpStatus.CREATED);
     }
 
-    @PostMapping("/suitable")
-public ResponseEntity<SuitableTour> createSuitableTour(@RequestBody SuitableTour suitableTour) {
-    try {
-        SuitableTour createdSuitable = packTourService.saveSuitableTour(suitableTour);
-        return new ResponseEntity<>(createdSuitable, HttpStatus.CREATED);
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(null);
-    }
-}
+//    @PostMapping("/suitable")
+//public ResponseEntity<Suitable> createSuitableTour(@RequestBody Suitable suitableTour) {
+//    try {
+//        Suitable createdSuitable = packTourService.saveSuitableTour(suitableTour);
+//        return new ResponseEntity<>(createdSuitable, HttpStatus.CREATED);
+//    } catch (IllegalArgumentException e) {
+//        return ResponseEntity.badRequest().body(null);
+//    }
+//}
 
-    @GetMapping("/suitable/{id}")
-    public Optional<SuitableTour> getSuitableById(@PathVariable int id) {
-        return packTourService.findSuitableById(id);
-    }
+//    @GetMapping("/suitable/{id}")
+//    public Optional<Suitable> getSuitableById(@PathVariable int id) {
+//        return packTourService.findSuitableById(id);
+//    }
 
 
     @GetMapping("/category/{id}")
@@ -132,18 +131,18 @@ public ResponseEntity<SuitableTour> createSuitableTour(@RequestBody SuitableTour
 
 
     @PutMapping("/suitable/{id}")
-public ResponseEntity<ApiResponse<SuitableTour>> updateSuitableTour(
+public ResponseEntity<ApiResponse<Suitable>> updateSuitableTour(
         @PathVariable int id,
-        @RequestBody SuitableTour suitableTourData) {
-    Optional<SuitableTour> existingSuitableTour = packTourService.findSuitableById(id);
+        @RequestBody Suitable suitableTourData) {
+    Optional<Suitable> existingSuitableTour = packTourService.findSuitableById(id);
     if (existingSuitableTour.isPresent()) {
-        SuitableTour updatedSuitableTour = existingSuitableTour.get();
+        Suitable updatedSuitableTour = existingSuitableTour.get();
         updatedSuitableTour.setSuitableName(suitableTourData.getSuitableName()); // Update with new data
         packTourService.saveSuitableTour(updatedSuitableTour);
-        ApiResponse<SuitableTour> response = new ApiResponse<>(updatedSuitableTour, "success", null);
+        ApiResponse<Suitable> response = new ApiResponse<>(updatedSuitableTour, "success", null);
         return ResponseEntity.ok(response);
     } else {
-        ApiResponse<SuitableTour> response = new ApiResponse<>(null, "error", "SuitableTour not found for update.");
+        ApiResponse<Suitable> response = new ApiResponse<>(null, "error", "SuitableTour not found for update.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 }

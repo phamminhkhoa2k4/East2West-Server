@@ -46,7 +46,7 @@ public class PackTourService {
     private ThemeRepository themeTourRepository;
 
     @Autowired
-    private SuitableTourRepository suitableTourRepository;
+    private SuitableRepository suitableRepository;
 
     @Autowired
     private DepartureDateRepository departureDateRepository;
@@ -100,8 +100,8 @@ public class PackTourService {
         return tourDepartureDateRepository.findAll();
     }
 
-    public List<SuitableTour> getAllTourPackagesSuitable() {
-        return suitableTourRepository.findAll();
+    public List<Suitable> getAllTourPackagesSuitable() {
+        return suitableRepository.findAll();
     }
 
     public List<TourPackage> getToursBySuitableName(String suitableName) {
@@ -130,7 +130,7 @@ public class PackTourService {
         dto.setCategoryTours(tourPackage.getCategoryTours());
 //        dto.setThemeTours(tourPackage.getThemes());
         dto.setDepartureDates(tourPackage.getDepartureDates());
-        dto.setSuitableTours(tourPackage.getSuitableTours());
+//        dto.setSuitableTours(tourPackage.getSuitableTours());
         return dto;
     }
 
@@ -171,9 +171,9 @@ public class PackTourService {
 //        tourPackage.setThemeTours(themeTours);
 
         // Map SuitableTours
-        tourPackage.getSuitableTours().clear();
-        List<SuitableTour> suitableTours = suitableTourRepository.findAllById(tourPackageDTO.getSuitableTourId());
-        tourPackage.setSuitableTours(suitableTours);
+//        tourPackage.getSuitableTours().clear();
+        List<Suitable> suitableTours = suitableRepository.findAllById(tourPackageDTO.getSuitableTourId());
+//        tourPackage.setSuitableTours(suitableTours);
 
         // Map DepartureDates
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
@@ -238,8 +238,8 @@ public class PackTourService {
         List<Theme> themeTours = themeTourRepository.findAllById(tourPackageDTO.getThemeTourId());
 //        tourPackage.setThemeTours(themeTours);
 
-        List<SuitableTour> suitableTours = suitableTourRepository.findAllById(tourPackageDTO.getSuitableTourId());
-        tourPackage.setSuitableTours(suitableTours);
+        List<Suitable> suitableTours = suitableRepository.findAllById(tourPackageDTO.getSuitableTourId());
+//        tourPackage.setSuitableTours(suitableTours);
 
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"))
@@ -491,12 +491,12 @@ public class PackTourService {
         return themeTourRepository.save(themeTour);
     }
 
-    public SuitableTour createSuitableTour(SuitableTour suitableTour) {
-        return suitableTourRepository.save(suitableTour);
+    public Suitable createSuitableTour(Suitable suitableTour) {
+        return suitableRepository.save(suitableTour);
     }
 
-    public Optional<SuitableTour> findSuitableById(int id) {
-        return suitableTourRepository.findById(id);
+    public Optional<Suitable> findSuitableById(int id) {
+        return suitableRepository.findById(id);
     }
 
     public Optional<CategoryTour> findCategoryById(int id) {
@@ -507,17 +507,17 @@ public class PackTourService {
         return themeTourRepository.findById(id);
     }
 
-    public SuitableTour saveSuitableTour(SuitableTour suitableTour) {
-        if (doesSuitableTourNameExist(suitableTour.getSuitableName(), suitableTour.getSuitableTourId())) {
-            throw new IllegalArgumentException("SuitableTour name already exists.");
-        }
+    public Suitable saveSuitableTour(Suitable suitableTour) {
+//        if (doesSuitableTourNameExist(suitableTour.getSuitableName(), suitableTour.getSuitableId())) {
+//            throw new IllegalArgumentException("SuitableTour name already exists.");
+//        }
 
-        return suitableTourRepository.save(suitableTour);
+        return suitableRepository.save(suitableTour);
     }
 
-    private boolean doesSuitableTourNameExist(String name, int excludeId) {
-        return suitableTourRepository.findBySuitableNameAndSuitableTourIdNot(name, excludeId).isPresent();
-    }
+//    private boolean doesSuitableTourNameExist(String name, int excludeId) {
+//        return suitableTourRepository.findBySuitableNameAndSuitableTourIdNot(name, excludeId).isPresent();
+//    }
 
     public CategoryTour saveCategory(CategoryTour categoryTour) {
         Optional<CategoryTour> existingCategory = categoryTourRepository.findById(categoryTour.getCategoryTourId());
@@ -650,7 +650,7 @@ public class PackTourService {
 
     public boolean deleteSuitable(int id) {
         try {
-            suitableTourRepository.deleteById(id);
+            suitableRepository.deleteById(id);
             return true;
         } catch (DataIntegrityViolationException ex) {
             // Handle the exception and return false if there's a foreign key constraint

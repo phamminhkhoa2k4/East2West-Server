@@ -26,7 +26,7 @@ import lombok.Setter;
     private List<CategoryTour> categoryTours;
     private List<Theme> themeTours;
     private List<DepartureDate> departureDates;
-    private List<SuitableTour> suitableTours;
+    private List<Suitable> suitableTours;
 
 
 

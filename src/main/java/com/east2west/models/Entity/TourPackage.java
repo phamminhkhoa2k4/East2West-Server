@@ -81,11 +81,13 @@ public class TourPackage {
     )
     private Set<Theme> themes = new HashSet<>();
 
-
-    @ManyToMany
-    @JoinTable(name = "toursuitabletour", joinColumns = @JoinColumn(name = "packageid"), inverseJoinColumns = @JoinColumn(name = "suitabletourid"))
-    private List<SuitableTour> suitableTours;
-
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "suitabletour",
+            joinColumns = @JoinColumn(name = "packageid"),
+            inverseJoinColumns = @JoinColumn(name = "suitableid")
+    )
+    private Set<Suitable> suitable = new HashSet<>();
 
 
     @ManyToMany
