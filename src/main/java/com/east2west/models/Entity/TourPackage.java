@@ -1,7 +1,9 @@
 package com.east2west.models.Entity;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.east2west.util.StringListConverter;
 
@@ -71,11 +73,13 @@ public class TourPackage {
     private List<CategoryTour> categoryTours;
 
 
-
-    @ManyToMany
-    @JoinTable(name = "tourthemetour", joinColumns = @JoinColumn(name = "packageid"), inverseJoinColumns = @JoinColumn(name = "themetourid"))
-    private List<ThemeTour> themeTours;
-
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "themetour",
+            joinColumns = @JoinColumn(name = "packageid"),
+            inverseJoinColumns = @JoinColumn(name = "themeid")
+    )
+    private Set<Theme> themes = new HashSet<>();
 
 
     @ManyToMany

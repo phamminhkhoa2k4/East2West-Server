@@ -22,7 +22,7 @@ import com.east2west.models.DTO.TourPackageFilterDTO;
 import com.east2west.models.Entity.CategoryTour;
 import com.east2west.models.Entity.DepartureDate;
 import com.east2west.models.Entity.SuitableTour;
-import com.east2west.models.Entity.ThemeTour;
+import com.east2west.models.Entity.Theme;
 import com.east2west.models.Entity.TourPackage;
 import com.east2west.service.PackTourService;
 
@@ -72,7 +72,7 @@ public class PackTourController {
     }
 
     @GetMapping("/theme")
-    public List<ThemeTour> getAllTheme() {
+    public List<Theme> getAllTheme() {
         return packTourService.getAllTourPackagesTheme();
     }
 
@@ -98,8 +98,8 @@ public class PackTourController {
     }
 
     @PostMapping("/theme")
-    public ResponseEntity<ThemeTour> createThemeTour(@RequestBody ThemeTour themeTour) {
-        ThemeTour createdTheme = packTourService.createThemeTour(themeTour);
+    public ResponseEntity<Theme> createThemeTour(@RequestBody Theme themeTour) {
+        Theme createdTheme = packTourService.createThemeTour(themeTour);
         return new ResponseEntity<>(createdTheme, HttpStatus.CREATED);
     }
 
@@ -126,7 +126,7 @@ public ResponseEntity<SuitableTour> createSuitableTour(@RequestBody SuitableTour
     }
     
     @GetMapping("/theme/{id}")
-    public Optional<ThemeTour>getThemeById(@PathVariable int id) {
+    public Optional<Theme>getThemeById(@PathVariable int id) {
          return packTourService.findThemeById(id);
     }
 
@@ -168,26 +168,26 @@ public ResponseEntity<ApiResponse<CategoryTour>> updateCategory(
 
 // Update ThemeTour
 @PutMapping("/theme/{id}")
-public ResponseEntity<ApiResponse<ThemeTour>> updateTheme(
+public ResponseEntity<ApiResponse<Theme>> updateTheme(
         @PathVariable int id,
-        @RequestBody ThemeTour themeTourData) {
-    Optional<ThemeTour> existingTheme = packTourService.findThemeById(id);
+        @RequestBody Theme themeTourData) {
+    Optional<Theme> existingTheme = packTourService.findThemeById(id);
     if (existingTheme.isPresent()) {
-        ThemeTour updatedTheme = existingTheme.get();
-        updatedTheme.setThemeTourName(themeTourData.getThemeTourName()); // Update with new data
+        Theme updatedTheme = existingTheme.get();
+        updatedTheme.setThemeName(themeTourData.getThemeName()); // Update with new data
         packTourService.saveTheme(updatedTheme);
-        ApiResponse<ThemeTour> response = new ApiResponse<>(updatedTheme, "success", null);
+        ApiResponse<Theme> response = new ApiResponse<>(updatedTheme, "success", null);
         return ResponseEntity.ok(response);
     } else {
-        ApiResponse<ThemeTour> response = new ApiResponse<>(null, "error", "ThemeTour not found for update.");
+        ApiResponse<Theme> response = new ApiResponse<>(null, "error", "ThemeTour not found for update.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 }
-    @PostMapping("/filter")
-    public ResponseEntity<List<TourPackage>> filterTourPackages(@RequestBody TourPackageFilterDTO filterDTO) {
-        List<TourPackage> filteredPackages = packTourService.filterTourPackages(filterDTO);
-        return ResponseEntity.ok(filteredPackages);
-    }
+//    @PostMapping("/filter")
+//    public ResponseEntity<List<TourPackage>> filterTourPackages(@RequestBody TourPackageFilterDTO filterDTO) {
+//        List<TourPackage> filteredPackages = packTourService.filterTourPackages(filterDTO);
+//        return ResponseEntity.ok(filteredPackages);
+//    }
     @GetMapping("/search/name")
     public List<TourPackage> searchToursByTitle(@RequestParam("title") String title) {
         return packTourService.findByTitle(title);

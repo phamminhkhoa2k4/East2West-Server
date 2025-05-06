@@ -27,7 +27,7 @@ public class TourPackageDTO {
     private List<Integer> suitableTourId;
     private List<DepartureDateDTO> departureDates;
 
-    private List<ItineraryDTO> itinerary;
+    private List<ItineraryDTO> itineraries;
 
 
     @Setter

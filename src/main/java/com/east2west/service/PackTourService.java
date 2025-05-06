@@ -34,7 +34,7 @@ public class PackTourService {
     private TourPackageRepository tourPackageRepository;
 
     @Autowired
-    private ThemeTourRepository ThemeTourRepository;
+    private ThemeRepository ThemeTourRepository;
 
     @Autowired
     private TourDepartureDateRepository tourDepartureDateRepository;
@@ -43,7 +43,7 @@ public class PackTourService {
     private CategoryTourRepository categoryTourRepository;
 
     @Autowired
-    private ThemeTourRepository themeTourRepository;
+    private ThemeRepository themeTourRepository;
 
     @Autowired
     private SuitableTourRepository suitableTourRepository;
@@ -88,7 +88,7 @@ public class PackTourService {
         return tourPackageRepository.findByCategoryTourName(cat);
     }
 
-    public List<ThemeTour> getAllTourPackagesTheme() {
+    public List<Theme> getAllTourPackagesTheme() {
         return ThemeTourRepository.findAll();
     }
 
@@ -128,7 +128,7 @@ public class PackTourService {
         dto.setBookingchange(tourPackage.getBookingchange());
         dto.setItineraries(itineraries);
         dto.setCategoryTours(tourPackage.getCategoryTours());
-        dto.setThemeTours(tourPackage.getThemeTours());
+//        dto.setThemeTours(tourPackage.getThemes());
         dto.setDepartureDates(tourPackage.getDepartureDates());
         dto.setSuitableTours(tourPackage.getSuitableTours());
         return dto;
@@ -166,9 +166,9 @@ public class PackTourService {
         tourPackage.setCategoryTours(categoryTours);
 
         // Map ThemeTours
-        tourPackage.getThemeTours().clear();
-        List<ThemeTour> themeTours = themeTourRepository.findAllById(tourPackageDTO.getThemeTourId());
-        tourPackage.setThemeTours(themeTours);
+//        tourPackage.getThemeTours().clear();
+        List<Theme> themeTours = themeTourRepository.findAllById(tourPackageDTO.getThemeTourId());
+//        tourPackage.setThemeTours(themeTours);
 
         // Map SuitableTours
         tourPackage.getSuitableTours().clear();
@@ -235,8 +235,8 @@ public class PackTourService {
         List<CategoryTour> categoryTours = categoryTourRepository.findAllById(tourPackageDTO.getCategoryTourId());
         tourPackage.setCategoryTours(categoryTours);
 
-        List<ThemeTour> themeTours = themeTourRepository.findAllById(tourPackageDTO.getThemeTourId());
-        tourPackage.setThemeTours(themeTours);
+        List<Theme> themeTours = themeTourRepository.findAllById(tourPackageDTO.getThemeTourId());
+//        tourPackage.setThemeTours(themeTours);
 
         List<SuitableTour> suitableTours = suitableTourRepository.findAllById(tourPackageDTO.getSuitableTourId());
         tourPackage.setSuitableTours(suitableTours);
@@ -487,7 +487,7 @@ public class PackTourService {
         return categoryTourRepository.save(categoryTour);
     }
 
-    public ThemeTour createThemeTour(ThemeTour themeTour) {
+    public Theme createThemeTour(Theme themeTour) {
         return themeTourRepository.save(themeTour);
     }
 
@@ -503,7 +503,7 @@ public class PackTourService {
         return categoryTourRepository.findById(id);
     }
 
-    public Optional<ThemeTour> findThemeById(int id) {
+    public Optional<Theme> findThemeById(int id) {
         return themeTourRepository.findById(id);
     }
 
@@ -534,39 +534,39 @@ public class PackTourService {
         return categoryTourRepository.findByCategoryTourNameAndCategoryTourIdNot(name, excludeId).isPresent();
     }
 
-    public ThemeTour saveTheme(ThemeTour themeTour) {
-        Optional<ThemeTour> existingTheme = themeTourRepository.findById(themeTour.getThemeTourId());
+    public Theme saveTheme(Theme themeTour) {
+        Optional<Theme> existingTheme = themeTourRepository.findById(themeTour.getThemeId());
         if (!existingTheme.isPresent()) {
             throw new IllegalArgumentException("ThemeTour not found for update.");
         }
-        if (doesThemeTourNameExist(themeTour.getThemeTourName(), themeTour.getThemeTourId())) {
-            throw new IllegalArgumentException("ThemeTour name already exists.");
-        }
+//        if (doesThemeTourNameExist(themeTour.getThemeName(), themeTour.getThemeId())) {
+//            throw new IllegalArgumentException("ThemeTour name already exists.");
+//        }
         return themeTourRepository.save(themeTour);
     }
 
-    private boolean doesThemeTourNameExist(String name, int excludeId) {
-        return themeTourRepository.findByThemeTourNameAndThemeTourIdNot(name, excludeId).isPresent();
-    }
+//    private boolean doesThemeTourNameExist(String name, int excludeId) {
+//        return themeTourRepository.findByThemeTourNameAndThemeTourIdNot(name, excludeId).isPresent();
+//    }
 
-    public List<TourPackage> filterTourPackages(TourPackageFilterDTO filterDTO) {
-        List<TourPackage> allTourPackages = tourPackageRepository.findAll();
-        BigDecimal budget = filterDTO.getBudget() != null && !filterDTO.getBudget().isEmpty()
-                ? new BigDecimal(filterDTO.getBudget())
-                : null;
-        return allTourPackages.stream()
-                .filter(pkg -> filterDTO.getCategoryTourId() == null || filterDTO.getCategoryTourId().isEmpty() ||
-                        pkg.getCategoryTours().stream()
-                                .anyMatch(c -> filterDTO.getCategoryTourId().contains(c.getCategoryTourId())))
-                .filter(pkg -> filterDTO.getThemeTourId() == null || filterDTO.getThemeTourId().isEmpty() ||
-                        pkg.getThemeTours().stream()
-                                .anyMatch(t -> filterDTO.getThemeTourId().contains(t.getThemeTourId())))
-                .filter(pkg -> filterDTO.getSuitableTourId() == null || filterDTO.getSuitableTourId().isEmpty() ||
-                        pkg.getSuitableTours().stream()
-                                .anyMatch(s -> filterDTO.getSuitableTourId().contains(s.getSuitableTourId())))
-                .filter(pkg -> budget == null || pkg.getPrice().compareTo(budget) <= 0)
-                .collect(Collectors.toList());
-    }
+//    public List<TourPackage> filterTourPackages(TourPackageFilterDTO filterDTO) {
+//        List<TourPackage> allTourPackages = tourPackageRepository.findAll();
+//        BigDecimal budget = filterDTO.getBudget() != null && !filterDTO.getBudget().isEmpty()
+//                ? new BigDecimal(filterDTO.getBudget())
+//                : null;
+//        return allTourPackages.stream()
+//                .filter(pkg -> filterDTO.getCategoryTourId() == null || filterDTO.getCategoryTourId().isEmpty() ||
+//                        pkg.getCategoryTours().stream()
+//                                .anyMatch(c -> filterDTO.getCategoryTourId().contains(c.getCategoryTourId())))
+//                .filter(pkg -> filterDTO.getThemeTourId() == null || filterDTO.getThemeTourId().isEmpty() ||
+//                        pkg.getThemeTours().stream()
+//                                .anyMatch(t -> filterDTO.getThemeTourId().contains(t.getThemeId())))
+//                .filter(pkg -> filterDTO.getSuitableTourId() == null || filterDTO.getSuitableTourId().isEmpty() ||
+//                        pkg.getSuitableTours().stream()
+//                                .anyMatch(s -> filterDTO.getSuitableTourId().contains(s.getSuitableTourId())))
+//                .filter(pkg -> budget == null || pkg.getPrice().compareTo(budget) <= 0)
+//                .collect(Collectors.toList());
+//    }
 
     public List<BookingTour> getListBookingByUser(int userId) {
         return bookingTourRepository.findByUserid(userId);

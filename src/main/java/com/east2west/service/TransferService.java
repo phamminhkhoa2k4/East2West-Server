@@ -49,10 +49,10 @@ public class TransferService {
 
     public String deleteTransfer(int id){
 
-        Optional<Transfer> meals = transferRepository.findById(id);
-        if(meals.isPresent()){
+        Optional<Transfer> transfers = transferRepository.findById(id);
+        if(transfers.isPresent()){
             transferRepository.deleteById(id);
-            return "Deleted " + meals.get().getTransfername() + " transfer successfully";
+            return "Deleted " + transfers.get().getTransfername() + " transfer successfully";
         }else{
             return "Not found transfer";
         }

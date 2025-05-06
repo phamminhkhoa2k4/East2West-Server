@@ -17,7 +17,7 @@ public interface TourPackageRepository extends JpaRepository<TourPackage, Intege
     @Query("SELECT tp FROM TourPackage tp JOIN tp.categoryTours ct WHERE ct.categoryTourName = :categoryTourName")
     List<TourPackage> findByCategoryTourName(@Param("categoryTourName") String categoryTourName);
 
-    @Query("SELECT tp FROM TourPackage tp JOIN tp.themeTours tt WHERE tt.themeTourName = :themeTourName")
+    @Query("SELECT tp FROM TourPackage tp JOIN tp.themes tt WHERE tt.themeName = :themeTourName")
     List<TourPackage> findByThemeTourName(@Param("themeTourName") String themeTourName);
 
     @Query("SELECT tp FROM TourPackage tp JOIN tp.suitableTours st WHERE st.suitableName = :suitableName")
@@ -28,17 +28,18 @@ public interface TourPackageRepository extends JpaRepository<TourPackage, Intege
     @Query("SELECT t FROM TourPackage t WHERE LOWER(t.title) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<TourPackage> findByTitleContainingIgnoreCase(@Param("title") String title);
 
-    @Query("SELECT t FROM TourPackage t WHERE (:title IS NULL OR t.title LIKE %:title%) AND " +
-            "(:minPrice IS NULL OR t.price >= :minPrice) AND " +
-            "(:maxPrice IS NULL OR t.price <= :maxPrice) AND " +
-            "(:categoryId IS NULL OR :categoryId IN (SELECT c.categoryTourId FROM t.categoryTours c)) AND " +
-            "(:themeId IS NULL OR :themeId IN (SELECT th.themeTourId FROM t.themeTours th)) AND " +
+    @Query("SELECT t FROM TourPackage t WHERE (:title IS NULL OR t.title LIKE %:title%) OR " +
+            "(:minPrice IS NULL OR t.price >= :minPrice) OR " +
+            "(:maxPrice IS NULL OR t.price <= :maxPrice) OR " +
+            "(:categoryId IS NULL OR :categoryId IN (SELECT c.categoryTourId FROM t.categoryTours c)) OR " +
+            "(:themeId IS NULL OR :themeId IN (SELECT th.themeId FROM t.themes th)) OR " +
             "(:suitableId IS NULL OR :suitableId IN (SELECT s.suitableTourId FROM t.suitableTours s))")
     List<TourPackage> findByCriteria(@Param("title") String title,
-            @Param("minPrice") Integer minPrice,
-            @Param("maxPrice") Integer maxPrice,
-            @Param("categoryId") Integer categoryId,
-            @Param("themeId") Integer themeId,
-            @Param("suitableId") Integer suitableId);
+                                     @Param("minPrice") Integer minPrice,
+                                     @Param("maxPrice") Integer maxPrice,
+                                     @Param("categoryId") Integer categoryId,
+                                     @Param("themeId") Integer themeId,
+                                     @Param("suitableId") Integer suitableId);
+
 
 }

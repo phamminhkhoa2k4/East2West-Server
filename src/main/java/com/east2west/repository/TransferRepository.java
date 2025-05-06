@@ -12,7 +12,9 @@ import com.east2west.models.Entity.Transfer;
 @Repository
 public interface TransferRepository extends JpaRepository<Transfer, Integer> {
 
-    Optional<Transfer> findByTransfername(String mealName);
     List<Transfer> findByTransfernameContainingIgnoreCase(String name);
+
+    Optional<Transfer> findByTransfername(String name);
+
     boolean existsByTransfername(String transfername);
 }

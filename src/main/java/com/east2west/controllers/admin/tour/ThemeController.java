@@ -1,12 +1,10 @@
 package com.east2west.controllers.admin.tour;
 
 
-import com.east2west.models.DTO.MealDTO;
 import com.east2west.models.DTO.ModelResponse;
-import com.east2west.models.DTO.TransferDTO;
-import com.east2west.models.Entity.Meal;
-import com.east2west.models.Entity.Transfer;
-import com.east2west.service.TransferService;
+import com.east2west.models.DTO.ThemeDTO;
+import com.east2west.models.Entity.Theme;
+import com.east2west.service.ThemeService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -19,42 +17,43 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/tours/transfers")
-public class TransferController {
-    private final TransferService transferService;
+@RequestMapping("/api/tours/themes")
+public class ThemeController {
 
-    public TransferController(TransferService transferService) {
-        this.transferService = transferService;
+    private final ThemeService themeService;
+
+    public ThemeController(ThemeService themeService) {
+        this.themeService = themeService;
     }
 
 
 
-    // Endpoint: Create Transfers
+    // Endpoint: Create theme
     @PostMapping
-    public ResponseEntity<ModelResponse<TransferDTO>> createTransfer(@RequestBody TransferDTO transfer) {
+    public ResponseEntity<ModelResponse<ThemeDTO>> createTheme(@RequestBody ThemeDTO theme) {
         try {
-            Optional<Transfer> transfers = transferService.findByTransferName(transfer.getTransfername());
+            Optional<Theme> themes = themeService.findByThemeName(theme.getThemeName());
 
-            if(transfers.isPresent()){
+            if(themes.isPresent()){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<TransferDTO>builder()
+                        ModelResponse.<ThemeDTO>builder()
                                 .status(400)
-                                .message("Transfer name " + transfer.getTransfername() + " already exists.")
+                                .message("Theme name " + theme.getThemeName() + " already exists.")
                                 .data(null)
                                 .build()
                 );
             }
-            TransferDTO data = transferService.createTransfer(transfer);
+            ThemeDTO data = themeService.createTheme(theme);
             return ResponseEntity.status(HttpStatus.CREATED).body(
-                    ModelResponse.<TransferDTO>builder()
+                    ModelResponse.<ThemeDTO>builder()
                             .status(201)
-                            .message(data.getTransfername() + " transfer created successfully !!!")
+                            .message(data.getThemeName() + " theme created successfully !!!")
                             .data(data)
                             .build()
             );
         }catch (Exception ex){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    ModelResponse.<TransferDTO>builder()
+                    ModelResponse.<ThemeDTO>builder()
                             .status(400)
                             .message("Error Internal Server !!!")
                             .data(null)
@@ -64,14 +63,14 @@ public class TransferController {
     }
 
 
-    // Endpoint: Delete transfer by id
+    // Endpoint: Delete theme by id
     @DeleteMapping("/{id}")
-    public ResponseEntity<ModelResponse<Transfer>> deleteTransfer(@PathVariable int id) {
+    public ResponseEntity<ModelResponse<Theme>> deleteTheme(@PathVariable int id) {
         try {
-            String data = transferService.deleteTransfer(id);
+            String data = themeService.deleteTheme(id);
             if(data.startsWith("Deleted")){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Transfer>builder()
+                        ModelResponse.<Theme>builder()
                                 .status(200)
                                 .message(data)
                                 .data(null)
@@ -79,7 +78,7 @@ public class TransferController {
                 );
             }else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Transfer>builder()
+                        ModelResponse.<Theme>builder()
                                 .status(404)
                                 .message(data)
                                 .data(null)
@@ -89,7 +88,7 @@ public class TransferController {
 
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Transfer>builder()
+                    ModelResponse.<Theme>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR !!!")
                             .data(null)
@@ -101,27 +100,27 @@ public class TransferController {
 
     // Endpoint: Pagination
     @GetMapping
-    public Page<TransferDTO> getTransfers(
+    public Page<ThemeDTO> getThemes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return transferService.getAllTransfers(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "transferid")));
+        return themeService.getAllThemes(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "themeId")));
     }
 
-    // Endpoint: Search transfer
+    // Endpoint: Search theme
     @GetMapping("/search")
-    public List<TransferDTO> searchTransfer(@RequestParam String keyword) {
-        return transferService.searchTransfer(keyword);
+    public List<ThemeDTO> searchTheme(@RequestParam String keyword) {
+        return themeService.searchTheme(keyword);
     }
 
 
-    // Endpoint: Get a transfer by id
+    // Endpoint: Get a theme by id
     @GetMapping("/{id}")
-    public ResponseEntity<ModelResponse<Optional<TransferDTO>>> getTransferById(@PathVariable int id){
+    public ResponseEntity<ModelResponse<Optional<ThemeDTO>>> getThemeById(@PathVariable int id){
         try {
-            Optional<TransferDTO> data = transferService.getTransferById(id);
+            Optional<ThemeDTO> data = themeService.getThemeById(id);
             if(data.isPresent()){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Optional<TransferDTO>>builder()
+                        ModelResponse.<Optional<ThemeDTO>>builder()
                                 .status(200)
                                 .message("OK")
                                 .data(data)
@@ -129,16 +128,16 @@ public class TransferController {
                 );
             }else{
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Optional<TransferDTO>>builder()
+                        ModelResponse.<Optional<ThemeDTO>>builder()
                                 .status(404)
-                                .message("Not found transfer !!!")
+                                .message("Not found theme !!!")
                                 .data(null)
                                 .build()
                 );
             }
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Optional<TransferDTO>>builder()
+                    ModelResponse.<Optional<ThemeDTO>>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR")
                             .data(null)
@@ -150,24 +149,24 @@ public class TransferController {
 
 
 
-    // Endpoint: Update transfer
+    // Endpoint: Update theme
     @PutMapping
-    public ResponseEntity<ModelResponse<TransferDTO>> updateTransfer(@RequestBody TransferDTO transfer) {
+    public ResponseEntity<ModelResponse<ThemeDTO>> updateTheme(@RequestBody ThemeDTO theme) {
         try {
-            TransferDTO data = transferService.updateTransfer(transfer);
+            ThemeDTO data = themeService.updateTheme(theme);
             if(data != null){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<TransferDTO>builder()
+                        ModelResponse.<ThemeDTO>builder()
                                 .status(200)
-                                .message(data.getTransfername() +" transfer updated successfully !!!")
+                                .message(data.getThemeName() +" theme updated successfully !!!")
                                 .data(data)
                                 .build()
                 );
             }else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<TransferDTO>builder()
+                        ModelResponse.<ThemeDTO>builder()
                                 .status(404)
-                                .message("Transfer not found !!!")
+                                .message("Theme not found !!!")
                                 .data(null)
                                 .build()
                 );
@@ -175,7 +174,7 @@ public class TransferController {
 
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<TransferDTO>builder()
+                    ModelResponse.<ThemeDTO>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR")
                             .data(null)
@@ -186,23 +185,22 @@ public class TransferController {
     }
 
 
-    // Endpoint: Create transfer  by file csv
+    // Endpoint: Create theme  by file csv
     @PostMapping("/uploadfromcsv")
     public ResponseEntity<ModelResponse<?>> uploadFile(@RequestParam("file") MultipartFile[] file) {
         try {
 
-            String data = transferService.saveTransferFromCSV(file);
+            String data = themeService.saveThemeFromCSV(file);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(
-                    ModelResponse.<TransferDTO>builder()
+                    ModelResponse.<ThemeDTO>builder()
                             .status(201)
-                            .message("Create successfully " + data +" transfer !!!").data(null).build());
+                            .message("Create successfully " + data +" theme !!!").data(null).build());
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<TransferDTO>builder()
+                    ModelResponse.<ThemeDTO>builder()
                             .status(500)
                             .message(String.valueOf(e)).data(null).build());
         }
     }
-
 }
