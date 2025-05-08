@@ -200,6 +200,11 @@ public class ItineraryService {
         accommodation.setAccommodationname(accommodationDTO.getAccommodationname());
         accommodation.setDurationaccommodation(accommodationDTO.getDurationaccommodation());
         accommodation.setAccommodationtype(accommodationDTO.getAccommodationtype());
+        accommodation.setRoomtype(accommodationDTO.getRoomtype());
+        accommodation.setIsbreadkfast(accommodationDTO.isIsbreadkfast());
+        accommodation.setAccommodationthumbnail(accommodationDTO.getAccommodationthumbnail());
+        accommodation.setAccommodationtype(accommodationDTO.getAccommodationtype());
+
 
         return accommodationRepository.save(accommodation);
     }

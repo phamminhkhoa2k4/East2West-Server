@@ -54,8 +54,8 @@ public class SuitableService {
     }
 
     public Page<SuitableDTO> getAllSuitableList(Pageable pageable) {
-        Page<Suitable> themePage = suitableRepository.findAll(pageable);
-        return themePage.map(SuitableMapper.INSTANCE::toDTO);
+        Page<Suitable> suitablePage = suitableRepository.findAll(pageable);
+        return suitablePage.map(SuitableMapper.INSTANCE::toDTO);
     }
 
     public List<SuitableDTO> searchSuitable(String keyword) {

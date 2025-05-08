@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.east2west.models.DTO.ApiResponse;
 
 import com.east2west.models.DTO.TourPackageDetailDTO;
-import com.east2west.models.Entity.CategoryTour;
+import com.east2west.models.Entity.Category;
 import com.east2west.models.Entity.DepartureDate;
 import com.east2west.models.Entity.Suitable;
 import com.east2west.models.Entity.Theme;
@@ -66,7 +66,7 @@ public class PackTourController {
     // }
 
     @GetMapping("/category")
-    public List<CategoryTour> getAllTourPackagesCategory() {
+    public List<Category> getAllTourPackagesCategory() {
         return packTourService.getAllTourPackagesCategory();
     }
 
@@ -91,8 +91,8 @@ public class PackTourController {
     }
 
     @PostMapping("/category")
-    public ResponseEntity<CategoryTour> createCategoryTour(@RequestBody CategoryTour categoryTour) {
-        CategoryTour createdCategory = packTourService.createCategoryTour(categoryTour);
+    public ResponseEntity<Category> createCategoryTour(@RequestBody Category categoryTour) {
+        Category createdCategory = packTourService.createCategoryTour(categoryTour);
         return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
@@ -119,7 +119,7 @@ public class PackTourController {
 
 
     @GetMapping("/category/{id}")
-    public  Optional<CategoryTour> getCategoryById(@PathVariable int id) {
+    public  Optional<Category> getCategoryById(@PathVariable int id) {
        return packTourService.findCategoryById(id);
 
     }
@@ -149,18 +149,18 @@ public ResponseEntity<ApiResponse<Suitable>> updateSuitableTour(
 
 // Update CategoryTour
 @PutMapping("/category/{id}")
-public ResponseEntity<ApiResponse<CategoryTour>> updateCategory(
+public ResponseEntity<ApiResponse<Category>> updateCategory(
         @PathVariable int id,
-        @RequestBody CategoryTour categoryTourData) {
-    Optional<CategoryTour> existingCategory = packTourService.findCategoryById(id);
+        @RequestBody Category categoryTourData) {
+    Optional<Category> existingCategory = packTourService.findCategoryById(id);
     if (existingCategory.isPresent()) {
-        CategoryTour updatedCategory = existingCategory.get();
-        updatedCategory.setCategoryTourName(categoryTourData.getCategoryTourName()); // Update with new data
+        Category updatedCategory = existingCategory.get();
+        updatedCategory.setCategoryName(categoryTourData.getCategoryName()); // Update with new data
         packTourService.saveCategory(updatedCategory);
-        ApiResponse<CategoryTour> response = new ApiResponse<>(updatedCategory, "success", null);
+        ApiResponse<Category> response = new ApiResponse<>(updatedCategory, "success", null);
         return ResponseEntity.ok(response);
     } else {
-        ApiResponse<CategoryTour> response = new ApiResponse<>(null, "error", "CategoryTour not found for update.");
+        ApiResponse<Category> response = new ApiResponse<>(null, "error", "CategoryTour not found for update.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 }

@@ -70,7 +70,7 @@ public class TourPackage {
 
     @ManyToMany
     @JoinTable(name = "tourcategorytour", joinColumns = @JoinColumn(name = "packageid"), inverseJoinColumns = @JoinColumn(name = "categorytourid"))
-    private List<CategoryTour> categoryTours;
+    private List<Category> categoryTours;
 
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -79,7 +79,7 @@ public class TourPackage {
             joinColumns = @JoinColumn(name = "packageid"),
             inverseJoinColumns = @JoinColumn(name = "themeid")
     )
-    private Set<Theme> themes = new HashSet<>();
+    private Set<Theme> themes;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
@@ -87,8 +87,15 @@ public class TourPackage {
             joinColumns = @JoinColumn(name = "packageid"),
             inverseJoinColumns = @JoinColumn(name = "suitableid")
     )
-    private Set<Suitable> suitable = new HashSet<>();
+    private Set<Suitable> suitable;
 
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "categoriestour",
+            joinColumns = @JoinColumn(name = "packageid"),
+            inverseJoinColumns = @JoinColumn(name = "categoryid")
+    )
+    private Set<Category> categories;
 
     @ManyToMany
     @JoinTable(name = "tourdeparturedate", joinColumns = @JoinColumn(name = "packageid"), inverseJoinColumns = @JoinColumn(name = "departuredateid"))

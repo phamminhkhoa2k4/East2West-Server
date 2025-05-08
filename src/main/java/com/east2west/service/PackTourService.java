@@ -40,7 +40,7 @@ public class PackTourService {
     private TourDepartureDateRepository tourDepartureDateRepository;
 
     @Autowired
-    private CategoryTourRepository categoryTourRepository;
+    private CategoryRepository categoryTourRepository;
 
     @Autowired
     private ThemeRepository themeTourRepository;
@@ -80,7 +80,7 @@ public class PackTourService {
         return tourPackageRepository.findAll();
     }
 
-    public List<CategoryTour> getAllTourPackagesCategory() {
+    public List<Category> getAllTourPackagesCategory() {
         return categoryTourRepository.findAll();
     }
 
@@ -162,7 +162,7 @@ public class PackTourService {
 
         // Map CategoryTours
         tourPackage.getCategoryTours().clear();
-        List<CategoryTour> categoryTours = categoryTourRepository.findAllById(tourPackageDTO.getCategoryTourId());
+        List<Category> categoryTours = categoryTourRepository.findAllById(tourPackageDTO.getCategoryTourId());
         tourPackage.setCategoryTours(categoryTours);
 
         // Map ThemeTours
@@ -232,7 +232,7 @@ public class PackTourService {
         tourPackage.setBookinghold(tourPackageDTO.getBookinghold());
         tourPackage.setBookingchange(tourPackageDTO.getBookingchange());
 
-        List<CategoryTour> categoryTours = categoryTourRepository.findAllById(tourPackageDTO.getCategoryTourId());
+        List<Category> categoryTours = categoryTourRepository.findAllById(tourPackageDTO.getCategoryTourId());
         tourPackage.setCategoryTours(categoryTours);
 
         List<Theme> themeTours = themeTourRepository.findAllById(tourPackageDTO.getThemeTourId());
@@ -483,7 +483,7 @@ public class PackTourService {
         return top10Tours;
     }
 
-    public CategoryTour createCategoryTour(CategoryTour categoryTour) {
+    public Category createCategoryTour(Category categoryTour) {
         return categoryTourRepository.save(categoryTour);
     }
 
@@ -499,7 +499,7 @@ public class PackTourService {
         return suitableRepository.findById(id);
     }
 
-    public Optional<CategoryTour> findCategoryById(int id) {
+    public Optional<Category> findCategoryById(int id) {
         return categoryTourRepository.findById(id);
     }
 
@@ -519,20 +519,20 @@ public class PackTourService {
 //        return suitableTourRepository.findBySuitableNameAndSuitableTourIdNot(name, excludeId).isPresent();
 //    }
 
-    public CategoryTour saveCategory(CategoryTour categoryTour) {
-        Optional<CategoryTour> existingCategory = categoryTourRepository.findById(categoryTour.getCategoryTourId());
+    public Category saveCategory(Category categoryTour) {
+        Optional<Category> existingCategory = categoryTourRepository.findById(categoryTour.getCategoryId());
         if (!existingCategory.isPresent()) {
             throw new IllegalArgumentException("CategoryTour not found for update.");
         }
-        if (doesCategoryTourNameExist(categoryTour.getCategoryTourName(), categoryTour.getCategoryTourId())) {
-            throw new IllegalArgumentException("CategoryTour name already exists.");
-        }
+//        if (doesCategoryTourNameExist(categoryTour.getCategoryName(), categoryTour.getCategoryTourId())) {
+//            throw new IllegalArgumentException("CategoryTour name already exists.");
+//        }
         return categoryTourRepository.save(categoryTour);
     }
 
-    private boolean doesCategoryTourNameExist(String name, int excludeId) {
-        return categoryTourRepository.findByCategoryTourNameAndCategoryTourIdNot(name, excludeId).isPresent();
-    }
+//    private boolean doesCategoryTourNameExist(String name, int excludeId) {
+//        return categoryTourRepository.findByCategoryTourNameAndCategoryTourIdNot(name, excludeId).isPresent();
+//    }
 
     public Theme saveTheme(Theme themeTour) {
         Optional<Theme> existingTheme = themeTourRepository.findById(themeTour.getThemeId());

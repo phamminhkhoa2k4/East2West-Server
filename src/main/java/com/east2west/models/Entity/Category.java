@@ -4,26 +4,26 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
+
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "theme")
-public class Theme {
-
+@Table(name = "categories")
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "themeid")
-    private int themeId;
+    @Column(name = "categoryid")
+    private int categoryId;
 
-    @Column(name = "themename")
-    private String themeName;
+    @Column(name = "categoryname")
+    private String categoryName;
 
-    @ManyToMany(mappedBy = "themes")
+    @ManyToMany(mappedBy = "categories")
     @JsonIgnore
     private Set<TourPackage> toursPackages;
 

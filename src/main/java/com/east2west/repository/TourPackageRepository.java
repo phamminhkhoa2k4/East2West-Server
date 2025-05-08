@@ -14,7 +14,7 @@ public interface TourPackageRepository extends JpaRepository<TourPackage, Intege
     TourPackage findByPackageid(int packageid);
     List<TourPackage> findAll();
 
-    @Query("SELECT tp FROM TourPackage tp JOIN tp.categoryTours ct WHERE ct.categoryTourName = :categoryTourName")
+    @Query("SELECT tp FROM TourPackage tp JOIN tp.categoryTours ct WHERE ct.categoryName = :categoryTourName")
     List<TourPackage> findByCategoryTourName(@Param("categoryTourName") String categoryTourName);
 
     @Query("SELECT tp FROM TourPackage tp JOIN tp.themes tt WHERE tt.themeName = :themeTourName")
@@ -31,7 +31,7 @@ public interface TourPackageRepository extends JpaRepository<TourPackage, Intege
     @Query("SELECT t FROM TourPackage t WHERE (:title IS NULL OR t.title LIKE %:title%) OR " +
             "(:minPrice IS NULL OR t.price >= :minPrice) OR " +
             "(:maxPrice IS NULL OR t.price <= :maxPrice) OR " +
-            "(:categoryId IS NULL OR :categoryId IN (SELECT c.categoryTourId FROM t.categoryTours c)) OR " +
+            "(:categoryId IS NULL OR :categoryId IN (SELECT c.categoryId FROM t.categoryTours c)) OR " +
             "(:themeId IS NULL OR :themeId IN (SELECT th.themeId FROM t.themes th)) OR " +
             "(:suitableId IS NULL OR :suitableId IN (SELECT s.suitableId FROM t.suitable s))")
     List<TourPackage> findByCriteria(@Param("title") String title,

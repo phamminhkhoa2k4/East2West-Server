@@ -23,7 +23,7 @@ import lombok.Setter;
     private String bookinghold;
     private String bookingchange;
     private List<Itinerary> itineraries;
-    private List<CategoryTour> categoryTours;
+    private List<Category> categoryTours;
     private List<Theme> themeTours;
     private List<DepartureDate> departureDates;
     private List<Suitable> suitableTours;
