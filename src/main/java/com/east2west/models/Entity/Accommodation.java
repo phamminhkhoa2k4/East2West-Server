@@ -26,8 +26,8 @@ public class Accommodation {
     @Column(name = "roomtype")
     private String roomtype;
 
-    @Column(name = "isbreadkfast")
-    private boolean isbreadkfast;
+    @Column(name = "isbreakfast")
+    private boolean isbreakfast;
 
     @Column(name = "durationaccommodation")
     private String durationaccommodation;

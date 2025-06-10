@@ -8,19 +8,10 @@ import lombok.Setter;
 @Setter
 public class AccommodationDTO {
     private int accommodationid;
-    private String accommodationname;
-    private String durationaccommodation;
     private String accommodationtype;
+    private String durationaccommodation;
+    private String accommodationname;
     private String accommodationthumbnail;
-    private boolean isbreadkfast;
+    private boolean isbreakfast;
     private String roomtype;
-
-
-
-
-
-
-
-
-    
 }

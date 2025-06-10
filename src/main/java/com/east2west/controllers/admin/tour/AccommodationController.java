@@ -1,10 +1,10 @@
 package com.east2west.controllers.admin.tour;
 
 
-import com.east2west.models.DTO.CategoryDTO;
 import com.east2west.models.DTO.ModelResponse;
-import com.east2west.models.Entity.Category;
-import com.east2west.service.CategoryService;
+import com.east2west.models.DTO.AccommodationDTO;
+import com.east2west.models.Entity.Accommodation;
+import com.east2west.service.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,43 +18,43 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/tours/categories")
-public class CategoryController {
+@RequestMapping("/api/tours/accommodation")
+public class AccommodationController {
 
-    private final CategoryService categoryService;
+
+    private final AccommodationService accommodationService;
 
     @Autowired
-    public CategoryController(CategoryService categoryService) {
-        this.categoryService = categoryService;
+    public AccommodationController(AccommodationService accommodationService) {
+        this.accommodationService = accommodationService;
     }
 
-
-    // Endpoint: Create category
+    // Endpoint: Create Accommodation
     @PostMapping
-    public ResponseEntity<ModelResponse<CategoryDTO>> createCategory(@RequestBody CategoryDTO categoryDto) {
+    public ResponseEntity<ModelResponse<AccommodationDTO>> createAccommodation(@RequestBody AccommodationDTO accommodationDto) {
         try {
-            Optional<Category> category = categoryService.findByCategoryName(categoryDto.getCategoryName());
+            Optional<Accommodation> accommodation = accommodationService.findByAccommodationName(accommodationDto.getAccommodationname());
 
-            if(category.isPresent()){
+            if(accommodation.isPresent()){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<CategoryDTO>builder()
+                        ModelResponse.<AccommodationDTO>builder()
                                 .status(400)
-                                .message("Category name " + categoryDto.getCategoryName() + " already exists.")
+                                .message("Accommodation name " + accommodationDto.getAccommodationname() + " already exists.")
                                 .data(null)
                                 .build()
                 );
             }
-            CategoryDTO data = categoryService.createCategory(categoryDto);
+            AccommodationDTO data = accommodationService.createAccommodation(accommodationDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(
-                    ModelResponse.<CategoryDTO>builder()
+                    ModelResponse.<AccommodationDTO>builder()
                             .status(201)
-                            .message(data.getCategoryName() + " category created successfully !!!")
+                            .message(data.getAccommodationname() + " accommodation created successfully !!!")
                             .data(data)
                             .build()
             );
         }catch (Exception ex){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    ModelResponse.<CategoryDTO>builder()
+                    ModelResponse.<AccommodationDTO>builder()
                             .status(400)
                             .message("Error Internal Server !!!")
                             .data(null)
@@ -64,14 +64,14 @@ public class CategoryController {
     }
 
 
-    // Endpoint: Delete category by id
+    // Endpoint: Delete accommodation by id
     @DeleteMapping("/{id}")
-    public ResponseEntity<ModelResponse<Category>> deleteCategory(@PathVariable int id) {
+    public ResponseEntity<ModelResponse<Accommodation>> deleteAccommodation(@PathVariable int id) {
         try {
-            String data = categoryService.deleteCategory(id);
+            String data = accommodationService.deleteAccommodation(id);
             if(data.startsWith("Deleted")){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Category>builder()
+                        ModelResponse.<Accommodation>builder()
                                 .status(200)
                                 .message(data)
                                 .data(null)
@@ -79,7 +79,7 @@ public class CategoryController {
                 );
             }else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Category>builder()
+                        ModelResponse.<Accommodation>builder()
                                 .status(404)
                                 .message(data)
                                 .data(null)
@@ -89,7 +89,7 @@ public class CategoryController {
 
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Category>builder()
+                    ModelResponse.<Accommodation>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR !!!")
                             .data(null)
@@ -101,27 +101,27 @@ public class CategoryController {
 
     // Endpoint: Pagination
     @GetMapping
-    public Page<CategoryDTO> getCategoryList(
+    public Page<AccommodationDTO> getAccommodations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return categoryService.getAllCategoryList(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "categoryId")));
+        return accommodationService.getAllAccommodations(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "accommodationid")));
     }
 
-    // Endpoint: Search category
+    // Endpoint: Search accommodation
     @GetMapping("/search")
-    public List<CategoryDTO> searchCategory(@RequestParam String keyword) {
-        return categoryService.searchCategory(keyword);
+    public List<AccommodationDTO> searchAccommodation(@RequestParam String keyword) {
+        return accommodationService.searchAccommodation(keyword);
     }
 
 
-    // Endpoint: Get a category by id
+    // Endpoint: Get a accommodation by id
     @GetMapping("/{id}")
-    public ResponseEntity<ModelResponse<Optional<CategoryDTO>>> getCategoryById(@PathVariable int id){
+    public ResponseEntity<ModelResponse<Optional<AccommodationDTO>>> getAccommodationById(@PathVariable int id){
         try {
-            Optional<CategoryDTO> data = categoryService.getCategoryById(id);
+            Optional<AccommodationDTO> data = accommodationService.getAccommodationById(id);
             if(data.isPresent()){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<Optional<CategoryDTO>>builder()
+                        ModelResponse.<Optional<AccommodationDTO>>builder()
                                 .status(200)
                                 .message("OK")
                                 .data(data)
@@ -129,16 +129,16 @@ public class CategoryController {
                 );
             }else{
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<Optional<CategoryDTO>>builder()
+                        ModelResponse.<Optional<AccommodationDTO>>builder()
                                 .status(404)
-                                .message("Not found category !!!")
+                                .message("Not found accommodation !!!")
                                 .data(null)
                                 .build()
                 );
             }
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<Optional<CategoryDTO>>builder()
+                    ModelResponse.<Optional<AccommodationDTO>>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR")
                             .data(null)
@@ -150,24 +150,24 @@ public class CategoryController {
 
 
 
-    // Endpoint: Update category
+    // Endpoint: Update accommodation
     @PutMapping
-    public ResponseEntity<ModelResponse<CategoryDTO>> updateCategory(@RequestBody CategoryDTO categoryDto) {
+    public ResponseEntity<ModelResponse<AccommodationDTO>> updateAccommodation(@RequestBody AccommodationDTO accommodationDto) {
         try {
-            CategoryDTO data = categoryService.updateCategory(categoryDto);
+            AccommodationDTO data = accommodationService.updateAccommodation(accommodationDto);
             if(data != null){
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        ModelResponse.<CategoryDTO>builder()
+                        ModelResponse.<AccommodationDTO>builder()
                                 .status(200)
-                                .message(data.getCategoryName() +" category updated successfully !!!")
+                                .message(data.getAccommodationname() +" accommodation updated successfully !!!")
                                 .data(data)
                                 .build()
                 );
             }else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ModelResponse.<CategoryDTO>builder()
+                        ModelResponse.<AccommodationDTO>builder()
                                 .status(404)
-                                .message("Category not found !!!")
+                                .message("Accommodation not found !!!")
                                 .data(null)
                                 .build()
                 );
@@ -175,7 +175,7 @@ public class CategoryController {
 
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<CategoryDTO>builder()
+                    ModelResponse.<AccommodationDTO>builder()
                             .status(500)
                             .message("INTERNAL SERVER ERROR")
                             .data(null)
@@ -186,20 +186,20 @@ public class CategoryController {
     }
 
 
-    // Endpoint: Create category  by file csv
+    // Endpoint: Create accommodation  by file csv
     @PostMapping("/uploadfromcsv")
     public ResponseEntity<ModelResponse<?>> uploadFile(@RequestParam("file") MultipartFile[] file) {
         try {
 
-            String data = categoryService.saveCategoryFromCSV(file);
+            String data = accommodationService.saveAccommodationFromCSV(file);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(
-                    ModelResponse.<CategoryDTO>builder()
+                    ModelResponse.<AccommodationDTO>builder()
                             .status(201)
-                            .message("Create successfully " + data +" category !!!").data(null).build());
+                            .message("Create successfully " + data +" accommodation !!!").data(null).build());
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ModelResponse.<CategoryDTO>builder()
+                    ModelResponse.<AccommodationDTO>builder()
                             .status(500)
                             .message(String.valueOf(e)).data(null).build());
         }
