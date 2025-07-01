@@ -1,10 +1,12 @@
 package com.east2west.models.DTO;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+
 public class LocationTypeDTO {
     private int locationtypeid;
 

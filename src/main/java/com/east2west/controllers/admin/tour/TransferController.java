@@ -1,10 +1,8 @@
 package com.east2west.controllers.admin.tour;
 
 
-import com.east2west.models.DTO.MealDTO;
 import com.east2west.models.DTO.ModelResponse;
 import com.east2west.models.DTO.TransferDTO;
-import com.east2west.models.Entity.Meal;
 import com.east2west.models.Entity.Transfer;
 import com.east2west.service.TransferService;
 import org.springframework.data.domain.Page;
@@ -202,6 +200,24 @@ public class TransferController {
                     ModelResponse.<TransferDTO>builder()
                             .status(500)
                             .message(String.valueOf(e)).data(null).build());
+        }
+    }
+
+
+
+
+    // Endpoint: List transfer
+    @GetMapping("/list")
+    public ResponseEntity<ModelResponse<List<TransferDTO>>> listTransfer(){
+        try{
+            List<TransferDTO> data = transferService.getAllTransfer();
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<List<TransferDTO>>builder().status(200).message("OK").data(data).build()
+            );
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ModelResponse.<List<TransferDTO>>builder().status(200).message("INTERNAL SERVER ERROR").data(null).build()
+            );
         }
     }
 

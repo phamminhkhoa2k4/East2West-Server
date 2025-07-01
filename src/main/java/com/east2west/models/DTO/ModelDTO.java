@@ -1,11 +1,13 @@
 package com.east2west.models.DTO;
 
 import com.east2west.models.Entity.Make;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ModelDTO {
     private int modelid;
 

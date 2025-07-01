@@ -148,4 +148,9 @@ public class PlaceService {
             return "Lỗi xử lý file: " + e.getMessage();
         }
     }
+
+
+    public List<PlaceDTO> getAllPlace(){
+        return placeRepository.findAll().stream().map(PlaceMapper.INSTANCE::toDTO).toList();
+    }
 }

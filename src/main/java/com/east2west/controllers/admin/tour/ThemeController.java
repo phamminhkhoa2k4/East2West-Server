@@ -203,4 +203,20 @@ public class ThemeController {
                             .message(String.valueOf(e)).data(null).build());
         }
     }
+
+
+    // Endpoint: List suitable
+    @GetMapping("/list")
+    public ResponseEntity<ModelResponse<List<ThemeDTO>>> listTheme(){
+        try{
+            List<ThemeDTO> data = themeService.getAllTheme();
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<List<ThemeDTO>>builder().status(200).message("OK").data(data).build()
+            );
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ModelResponse.<List<ThemeDTO>>builder().status(200).message("INTERNAL SERVER ERROR").data(null).build()
+            );
+        }
+    }
 }

@@ -142,14 +142,14 @@ public class CarController {
 
     // Endpoint: Search car
     @GetMapping("/search")
-    public List<CarDTO> searchMake(@RequestParam String keyword) {
+    public List<CarDTO> searchCar(@RequestParam String keyword) {
         return carService.searchCar(keyword);
     }
 
 
     // Endpoint: Delete car by id
     @DeleteMapping("/{id}")
-    public ResponseEntity<ModelResponse<CarDTO>> deleteMake(@PathVariable int id) {
+    public ResponseEntity<ModelResponse<CarDTO>> deleteCar(@PathVariable int id) {
         try {
             String data = carService.deleteCar(id);
             if(data.startsWith("Deleted")){

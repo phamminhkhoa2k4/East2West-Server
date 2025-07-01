@@ -1,5 +1,6 @@
 package com.east2west.models.Entity;
 
+import com.east2west.models.enums.ERole;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

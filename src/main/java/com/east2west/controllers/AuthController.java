@@ -3,7 +3,7 @@ package com.east2west.controllers;
 import java.util.*;
 import java.util.stream.Collectors;
 import com.east2west.models.DTO.*;
-import com.east2west.models.Entity.ERole;
+import com.east2west.models.enums.ERole;
 import com.east2west.models.Entity.PasswordResetToken;
 import com.east2west.models.Entity.Role;
 import com.east2west.models.payload.request.*;

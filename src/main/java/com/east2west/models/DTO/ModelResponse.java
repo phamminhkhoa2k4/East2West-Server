@@ -1,9 +1,11 @@
 package com.east2west.models.DTO;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
-@Getter
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ModelResponse<T> {
     private int status;

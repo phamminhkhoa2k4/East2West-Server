@@ -11,6 +11,20 @@ import com.east2west.models.Entity.TourPackage;
 
 @Repository
 public interface TourPackageRepository extends JpaRepository<TourPackage, Integer> {
+
+
+    List<TourPackage> findByTitleContainingIgnoreCase(String keyword);
+
+    Optional<TourPackage> findByTitle(String title);
+
+    Page<TourPackage> findAll(Pageable pageable);
+
+
+
+
+
+
+
     TourPackage findByPackageid(int packageid);
     List<TourPackage> findAll();
 

@@ -1,20 +1,17 @@
 package com.east2west.models.DTO;
 
 import jakarta.validation.constraints.Null;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.locationtech.jts.geom.Point;
+import lombok.*;
+
 
 import java.math.BigDecimal;
 import java.util.List;
 
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class  HomestayDTO {
     @Null
     private Integer homestayid;

@@ -23,33 +23,15 @@ public class TourPackage {
     @Column(name = "packageid")
     private int packageid;
 
-
-
     @Column(name = "title")
     private String title;
-
-
 
     @Convert(converter = StringListConverter.class)
     @Column(name = "thumbnail", columnDefinition = "Text")
     private List<String> thumbnail;
 
-
     @Column(name = "price")
     private BigDecimal price;
-
-
-
-//    @Column(name = "pricereduce")
-//    private BigDecimal pricereduce;
-
-//    public BigDecimal getPricereduce() {
-//        return this.pricereduce;
-//    }
-//
-//    public void setPricereduce(BigDecimal pricereduce) {
-//        this.pricereduce = pricereduce;
-//    }
 
     @Column(name = "groupsize")
     private String groupsize;
@@ -57,20 +39,8 @@ public class TourPackage {
     @Column(name = "deposit")
     private String deposit;
 
-    @Column(name = "bookinghold")
-    private String bookinghold;
-
-    @Column(name = "bookingchange")
-    private String bookingchange;
-
-    @OneToMany(mappedBy = "tourPackage", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tourPackage",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Itinerary> itineraries;
-
-
-
-    @ManyToMany
-    @JoinTable(name = "tourcategorytour", joinColumns = @JoinColumn(name = "packageid"), inverseJoinColumns = @JoinColumn(name = "categorytourid"))
-    private List<Category> categoryTours;
 
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -97,9 +67,9 @@ public class TourPackage {
     )
     private Set<Category> categories;
 
-    @ManyToMany
-    @JoinTable(name = "tourdeparturedate", joinColumns = @JoinColumn(name = "packageid"), inverseJoinColumns = @JoinColumn(name = "departuredateid"))
-    private List<DepartureDate> departureDates;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "packageid")
+    private List<DepartureDate> departuredates;
 
 
 }

@@ -1,13 +1,14 @@
 package com.east2west.models.DTO;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class HomestayFilterDTO {
 
     private Integer minBeds;
@@ -17,5 +18,4 @@ public class HomestayFilterDTO {
     private String type;
     private List<Integer> amenityIds;
 
-    // Getters and Setters
 }

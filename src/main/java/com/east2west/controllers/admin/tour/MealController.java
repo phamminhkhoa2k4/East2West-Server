@@ -203,6 +203,20 @@ public class MealController {
     }
 
 
+    // Endpoint: List meal
+    @GetMapping("/list")
+    public ResponseEntity<ModelResponse<List<MealDTO>>> listMeal(){
+        try{
+            List<MealDTO> data = mealService.getAllMeal();
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<List< MealDTO>>builder().status(200).message("OK").data(data).build()
+            );
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ModelResponse.<List<MealDTO>>builder().status(200).message("INTERNAL SERVER ERROR").data(null).build()
+            );
+        }
+    }
 
 
 

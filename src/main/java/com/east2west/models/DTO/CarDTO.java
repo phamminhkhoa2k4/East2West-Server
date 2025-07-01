@@ -1,10 +1,12 @@
 package com.east2west.models.DTO;
 import java.util.List;
 import com.east2west.models.Entity.*;
-import lombok.Getter;
-import lombok.Setter;
-@Getter
-@Setter
+import lombok.*;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CarDTO {
     private int carid;
 

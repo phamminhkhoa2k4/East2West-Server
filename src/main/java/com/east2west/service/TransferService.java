@@ -147,4 +147,10 @@ public class TransferService {
             return "Lỗi xử lý file: " + e.getMessage();
         }
     }
+
+
+
+    public List<TransferDTO> getAllTransfer(){
+        return transferRepository.findAll().stream().map(TransferMapper.INSTANCE::toDTO).toList();
+    }
 }

@@ -145,4 +145,8 @@ public class MealService {
             return "Lỗi xử lý file: " + e.getMessage();
         }
     }
+
+    public List<MealDTO> getAllMeal(){
+        return mealRepository.findAll().stream().map(MealMapper.INSTANCE::toDTO).toList();
+    }
 }

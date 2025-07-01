@@ -1,7 +1,6 @@
 package com.east2west.controllers.admin.tour;
 
 
-import com.east2west.models.DTO.MealDTO;
 import com.east2west.models.DTO.ModelResponse;
 import com.east2west.models.DTO.PlaceDTO;
 import com.east2west.models.Entity.Place;
@@ -204,4 +203,20 @@ public class PlaceController {
         }
     }
 
+
+
+    // Endpoint: List place
+    @GetMapping("/list")
+    public ResponseEntity<ModelResponse<List<PlaceDTO>>> listTransfer(){
+        try{
+            List<PlaceDTO> data = placeService.getAllPlace();
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<List<PlaceDTO>>builder().status(200).message("OK").data(data).build()
+            );
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ModelResponse.<List<PlaceDTO>>builder().status(200).message("INTERNAL SERVER ERROR").data(null).build()
+            );
+        }
+    }
 }

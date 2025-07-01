@@ -204,4 +204,20 @@ public class CategoryController {
                             .message(String.valueOf(e)).data(null).build());
         }
     }
+
+
+    // Endpoint: List category
+    @GetMapping("/list")
+    public ResponseEntity<ModelResponse<List<CategoryDTO>>> listCategory(){
+        try{
+            List<CategoryDTO> data = categoryService.getAllCategory();
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<List<CategoryDTO>>builder().status(200).message("OK").data(data).build()
+            );
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ModelResponse.<List<CategoryDTO>>builder().status(200).message("INTERNAL SERVER ERROR").data(null).build()
+            );
+        }
+    }
 }

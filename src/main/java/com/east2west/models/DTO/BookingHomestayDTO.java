@@ -1,20 +1,19 @@
 package com.east2west.models.DTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 
-@Setter
-@Getter
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class BookingHomestayDTO {
+    private int bookinghomestayid;
+
     private int homestayavailabilityId;
     private int userId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
@@ -41,5 +40,5 @@ public class BookingHomestayDTO {
                 .append("Total Price: ").append(totalPrice);
         return sb.toString();
     }
-    // Getters and Setters
+
 }

@@ -138,4 +138,9 @@ public class CategoryService {
             return "Lỗi xử lý file: " + e.getMessage();
         }
     }
+
+
+    public List<CategoryDTO> getAllCategory() {
+        return categoryRepository.findAll().stream().map(CategoryMapper.INSTANCE::toDTO).toList();
+    }
 }

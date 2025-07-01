@@ -1,10 +1,11 @@
 package com.east2west.models.DTO;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 class FlightSegment {
     private String departure_id;
     private String arrival_id;

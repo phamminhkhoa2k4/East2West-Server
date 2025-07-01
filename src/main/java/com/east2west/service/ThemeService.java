@@ -1,4 +1,4 @@
-package com.east2west.service;
+package com.east2west.service;  
 
 
 import com.east2west.models.DTO.ThemeDTO;
@@ -133,5 +133,10 @@ public class ThemeService {
         } catch (Exception e) {
             return "Lỗi xử lý file: " + e.getMessage();
         }
+    }
+
+
+    public List<ThemeDTO> getAllTheme() {
+        return  themeRepository.findAll().stream().map(ThemeMapper.INSTANCE::toDTO).toList();
     }
 }

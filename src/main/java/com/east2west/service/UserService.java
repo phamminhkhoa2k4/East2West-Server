@@ -2,7 +2,7 @@ package com.east2west.service;
 
 import com.east2west.models.DTO.SignupRequest;
 import com.east2west.models.DTO.VerificationCodeData;
-import com.east2west.models.Entity.ERole;
+import com.east2west.models.enums.ERole;
 import com.east2west.models.Entity.PasswordResetToken;
 import com.east2west.models.Entity.Role;
 import com.east2west.models.payload.request.UpdateProfileRequest;

@@ -1,5 +1,6 @@
 package com.east2west.models.Entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -23,38 +24,10 @@ public class Itinerary {
     @JsonIgnore
     private TourPackage tourPackage;
 
-    @ManyToMany
-    @JoinTable(
-        name = "itineraryaccommodation",
-        joinColumns = @JoinColumn(name = "itineraryid"),
-        inverseJoinColumns = @JoinColumn(name = "accommodationid")
-    )
-    private List<Accommodation> accommodations;
-
-    @ManyToMany
-    @JoinTable(
-        name = "itinerarymeals",
-        joinColumns = @JoinColumn(name = "itineraryid"),
-        inverseJoinColumns = @JoinColumn(name = "mealid")
-    )
-    private List<Meal> meals;
-
-    @ManyToMany
-    @JoinTable(
-        name = "itineraryplaces",
-        joinColumns = @JoinColumn(name = "itineraryid"),
-        inverseJoinColumns = @JoinColumn(name = "placeid")
-    )
-    private List<Place> places;
-
-    @ManyToMany
-    @JoinTable(
-        name = "itinerarytransfer",
-        joinColumns = @JoinColumn(name = "itineraryid"),
-        inverseJoinColumns = @JoinColumn(name = "transferid")
-    )
-    private List<Transfer> transfers;
-
     @Column(name = "day")
     private int day;
+
+
+    @OneToMany(mappedBy = "itinerary", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ActivityOrder> activityOrders = new ArrayList<>();
 }

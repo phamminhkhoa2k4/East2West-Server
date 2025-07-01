@@ -156,4 +156,8 @@ public class AccommodationService {
         }
     }
 
+
+    public List<AccommodationDTO> getAllAccommodation(){
+        return accommodationRepository.findAll().stream().map(AccommodationMapper.INSTANCE::toDTO).toList();
+    }
 }

@@ -159,7 +159,7 @@ public class CarService {
             carRepository.deleteById(id);
             return "Deleted " + car.get().getCarName() + " car successfully";
         }else{
-            return "Not found make";
+            return "Not found car";
         }
     }
 
@@ -184,7 +184,7 @@ public class CarService {
             List<Car> carsList = new ArrayList<>();
             Optional<Car> maxIdCar = carRepository.findAll().stream()
                     .max(Comparator.comparingInt(Car::getCarid));
-            int idCounter = maxIdCar.map(make -> make.getCarid() + 1)
+            int idCounter = maxIdCar.map(car -> car.getCarid() + 1)
                     .orElse(1);
 
             for (MultipartFile file : files) {

@@ -1,12 +1,14 @@
 package com.east2west.models.DTO;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
-@Getter
-@Setter
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MultiCityRequest {
     private List<FlightSegment> segments;
 }

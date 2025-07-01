@@ -136,4 +136,9 @@ public class SuitableService {
             return "Lỗi xử lý file: " + e.getMessage();
         }
     }
+
+
+    public List<SuitableDTO> getAllSuitable(){
+        return suitableRepository.findAll().stream().map(SuitableMapper.INSTANCE::toDTO).toList();
+    }
 }

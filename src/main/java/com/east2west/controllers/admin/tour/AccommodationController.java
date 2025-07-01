@@ -204,4 +204,21 @@ public class AccommodationController {
                             .message(String.valueOf(e)).data(null).build());
         }
     }
+
+
+
+    // Endpoint: List accommodation
+    @GetMapping("/list")
+    public ResponseEntity<ModelResponse<List<AccommodationDTO>>> listAccommodation(){
+        try{
+            List<AccommodationDTO> data = accommodationService.getAllAccommodation();
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<List<AccommodationDTO>>builder().status(200).message("OK").data(data).build()
+            );
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ModelResponse.<List<AccommodationDTO>>builder().status(200).message("INTERNAL SERVER ERROR").data(null).build()
+            );
+        }
+    }
 }
