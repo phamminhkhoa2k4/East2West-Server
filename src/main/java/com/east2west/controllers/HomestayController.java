@@ -1,9 +1,6 @@
 package com.east2west.controllers;
 
-import com.east2west.models.DTO.AmenitiesDTO;
-import com.east2west.models.DTO.HomestayDTO;
-import com.east2west.models.DTO.HomestayFilterDTO;
-import com.east2west.models.DTO.HomestaySearchDTO;
+import com.east2west.models.DTO.*;
 import com.east2west.models.Entity.Amenities;
 import com.east2west.models.Entity.Structure;
 import com.east2west.service.AmenitiesService;
@@ -12,11 +9,13 @@ import com.east2west.service.StructureService;
 import com.east2west.util.DateUtil;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/homestays")
@@ -34,12 +33,45 @@ public class HomestayController {
         this.amenitiesService = amenitiesService;
     }
 
-
     @GetMapping("/{id}")
-    public ResponseEntity<HomestayDTO> getById(@PathVariable int id) throws ParseException {
-        HomestayDTO homestay = homestayService.getById(id);
-        return ResponseEntity.ok(homestay);
+    public ResponseEntity<ModelResponse<Optional<HomestayDTO>>> getHomestayById(@PathVariable int id){
+        try {
+            Optional<HomestayDTO> data = homestayService.getHomestayById(id);
+            if(data.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        ModelResponse.<Optional<HomestayDTO>>builder()
+                                .status(404)
+                                .message("Not found homestays !!!")
+                                .data(null)
+                                .build()
+                );
+
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.<Optional<HomestayDTO>>builder()
+                            .status(200)
+                            .message("OK")
+                            .data(data)
+                            .build()
+            );
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ModelResponse.<Optional<HomestayDTO>>builder()
+                            .status(500)
+                            .message("INTERNAL SERVER ERROR")
+                            .data(null)
+                            .build()
+            );
+        }
+
     }
+
+
+//    @GetMapping("/{id}")
+//    public ResponseEntity<HomestayDTO> getById(@PathVariable int id) throws ParseException {
+//        HomestayDTO homestay = homestayService.getById(id);
+//        return ResponseEntity.ok(homestay);
+//    }
 
     @GetMapping("/price/max-today")
     public BigDecimal getMaxPriceForToday() {
@@ -60,7 +92,6 @@ public class HomestayController {
         List<HomestayDTO> homestays = homestayService.getAll();
         return ResponseEntity.ok(homestays);
     }
-
 
 
 

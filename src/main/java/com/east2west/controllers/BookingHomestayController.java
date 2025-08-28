@@ -142,31 +142,31 @@ public class BookingHomestayController {
     }
 
 
-    @GetMapping("/payment_infor")
-    public void transaction(
-            @RequestParam(value = "vnp_Amount") String amount,
-            @RequestParam(value = "vnp_BankCode") String bankCode,
-            @RequestParam(value = "vnp_OrderInfo") String order,
-            @RequestParam(value = "vnp_ResponseCode", required = false) String responseCode,
-            HttpServletResponse response
-    ) throws IOException, MessagingException {
-
-
-        if (responseCode != null && responseCode.equals("00")) {
-            BookingHomestayDTO bookingHomestayDTO = parseOrderInfo(order);
-            homestayService.createBooking(bookingHomestayDTO);
-            Optional<User> userAuth =  userService.getUserById(bookingHomestayDTO.getUserId());
-            Optional<HomestayAvailability> homestayAvailability = homestayService.getHomeAvailabilityById(bookingHomestayDTO.getHomestayavailabilityId());
-            Homestay homestay = homestayService.getHomestayById(homestayAvailability.get().getHomestay().getHomestayid());
-            if(userAuth.isPresent()){
-                UserEmail userEmail = getUserEmail(userAuth , bookingHomestayDTO , homestay ,homestayAvailability);
-                emailService.sendEmail(userEmail);
-            }
-
-        }
-        String responseUrl = "http://localhost:3000/homestays";
-        response.sendRedirect(responseUrl);
-    }
+//    @GetMapping("/payment_infor")
+//    public void transaction(
+//            @RequestParam(value = "vnp_Amount") String amount,
+//            @RequestParam(value = "vnp_BankCode") String bankCode,
+//            @RequestParam(value = "vnp_OrderInfo") String order,
+//            @RequestParam(value = "vnp_ResponseCode", required = false) String responseCode,
+//            HttpServletResponse response
+//    ) throws IOException, MessagingException {
+//
+//
+//        if (responseCode != null && responseCode.equals("00")) {
+//            BookingHomestayDTO bookingHomestayDTO = parseOrderInfo(order);
+//            homestayService.createBooking(bookingHomestayDTO);
+//            Optional<User> userAuth =  userService.getUserById(bookingHomestayDTO.getUserId());
+//            Optional<HomestayAvailability> homestayAvailability = homestayService.getHomeAvailabilityById(bookingHomestayDTO.getHomestayavailabilityId());
+//            Homestay homestay = homestayService.getHomestayById(homestayAvailability.get().getHomestay().getHomestayid());
+//            if(userAuth.isPresent()){
+//                UserEmail userEmail = getUserEmail(userAuth , bookingHomestayDTO , homestay ,homestayAvailability);
+//                emailService.sendEmail(userEmail);
+//            }
+//
+//        }
+//        String responseUrl = "http://localhost:3999/homestays/payment/invoice";
+//        response.sendRedirect(responseUrl);
+//    }
 
     private static UserEmail getUserEmail(Optional<User> userAuth , BookingHomestayDTO bookingInfo , Homestay homestay, Optional<HomestayAvailability> homestayAvailability) {
         User userEntity = userAuth.get();
@@ -205,5 +205,51 @@ public class BookingHomestayController {
 
         return dto;
     }
+
+
+    @GetMapping("/pending")
+    public ResponseEntity<List<BookingHomestayDTO>> listPendingBookingHomestays() {
+        List<BookingHomestayDTO> bookingHomestays = homestayService.listPendingBookingHomestays();
+        return ResponseEntity.ok(bookingHomestays);
+    }
+
+
+    @GetMapping("/homestaysbyhomestayava/{id}")
+    public ResponseEntity<HomestayDTO> homestaysByHomestayAva(@PathVariable int id) {
+        HomestayDTO homestay = homestayService.getHomestayHomestayAvailabilityById(id);
+        return ResponseEntity.ok(homestay);
+    }
+    @GetMapping("/homestayava/{id}")
+    public ResponseEntity<HomestayAvailabilityDTO> getByIdHomestayAva(@PathVariable int id) {
+        HomestayAvailabilityDTO homestay = homestayService.getHomestayAvailabilityById(id);
+        return ResponseEntity.ok(homestay);
+    }
+
+
+    @GetMapping("/booked")
+    public ResponseEntity<List<BookingHomestayDTO>> listBookedBookingHomestays() {
+        List<BookingHomestayDTO> bookingHomestays = homestayService.listBookedBookingHomestays();
+        return ResponseEntity.ok(bookingHomestays);
+    }
+
+    @GetMapping("/booked/{id}")
+    public ResponseEntity<List<BookingHomestayDTO>> listBookedBookingHomestays(@PathVariable int id) {
+        List<BookingHomestayDTO> bookingHomestays = homestayService.listBookedBookingHomestaysId(id);
+        return ResponseEntity.ok(bookingHomestays);
+    }
+
+
+    @PutMapping("/confirmBooking/{id}")
+    public ResponseEntity<?> confirmBooking(@PathVariable int id){
+        homestayService.confirmBooking(id);
+        return ResponseEntity.ok("Booking confirmed successfully.");
+    }
+
+    @PutMapping("/cancelBooking/{id}")
+    public ResponseEntity<?> cancelBooking(@PathVariable int id){
+        homestayService.cancelBooking(id);
+        return ResponseEntity.ok("Booking cancel successfully.");
+    }
+
 
 }

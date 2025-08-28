@@ -8,8 +8,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 
-@Setter
-@Getter
+@Data
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor

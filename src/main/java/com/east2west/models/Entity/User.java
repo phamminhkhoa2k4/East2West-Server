@@ -1,4 +1,7 @@
 package com.east2west.models.Entity;
+import com.east2west.models.enums.EComparisonMethod;
+import com.east2west.models.enums.EIdentityType;
+import com.east2west.models.enums.EStatusVerify;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.HashSet;
@@ -10,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @Table(name = "users")
 public class User {
 
@@ -50,4 +53,27 @@ public class User {
     @JoinTable(name = "user_roles",joinColumns = @JoinColumn(name = "userid"),inverseJoinColumns = @JoinColumn(name = "roleid"))
     private Set<Role> roles = new HashSet<>();
 
+    @Column(name = "nation")
+    private String nation;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "identity_type")
+    private EIdentityType identityType;
+
+    @Column(name = "identity_forward")
+    private  String identityForward;
+
+
+    @Column(name = "identity_backward")
+    private  String identityBackward;
+
+    @Column(name = "comparison_method")
+    private EComparisonMethod comparisonMethod;
+
+
+    @Column(name = "status")
+    private EStatusVerify status;
+
+    @Column(name = "selfie")
+    private String selfie;
 }

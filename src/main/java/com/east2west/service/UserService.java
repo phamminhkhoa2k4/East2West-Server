@@ -5,6 +5,10 @@ import com.east2west.models.DTO.VerificationCodeData;
 import com.east2west.models.enums.ERole;
 import com.east2west.models.Entity.PasswordResetToken;
 import com.east2west.models.Entity.Role;
+import com.east2west.models.enums.EStatusVerify;
+import com.east2west.models.payload.request.IdentityUploadRequest;
+import com.east2west.models.payload.request.IdentityVerifyAutoRequest;
+import com.east2west.models.payload.request.IdentityVerifyManualRequest;
 import com.east2west.models.payload.request.UpdateProfileRequest;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
@@ -43,6 +47,7 @@ public class UserService {
 
     private final PasswordResetTokenRepository tokenRepository;
 
+    private  final double  THRESHOLD = 0.6;
     private final JavaMailSender mailSender;
 
     @Value("${app.verification-code.expiry-minutes}")
@@ -387,6 +392,41 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User saveIdentity(IdentityUploadRequest identity , User user){
+        return userRepository.save(
+                user.toBuilder()
+                        .identityType(identity.getIdentityType())
+                        .identityBackward(identity.getIdentityBackward())
+                        .identityForward(identity.getIdentityForward())
+                        .nation(identity.getNation())
+                        .build()
+        );
+    }
 
+    public  User automaticIdentificationVerification(IdentityVerifyAutoRequest identity, User user){
+        boolean isVerify = identity.getDistance() < THRESHOLD;
+        return userRepository.save(
+                user.toBuilder()
+                        .comparisonMethod(identity.getComparisonMethod())
+                        .status(isVerify ? EStatusVerify.IDENTIFICATION_VERIFYED : EStatusVerify.NOT_VERIFYED)
+                        .build()
+        );
+    }
+
+    public  User manualIdentificationVerification(IdentityVerifyManualRequest identity, User user){
+        return userRepository.save(
+                user.toBuilder()
+                        .comparisonMethod(identity.getComparisonMethod())
+                        .selfie(identity.getSelfie())
+                        .status(EStatusVerify.PENDING_VERIFYED)
+                        .build()
+        );
+    }
+
+
+
+    public String getIdentityForward(int id){
+        return userRepository.findById(id).get().getIdentityForward();
+    }
 
 }

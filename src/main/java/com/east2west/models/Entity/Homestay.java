@@ -1,10 +1,18 @@
 package com.east2west.models.Entity;
 
+import com.east2west.models.enums.EHomestayStatus;
 import com.east2west.util.StringListConverter;
 import jakarta.persistence.*;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.Null;
+import org.springframework.data.annotation.*;
 import lombok.*;
 import org.locationtech.jts.geom.Point;
+import org.springframework.data.annotation.Version;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 
@@ -14,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "homestays")
 public class Homestay {
 
@@ -86,8 +95,9 @@ public class Homestay {
     private int maxguest;
 
 
+
     @Column(name = "instant")
-    private boolean instant;
+    private Boolean instant;
 
 
     @Column(name = "bathroom")
@@ -101,8 +111,12 @@ public class Homestay {
     @Column(name = "beds")
     private int beds;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private EHomestayStatus status;
 
-    @ManyToMany
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinTable(
             name = "homestayamenities",
             joinColumns = @JoinColumn(name = "homestayid"),
@@ -113,4 +127,28 @@ public class Homestay {
 
     @OneToMany(mappedBy = "homestay", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<HomestayAvailability> homestayAvailabilityList;
+
+
+    @Version
+    @Column(name = "version")
+    private int version;
+
+    @CreatedBy
+    @Column(name = "creator", updatable = false)
+    private Integer creator;
+
+    @LastModifiedBy
+    @Column(name = "modifier")
+    private Integer modifier;
+
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+
 }

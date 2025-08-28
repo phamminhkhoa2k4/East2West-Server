@@ -175,7 +175,7 @@ public class Analysis {
         // each car
         Map<Integer, RentalSummary> rentalSummaryMap = filteredRentals.stream()
                 .collect(Collectors.groupingBy(
-                        rental -> rental.getCar().getCarId(),
+                        rental -> rental.getCar().getCarid(),
                         Collectors.collectingAndThen(
                                 Collectors.toList(),
                                 rentalsList -> new RentalSummary(

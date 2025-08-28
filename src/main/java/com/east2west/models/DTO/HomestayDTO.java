@@ -1,10 +1,12 @@
 package com.east2west.models.DTO;
 
+import com.east2west.models.enums.EHomestayStatus;
 import jakarta.validation.constraints.Null;
 import lombok.*;
 
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 
@@ -13,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class  HomestayDTO {
-    @Null
+
     private Integer homestayid;
     private Integer structureId;
     private Integer userId;
@@ -24,7 +26,6 @@ public class  HomestayDTO {
     private Double latitude;
     private String title;
     private String address;
-    private String geom;
     private List<String> photos;
     private String description;
     private String extraInfo;
@@ -37,8 +38,12 @@ public class  HomestayDTO {
     private Integer bathroom;
     private Integer beds;
     private BigDecimal pricePerNight;
-    private List<Integer> perkIds;
     private List<HomestayAvailabilityDTO> availability;
+    private List<Integer> amenityIds;
+    private EHomestayStatus status;
+    private Date createdAt;
+    private Date updatedAt;
+
 
 
 }

@@ -1,5 +1,6 @@
 package com.east2west.repository;
 
+import com.east2west.models.enums.EHomestayStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.east2west.models.Entity.Homestay;
 import org.springframework.data.jpa.repository.Query;
@@ -141,6 +142,11 @@ public interface HomestayRepository extends JpaRepository<Homestay,Integer>{
             @Param("maxMaxGuest") Integer maxMaxGuest,
             @Param("type") String type,
             @Param("amenityIds") List<Integer> amenityIds);
+
+
+
+
+    List<Homestay> findByUseridAndStatus(int userid, EHomestayStatus status);
 
 }
 

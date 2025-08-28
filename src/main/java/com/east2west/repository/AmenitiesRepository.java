@@ -12,4 +12,7 @@ public interface AmenitiesRepository extends JpaRepository<Amenities,Integer>{
     Page<Amenities> findAll(Pageable pageable);
 
     List<Amenities> findByAmenitiesnameContainingIgnoreCase(String keyword);
+
+    List<Amenities> findByAmenitiesidIn(List<Integer> ids);
+
 }
