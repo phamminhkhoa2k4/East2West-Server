@@ -12,8 +12,9 @@ import java.time.ZoneId;
 import com.east2west.models.DTO.*;
 import com.east2west.models.Entity.*;
 import com.east2west.models.enums.EHomestayStatus;
+import com.east2west.models.enums.EStatusVerify;
 import com.east2west.models.mapper.HomestayMapper;
-import com.east2west.models.mapper.StructureMapper;
+
 import com.east2west.repository.*;
 import com.east2west.util.DateUtil;
 import org.locationtech.jts.geom.Coordinate;
@@ -614,5 +615,18 @@ public HomestayDTO getHomestayHomestayAvailabilityById(int id){
                 .filter(Homestay::isIsapproved)
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<Homestay> findByHomestaysIdUserId(int homestayid,int userid) {
+        return homestayRepository.findByHomestayidAndUserid(homestayid,userid);
+    }
+
+    public HomestayDTO activateHomestays(Homestay homestay, EStatusVerify status) {
+        if(status == EStatusVerify.VERIFYED){
+            homestay.setStatus(EHomestayStatus.APPROVED);
+            return HomestayMapper.INSTANCE.toDTO(homestayRepository.save(homestay));
+        }
+
+        return  null;
     }
 }

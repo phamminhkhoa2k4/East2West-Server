@@ -6,6 +6,7 @@ import com.east2west.models.DTO.*;
 import com.east2west.models.enums.ERole;
 import com.east2west.models.Entity.PasswordResetToken;
 import com.east2west.models.Entity.Role;
+import com.east2west.models.enums.EStatusVerify;
 import com.east2west.models.payload.request.*;
 import com.east2west.models.payload.response.JwtResponse;
 import com.east2west.security.services.UserDetailsServiceImpl;
@@ -106,7 +107,7 @@ public class AuthController {
 
     @PostMapping("/verify-code")
     public ResponseEntity<?> verifyCode(@RequestBody VerifyCodeRequest request) {
-        boolean isValid = userService.verifyCode(request.getEmail(), request.getVerificationCode());
+        boolean isValid = userService.verifyCode(request.getData(), request.getVerificationCode());
         if (isValid) {
             return ResponseEntity.status(HttpStatus.OK).body(
                     ModelResponse.builder()
@@ -545,6 +546,17 @@ public class AuthController {
             errors.put(fieldName, errorMessage);
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+
+    @GetMapping("/status/{id}")
+    public ResponseEntity<?> getStatusUser(@PathVariable int id) {
+        EStatusVerify status = userService.getStatus(id);
+        return ResponseEntity.ok(ModelResponse.builder()
+                .status(200)
+                .message("OK")
+                .data(status)
+                .build());
     }
 
 

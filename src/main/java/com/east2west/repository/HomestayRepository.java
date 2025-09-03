@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -147,6 +148,8 @@ public interface HomestayRepository extends JpaRepository<Homestay,Integer>{
 
 
     List<Homestay> findByUseridAndStatus(int userid, EHomestayStatus status);
+
+        Optional<Homestay> findByHomestayidAndUserid(int homestayid, int userid);
 
 }
 

@@ -6,10 +6,7 @@ import com.east2west.models.enums.ERole;
 import com.east2west.models.Entity.PasswordResetToken;
 import com.east2west.models.Entity.Role;
 import com.east2west.models.enums.EStatusVerify;
-import com.east2west.models.payload.request.IdentityUploadRequest;
-import com.east2west.models.payload.request.IdentityVerifyAutoRequest;
-import com.east2west.models.payload.request.IdentityVerifyManualRequest;
-import com.east2west.models.payload.request.UpdateProfileRequest;
+import com.east2west.models.payload.request.*;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
@@ -67,8 +64,8 @@ public class UserService {
     @Value("${twilio.auth.token}")
     private String authToken;
 
-    @Value("${twilio.phone.number}")
-    private String twilioPhoneNumber;
+    @Value("${twilio.whatsapp.number}")
+    private String fromWhatsAppNumber;
 
     @Autowired
     public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, PasswordResetTokenRepository tokenRepository, JavaMailSender mailSender) {
@@ -91,18 +88,33 @@ public class UserService {
         sendVerificationEmail(email, code);
     }
 
-    public boolean verifyCode(String email, String code) {
-        VerificationCodeData savedCode = verificationCodes.get(email);
+    public boolean verifyCode(String data, String code) {
+        VerificationCodeData savedCode = verificationCodes.get(data);
         if (savedCode == null) {
             return false;
         }
 
         if (LocalDateTime.now().isAfter(savedCode.getCreatedAt().plusMinutes(codeExpiryMinutes))) {
-            verificationCodes.remove(email);
+            verificationCodes.remove(data);
             return false;
         }
 
         return savedCode.getCode().equals(code);
+    }
+
+    public boolean verifyCodePhone(String phoneNumber, String code,User user) {
+        boolean isVerify = verifyCode(phoneNumber, code);
+        if(isVerify) {
+            userRepository.save(
+                    user.toBuilder()
+                            .status(EStatusVerify.VERIFYED)
+                            .build()
+            );
+            return true;
+        }
+
+        return false;
+
     }
 
     public void resetPassword(String email, String code, String newPassword, User user) {
@@ -269,20 +281,6 @@ public class UserService {
                 new PhoneNumber("+17409084843"),
                 "Your OTP is: " + otp
         ).create();
-//        String twimlUrl = "http://twimlets.com/echo?Twiml=" +
-//                java.net.URLEncoder.encode(
-//                        "<Response><Say language='vi-VN' voice='alice'>Mã OTP của bạn là " + otp + ". Vui lòng không chia sẻ mã này với bất kỳ ai.</Say></Response>",
-//                        "UTF-8"
-//                );
-//
-//        // Tạo cuộc gọi
-//        Call call = Call.creator(
-//                new PhoneNumber("+84 787 998 419"), // Số điện thoại nhận cuộc gọi
-//                new PhoneNumber("+17409084843"), // Số Twilio (Mỹ)
-//                URI.create(twimlUrl)              // Nội dung cuộc gọi
-//        ).create();
-//
-//        System.out.println("Cuộc gọi OTP đã được thực hiện, SID: " + call.getSid());
     }
 
     private final Map<String, String> otpStorage = new HashMap<>();
@@ -403,12 +401,27 @@ public class UserService {
         );
     }
 
+    public  void phoneVerification(PhoneVerifyRequest phone){
+        String code = generateVerificationCode();
+        verificationCodes.put(phone.getPhoneNumber(), new VerificationCodeData(code, LocalDateTime.now()));
+        sendWhatsAppCode(phone.getPhoneNumber(), code,"Your verification code is: ");
+
+    }
+
+   public void sendWhatsAppCode(String toPhoneNumber, String code,String message) {
+        Message.creator(
+                new PhoneNumber("whatsapp:" + toPhoneNumber),
+                new PhoneNumber(fromWhatsAppNumber),
+                message + code
+        ).create();
+    }
+
     public  User automaticIdentificationVerification(IdentityVerifyAutoRequest identity, User user){
         boolean isVerify = identity.getDistance() < THRESHOLD;
         return userRepository.save(
                 user.toBuilder()
                         .comparisonMethod(identity.getComparisonMethod())
-                        .status(isVerify ? EStatusVerify.IDENTIFICATION_VERIFYED : EStatusVerify.NOT_VERIFYED)
+                        .status(isVerify ? EStatusVerify.IDENTIFICATION_VERIFYED : EStatusVerify.IDENTIFICATION_PROBLEM)
                         .build()
         );
     }
@@ -427,6 +440,10 @@ public class UserService {
 
     public String getIdentityForward(int id){
         return userRepository.findById(id).get().getIdentityForward();
+    }
+
+    public EStatusVerify getStatus(int userId ){
+        return userRepository.findById(userId).get().getStatus();
     }
 
 }

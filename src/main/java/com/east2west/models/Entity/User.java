@@ -72,7 +72,8 @@ public class User {
 
 
     @Column(name = "status")
-    private EStatusVerify status;
+    @Enumerated(EnumType.ORDINAL)
+    private EStatusVerify status = EStatusVerify.NOT_VERIFYED;
 
     @Column(name = "selfie")
     private String selfie;

@@ -7,6 +7,6 @@ import lombok.*;
 @Setter
 @Builder
 public class VerifyCodeRequest {
-    private String email;
+    private String data;
     private String verificationCode;
 }

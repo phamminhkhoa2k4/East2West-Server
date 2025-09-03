@@ -9,9 +9,7 @@ import com.east2west.models.Entity.Homestay;
 import com.east2west.models.Entity.Structure;
 import com.east2west.models.Entity.User;
 import com.east2west.models.enums.EHomestayStatus;
-import com.east2west.models.payload.request.IdentityUploadRequest;
-import com.east2west.models.payload.request.IdentityVerifyAutoRequest;
-import com.east2west.models.payload.request.IdentityVerifyManualRequest;
+import com.east2west.models.payload.request.*;
 import com.east2west.security.jwt.JwtUtils;
 import com.east2west.service.AmenitiesService;
 import com.east2west.service.HomestayService;
@@ -86,6 +84,79 @@ public class HostController {
         }
 
     }
+
+    @PostMapping("/user/verify-code")
+    public ResponseEntity<?> verifyCode(@RequestBody VerifyCodePhoneRequest request) {
+
+        Optional<User> user = userService.getUserById(Integer.parseInt(request.getUserId()));
+        if(user.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.builder()
+                            .status(404)
+                            .data(null)
+                            .message("User Not Found !!!")
+                            .build()
+            );
+        }
+
+        boolean isValid = userService.verifyCodePhone(request.getData(), request.getVerificationCode(),user.get());
+
+        if (isValid) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.builder()
+                            .status(200)
+                            .message("Authenticate code valid !!!")
+                            .data("OK")
+                            .build()
+            );
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ModelResponse.builder()
+                        .status(400)
+                        .message("Authenticate code invalid !!!")
+                        .data("OK")
+                        .build()
+        );
+    }
+
+
+    @PutMapping("/user/verify-phone")
+    public  ResponseEntity<ModelResponse<?>> verifyPhone(@RequestBody PhoneVerifyRequest phone) {
+        try {
+            Optional<User> user = userService.getUserById(Integer.parseInt(phone.getUserId()));
+
+            if(user.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        ModelResponse.builder()
+                                .status(404)
+                                .data(null)
+                                .message("User Not Found !!!")
+                                .build()
+                );
+            }
+
+            userService.phoneVerification(phone);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.builder()
+                            .status(200)
+                            .data("OK")
+                            .message("OK")
+                            .build()
+            );
+
+
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ModelResponse.builder()
+                            .status(500)
+                            .data(null)
+                            .message("INTERNAL SERVER ERROR")
+                            .build()
+
+            );
+        }
+    }
+
 
     @PutMapping("/user/upload-identity")
     public  ResponseEntity<ModelResponse<?>> uploadIdentity(@RequestBody IdentityUploadRequest identity) {
@@ -418,4 +489,54 @@ public class HostController {
 
         return user.map(value -> homestayService.search(keyword, value.getUserId())).orElse(null);
     }
+
+    @PostMapping("/activate")
+    public  ResponseEntity<ModelResponse<?>> activateHomestays(@RequestBody ActivateHomestayRequest activate) {
+        try {
+            Optional<Homestay> homestay = homestayService.findByHomestaysIdUserId(activate.getHomestayid(), activate.getUserId());
+
+            if(homestay.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        ModelResponse.builder()
+                                .status(404)
+                                .data(null)
+                                .message("Homestay Not Found !!!")
+                                .build()
+                );
+            }
+
+            HomestayDTO data = homestayService.activateHomestays(homestay.get(),activate.getStatus());
+
+            if(data == null){
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        ModelResponse.builder()
+                                .status(404)
+                                .data(data)
+                                .message("Your homestay activation failed !!!")
+                                .build()
+                );
+            }
+
+
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ModelResponse.builder()
+                            .status(200)
+                            .data(data)
+                            .message("Your homestay has been successfully activated !!!")
+                            .build()
+            );
+
+
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ModelResponse.builder()
+                            .status(500)
+                            .data(null)
+                            .message("INTERNAL SERVER ERROR")
+                            .build()
+
+            );
+        }
+    }
+
 }
