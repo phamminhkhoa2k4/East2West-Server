@@ -1,6 +1,8 @@
 package com.east2west.controllers;
 
 import com.east2west.models.DTO.MultiCityRequest;
+import com.east2west.models.payload.response.AirportsSearchResponse;
+import com.east2west.service.FlightService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,19 +19,27 @@ import java.io.IOException;
 import java.util.*;
 
 @RestController
+@RequestMapping("/api/flights")
 public class FlightSearchController {
 
     private final OkHttpClient client = new OkHttpClient();
+    private final FlightService flightService;
     private final ObjectMapper objectMapper;
 
-    public FlightSearchController(ObjectMapper objectMapper) {
+    public FlightSearchController(FlightService flightService, ObjectMapper objectMapper) {
+        this.flightService = flightService;
         this.objectMapper = objectMapper;
     }
 
     @Value("${serpapi.api.key}")
     private String apiKey;
 
-    @PostMapping("/api/flights/{departureId}/{arrivalId}/{outboundDate}/{returnDate}/{tripType}/{travelClass}/{adults}/{children}/{infants}")
+    @GetMapping("/airports")
+    public List<AirportsSearchResponse> getAirports(@RequestParam String query) {
+        return flightService.searchAirports(query);
+    }
+
+    @PostMapping("/{departureId}/{arrivalId}/{outboundDate}/{returnDate}/{tripType}/{travelClass}/{adults}/{children}/{infants}")
     public ResponseEntity<JsonNode> searchFlights(
             @PathVariable String departureId,
             @PathVariable String arrivalId,
@@ -213,4 +223,11 @@ public class FlightSearchController {
         ObjectNode errorNode = objectMapper.createObjectNode().put("error", errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorNode);
     }
+
+
+
+
+
+
+
 }
