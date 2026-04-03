@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/api/cars/type")
+@RequestMapping("/api/cars/admin/type")
 @PreAuthorize("hasAuthority('MODERATOR')")
 public class TypeController {
 

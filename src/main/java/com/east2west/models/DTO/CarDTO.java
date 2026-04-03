@@ -1,4 +1,5 @@
 package com.east2west.models.DTO;
+import java.math.BigDecimal;
 import java.util.List;
 import com.east2west.models.Entity.*;
 import lombok.*;
@@ -13,6 +14,10 @@ public class CarDTO {
     private String carName;
 
     private Double pricePerDay;
+
+    private  Integer quantity;
+
+    private Integer availableVehicles;
 
     private String status;
 
@@ -56,34 +61,22 @@ public class CarDTO {
 
     private List<String> thumbnail;
 
+    private Integer largeLuggage;
 
+    private Integer smallLuggage;
 
+    private Boolean fuelSameReturn;
 
+    @Builder.Default
+    private Double averageRating = 0.0;
 
+    @Builder.Default
+    private Integer numberOfReviews = 1;
 
+    private CarReviewAverageDTO reviewAverage;
 
+    private BigDecimal deposit;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    private Boolean cancelFree;
 
 }

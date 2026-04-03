@@ -1,16 +1,15 @@
 package com.east2west.models.payload.response;
 
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 
-@Getter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@Setter
 public class JwtResponse {
 
     private String token;

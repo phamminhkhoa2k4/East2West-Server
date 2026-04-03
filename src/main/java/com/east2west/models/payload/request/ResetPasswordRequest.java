@@ -4,8 +4,8 @@ package com.east2west.models.payload.request;
 import lombok.*;
 
 @Data
-@Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ResetPasswordRequest {
     private String email;

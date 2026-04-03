@@ -9,14 +9,11 @@ import com.east2west.models.Entity.User;
 import com.east2west.service.EmailService;
 import com.east2west.service.HomestayService;
 import com.east2west.service.UserService;
-import jakarta.mail.MessagingException;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -24,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

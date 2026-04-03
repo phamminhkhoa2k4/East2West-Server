@@ -1,6 +1,5 @@
 package com.east2west.models.DTO;
 
-import com.east2west.constans.AvailabilityStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

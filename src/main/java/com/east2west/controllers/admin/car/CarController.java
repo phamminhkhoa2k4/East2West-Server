@@ -17,8 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/cars")
+@RestController("adminCarController")
+@RequestMapping("/api/cars/admin")
 public class CarController {
 
     private final CarService carService;

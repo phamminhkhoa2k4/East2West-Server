@@ -596,7 +596,6 @@ public HomestayDTO getHomestayHomestayAvailabilityById(int id){
 
 
 
-
         int nights = (int) DateUtil.getDiffInDays(checkinDate, checkoutDate);
         checkoutDate = checkoutDate.minusDays(1);
 

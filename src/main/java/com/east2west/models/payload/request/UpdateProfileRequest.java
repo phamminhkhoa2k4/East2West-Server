@@ -6,8 +6,9 @@ import lombok.*;
 
 
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class UpdateProfileRequest {
     @NotBlank(message = "Username is required.")

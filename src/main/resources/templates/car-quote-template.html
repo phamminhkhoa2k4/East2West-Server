@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333;">
+<div style="max-width: 800px; margin: 20px auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+
+    <!-- Header -->
+    <div style="color: white; padding: 20px; text-align: center;">
+        <img th:src="${logo}" height="100px" alt="East2West"/>
+    </div>
+
+    <!-- Content -->
+    <div style="padding: 30px;">
+        <!-- Title -->
+        <div style="font-size: 20px; font-weight: bold; margin-bottom: 20px; text-align: center;"
+             th:text="${title} ?: 'Báo giá cho chuyến đi của bạn'">
+        </div>
+
+        <!-- Alert Box -->
+        <div style="background-color: #fef3ec; border: 1px solid #f56700; border-radius: 6px; padding: 15px; margin-bottom: 25px;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 20px; vertical-align: top; padding-right: 10px;">
+                        <span style="color: #856404; font-size: 18px;">⚠️</span>
+                    </td>
+                    <td style="vertical-align: top;">
+                        <h3 style="margin: 0 0 8px 0; color: #856404; font-size: 16px;" th:text="${alertTitle} ?: 'Hoàn tất đặt xe của bạn'"></h3>
+                        <p style="margin: 0 0 8px 0; color: #856404; font-size: 14px; line-height: 1.4;" th:text="${alertMessage} ?: 'Mức giá này chỉ tạm thời và có hiệu lực trong khoảng thời gian có hạn.'"></p>
+                        <a th:href="${alertLink}" style="color: #0066cc; text-decoration: none; font-size: 14px;">Đăng ký của bạn</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Car Details -->
+        <div style="border-radius: 8px; padding: 20px; margin-bottom: 25px; border: 1px solid #e2e8f0;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 300px; vertical-align: top; padding-right: 15px;">
+                        <img th:src="${thumbnail}" width="300" height="200" style="border-radius: 8px; margin-top: 45px; object-fit: cover;" alt="Car Image"/>
+                    </td>
+                    <td style="vertical-align: top;">
+                        <div style="font-size: 18px; font-weight: bold; margin-bottom: 5px;" th:text="${carName}">Toyota Yaris</div>
+                        <span style="display: inline-block; background-color: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight:700; margin-bottom:10px;" th:text="${rentalCompany}">Alamo</span>
+
+                        <table style="width:100%; border-collapse: collapse; margin-bottom: 10px;">
+                            <tr th:each="row : ${rows}">
+                                <td th:each="field : ${row}" style="width:120px; color:#666; font-size:14px; vertical-align:middle;">
+                                    <table style="border-collapse:collapse;">
+                                        <tr>
+                                            <td style="padding-right:5px; vertical-align:middle;">
+                                                <img th:src="${field.icon}" alt="" width="16" height="16" style="display:block;">
+                                            </td>
+                                            <td style="vertical-align:middle; font-size:14px; color:#666;">
+                                                <span th:text="${field.label}"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table style="border-collapse:collapse;">
+                            <tr>
+                                <td style="padding-right:5px; vertical-align:middle;">
+                                    <img th:src="${engineSystemIcon}" alt="" width="16" height="16" style="display:block;">
+                                </td>
+                                <td style="vertical-align:middle; font-size:14px; color:#666;">
+                                    <span th:text="${engineSystem}"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-right:5px; vertical-align:middle;">
+                                    <img th:src="${typeIcon}" alt="" width="24" height="24" style="display:block;">
+                                </td>
+                                <td style="vertical-align:middle; font-size:14px; color:#666;">
+                                    <span th:text="${typeName}"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <hr/>
+            <img th:src="${makeLogo}" height="70" width="120" style="border-radius: 10px;" alt="Make Logo"/>
+        </div>
+
+        <!-- Rental Details -->
+        <div style="margin-bottom: 25px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+            <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #003580;">Nhận xe và trả xe</h3>
+
+            <!-- Pick up -->
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 10px;">
+                <div style="font-weight: bold; color: #333; margin-bottom: 5px;">
+                    📅 <span th:text="${#dates.format(pickUpDate, 'dd MMM yyyy')}"></span> <span th:text="${pickUpTime}"></span>
+                </div>
+                <div style="color: #666; font-size: 14px;" th:text="${location}"></div>
+            </div>
+
+            <!-- Drop off -->
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 6px;">
+                <div style="font-weight: bold; color: #333; margin-bottom: 5px;">
+                    📅 <span th:text="${#dates.format(dropOffDate, 'dd MMM yyyy')}"></span> <span th:text="${dropOffTime}"></span>
+                </div>
+                <div style="color: #666; font-size: 14px;" th:text="${location}"></div>
+            </div>
+        </div>
+
+        <!-- Pricing -->
+        <div style="border-top: 2px solid #e0e0e0; padding-top: 20px; margin-bottom: 25px;">
+            <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #003580;">Chi tiết giá</h3>
+
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+                <tr>
+                    <td style="padding: 5px 0; font-size: 16px;" th:text="'Chi Phí Thuê Xe Trong ' + ${days} + ' Ngày'"></td>
+                    <td style="padding: 5px 0; font-size: 16px; text-align: right;" th:text="${price} + ' đ'"></td>
+                </tr>
+            </table>
+
+            <table style="width: 100%; border-collapse: collapse; border-top: 1px solid #e0e0e0; padding-top: 10px;">
+                <tr>
+                    <td style="padding: 10px 0 0 0; font-weight: bold; font-size: 18px; color: #003580;">Giá Tổng Cộng</td>
+                    <td style="padding: 10px 0 0 0; font-weight: bold; font-size: 18px; color: #003580; text-align: right;" th:text="${price} + ' đ'"></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Note -->
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 6px; font-size: 14px; color: #666; margin-bottom: 25px;"
+             th:text="${note} ?: '* Giá có thể thay đổi. Vui lòng kiểm tra chi tiết các điều khoản miễn phí.'">
+        </div>
+
+        <!-- Book Now Button -->
+        <div style="margin-bottom: 30px;">
+            <a th:href="${bookLink}"
+               style="display: block; width: 100%; background-color: #0066cc; color: white; text-align: center; padding: 15px; border-radius: 6px; text-decoration: none; font-size: 16px; font-weight: bold;">
+                Hãy đặt ngay
+            </a>
+        </div>
+
+        <!-- Benefits -->
+        <div style="margin-bottom: 25px;">
+            <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #003580;">Những lợi ích khi sử dụng Booking.com</h3>
+
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 20px; padding: 5px 10px 5px 0; vertical-align: top;">🚗</td>
+                    <td style="padding: 5px 0; font-size: 14px; vertical-align: top;">Huge selection of cars</td>
+                </tr>
+                <tr>
+                    <td style="width: 20px; padding: 5px 10px 5px 0; vertical-align: top;">⭐</td>
+                    <td style="padding: 5px 0; font-size: 14px; vertical-align: top;">35 triệu xếp hạng khách hàng</td>
+                </tr>
+                <tr>
+                    <td style="width: 20px; padding: 5px 10px 5px 0; vertical-align: top;">🏆</td>
+                    <td style="padding: 5px 0; font-size: 14px; vertical-align: top;">Không có phí ẩn</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Extras -->
+        <div style="background-color: #f0f8ff; padding: 20px; border-radius: 8px;">
+            <h3 style="margin: 0 0 15px 0; color: #003580; font-size: 16px;">FREE extras with all vehicles</h3>
+
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 20px; padding: 4px 8px 4px 0; vertical-align: top;">✅</td>
+                    <td style="padding: 4px 0; font-size: 14px; vertical-align: top;">Hủy đặt thuê MIỄN PHÍ</td>
+                </tr>
+                <tr>
+                    <td style="width: 20px; padding: 4px 8px 4px 0; vertical-align: top;">✅</td>
+                    <td style="padding: 4px 0; font-size: 14px; vertical-align: top;">Bảo Hiểm Mất Trộm</td>
+                </tr>
+                <tr>
+                    <td style="width: 20px; padding: 4px 8px 4px 0; vertical-align: top;">✅</td>
+                    <td style="padding: 4px 0; font-size: 14px; vertical-align: top;">Khớp Giá</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="background-color: #f8f9fa; padding: 20px; text-align: center; font-size: 12px; color: #666;">
+        <p style="margin: 0 0 5px 0;">Email này được gửi từ East2West.com</p>
+        <p style="margin: 0;">Cảm ơn bạn đã tin tưởng sử dụng dịch vụ của chúng tôi</p>
+    </div>
+</div>
+</body>
+</html>

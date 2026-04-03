@@ -7,7 +7,9 @@ import com.east2west.models.Entity.Transfer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.east2west.models.Entity.Accommodation;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface AccommodationRepository extends JpaRepository<Accommodation, Integer> {
     boolean existsByAccommodationname(String accommodationname);
     Optional<Accommodation> findByAccommodationname(String name);

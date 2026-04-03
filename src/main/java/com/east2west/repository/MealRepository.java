@@ -6,9 +6,10 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.east2west.models.Entity.Meal;
+import org.springframework.stereotype.Repository;
 
 
-
+@Repository
 public interface MealRepository extends JpaRepository<Meal, Integer> {
 
     Optional<Meal> findByMealname(String mealName);

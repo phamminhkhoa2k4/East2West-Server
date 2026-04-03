@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/cars/model")
+@RequestMapping("/api/cars/admin/model")
 @PreAuthorize("hasAuthority('MODERATOR')")
 public class ModelController {
 

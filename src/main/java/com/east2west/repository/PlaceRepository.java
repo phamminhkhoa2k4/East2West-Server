@@ -7,8 +7,9 @@ import com.east2west.models.Entity.Transfer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.east2west.models.Entity.Place;
+import org.springframework.stereotype.Repository;
 
-
+@Repository
 public interface PlaceRepository extends JpaRepository<Place, Integer>{
     Optional<Place> findByPlacename(String placeName);
 

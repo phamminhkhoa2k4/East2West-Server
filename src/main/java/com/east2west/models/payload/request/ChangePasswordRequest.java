@@ -1,13 +1,10 @@
 package com.east2west.models.payload.request;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Data
-@Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ChangePasswordRequest {
     private String token;

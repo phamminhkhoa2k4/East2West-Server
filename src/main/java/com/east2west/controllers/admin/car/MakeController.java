@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/cars/make")
+@RequestMapping("/api/cars/admin/make")
 @PreAuthorize("hasAuthority('MODERATOR')")
 public class MakeController {
 

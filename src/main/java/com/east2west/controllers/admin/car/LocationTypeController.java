@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/api/cars/locationtype")
+@RequestMapping("/api/cars/admin/locationtype")
 @PreAuthorize("hasAuthority('MODERATOR')")
 public class LocationTypeController {
 
