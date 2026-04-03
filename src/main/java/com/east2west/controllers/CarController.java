@@ -138,7 +138,7 @@ public class CarController {
     }
 
     @PostMapping("/sendQuoteViaEmail")
-    public ResponseEntity<?> sendQuoteViaEmail(@RequestBody SendQuoteViaEmailRequest email) {
+    public ResponseEntity<?> sendQuoteViaEmail(@Valid @RequestBody SendQuoteViaEmailRequest email) {
         Optional<CarDTO> car = carService.getCarById(email.getCarId());
         if (car.isEmpty()) {
             return ResponseEntity.ok(
