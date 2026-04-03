@@ -32,5 +32,5 @@ public class CarAvailability {
     private int availableQuantity;
 
     @Column(name = "date")
-    private Timestamp date;
+    private Timestamp availabilityDateTime;
 }

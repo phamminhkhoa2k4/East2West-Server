@@ -127,7 +127,7 @@ public class CarService {
             while (!today.isAfter(endDate)) {
                 CarAvailability availability = new CarAvailability();
                 availability.setCar(savedCar);
-                availability.setDate(Timestamp.valueOf(today.atStartOfDay(ZoneId.systemDefault()).toLocalDateTime()));
+                availability.setAvailabilityDateTime(Timestamp.valueOf(today.atStartOfDay(ZoneId.systemDefault()).toLocalDateTime()));
                 availability.setAvailableQuantity(carDTO.getQuantity());
                 availability.setPricePerDay(BigDecimal.valueOf(carDTO.getPricePerDay()));
                 carAvailabilityList.add(availability);
@@ -197,7 +197,7 @@ public class CarService {
         Car car = carBuilder.build();
         if (carDTO.getPricePerDay() != null) {
             LocalDate today = LocalDate.now();
-            carAvailabilityRepository.deleteAllByCarAndDateAfter(car, Timestamp.valueOf(today.atStartOfDay()));
+            carAvailabilityRepository.deleteAllByCarAndAvailabilityDateTimeAfter(car, Timestamp.valueOf(today.atStartOfDay()));
 
             LocalDate endDate = today.plusDays(365);
             List<CarAvailability> newAvailabilities = new ArrayList<>();
@@ -205,7 +205,7 @@ public class CarService {
             while (!today.isAfter(endDate)) {
                 CarAvailability availability = new CarAvailability();
                 availability.setCar(car);
-                availability.setDate(Timestamp.valueOf(today.atStartOfDay()));
+                availability.setAvailabilityDateTime(Timestamp.valueOf(today.atStartOfDay()));
                 availability.setAvailableQuantity(carDTO.getQuantity());
                 availability.setPricePerDay(BigDecimal.valueOf(carDTO.getPricePerDay()));
                 newAvailabilities.add(availability);
@@ -222,7 +222,8 @@ public class CarService {
         Page<Car> carPage = carRepository.findAll(pageable);
         return carPage.map(car -> {
             CarDTO dto = CarMapper.INSTANCE.toDTO(car);
-            Double avg = carReviewRepository.getAverageRatingByCar(car.getCarid());
+            Double avgSum = carReviewRepository.getAverageRatingByCar(car.getCarid());
+            Double avg = avgSum != null ? avgSum / 7 : 0.0;
             int numberOfReviews = carReviewRepository.findByCar_Carid(car.getCarid()).size();
             CarReviewAverageDTO reviewAverage = carReviewRepository.getAverageDetailsByCar(car.getCarid());
             dto.setAverageRating(avg != null ? avg : 0.0);
@@ -246,7 +247,8 @@ public class CarService {
     public Optional<CarDTO> getCarById(int id) {
         Optional<Car> car = carRepository.findById(id);
         if (car.isPresent()) {
-            Double averageRating = carReviewRepository.getAverageRatingByCar(id);
+            Double avgSum = carReviewRepository.getAverageRatingByCar(id);
+            Double averageRating = avgSum != null ? avgSum / 7 : 0.0;
             int numberOfReviews = carReviewRepository.findByCar_Carid(id).size();
             CarReviewAverageDTO reviewAverage = carReviewRepository.getAverageDetailsByCar(id);
             CarDTO carDTO = CarMapper.INSTANCE.toDTO(car.get());
@@ -423,7 +425,8 @@ public class CarService {
         List<Car> cars = carRepository.findAll();
         return cars.stream().map(car -> {
             CarDTO dto = CarMapper.INSTANCE.toDTO(car);
-            Double avg = carReviewRepository.getAverageRatingByCar(car.getCarid());
+            Double avgSum = carReviewRepository.getAverageRatingByCar(car.getCarid());
+            Double avg = avgSum != null ? avgSum / 7 : 0.0;
             int numberOfReviews = carReviewRepository.findByCar_Carid(car.getCarid()).size();
             CarReviewAverageDTO reviewAverage = carReviewRepository.getAverageDetailsByCar(car.getCarid());
             dto.setAverageRating(avg != null ? avg : 0.0);
@@ -457,7 +460,8 @@ public class CarService {
                 .filter(car -> car.getStatus().equalsIgnoreCase("available"))
                 .map(car -> {
                     CarDTO dto = CarMapper.INSTANCE.toDTO(car);
-                    Double avg = carReviewRepository.getAverageRatingByCar(car.getCarid());
+                    Double avgSum = carReviewRepository.getAverageRatingByCar(car.getCarid());
+                    Double avg = avgSum != null ? avgSum / 7 : 0.0;
                     int numberOfReviews = carReviewRepository.findByCar_Carid(car.getCarid()).size();
                     CarReviewAverageDTO reviewAverage = carReviewRepository.getAverageDetailsByCar(car.getCarid());
                     dto.setAverageRating(avg != null ? avg : 0.0);
@@ -551,7 +555,8 @@ public class CarService {
                 .filter(car -> car.getStatus().equalsIgnoreCase("available"))
                 .map(car -> {
                     CarDTO dto = CarMapper.INSTANCE.toDTO(car);
-                    Double avg = carReviewRepository.getAverageRatingByCar(car.getCarid());
+                    Double avgSum = carReviewRepository.getAverageRatingByCar(car.getCarid());
+                    Double avg = avgSum != null ? avgSum / 7 : 0.0;
                     int numberOfReviews = carReviewRepository.findByCar_Carid(car.getCarid()).size();
                     CarReviewAverageDTO reviewAverage = carReviewRepository.getAverageDetailsByCar(car.getCarid());
                     dto.setAverageRating(avg != null ? avg : 0.0);

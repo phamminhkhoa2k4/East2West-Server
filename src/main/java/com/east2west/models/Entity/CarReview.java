@@ -19,11 +19,11 @@ public class CarReview {
     @Column(name = "carreviewid")
     private int carReviewId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userid", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "carid", nullable = false)
     private Car car;
 

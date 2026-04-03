@@ -47,7 +47,7 @@ public interface CarMapper {
 
         Optional<CarAvailability> match = carAvailabilityList.stream()
                 .filter(availability -> {
-                    Timestamp timestamp = availability.getDate();
+                    Timestamp timestamp = availability.getAvailabilityDateTime();
                     if (timestamp == null) return false;
                     LocalDate availabilityDate = timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     return availabilityDate.equals(today);
@@ -65,7 +65,7 @@ public interface CarMapper {
 
         Optional<CarAvailability> match = carAvailabilityList.stream()
                 .filter(availability -> {
-                    Timestamp timestamp = availability.getDate();
+                    Timestamp timestamp = availability.getAvailabilityDateTime();
                     if (timestamp == null) return false;
                     LocalDate availabilityDate = timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     return availabilityDate.equals(today);

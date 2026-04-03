@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @Repository
 public interface CarAvailabilityRepository extends JpaRepository<CarAvailability, Integer> {
     @Transactional
-    void deleteAllByCarAndDateAfter(Car car, Timestamp date);
+    void deleteAllByCarAndAvailabilityDateTimeAfter(Car car, Timestamp date);
 
 
 }
