@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.east2west.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.RequestParam;
+import com.east2west.models.payload.request.CarFilterRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -487,24 +487,24 @@ public class CarService {
 
 
 
-    public List<CarDTO> filterCars(
-            String sort,
-            List<String> gearbox,
-            List<String> type,
-            List<String> information,
-            List<String> engine,
-            List<String> mileage,
-            List<String> make,
-            List<String> location,
-            String fuelPolicy,
-            List<String> rating,
-            List<String> deposit,
-            Double latitude,
-            Double longitude,
-            LocalDate pickupDate,
-            LocalDate dropOffDate,
-            Double radius
-    ) {
+    public List<CarDTO> filterCars(CarFilterRequest request) {
+
+        String sort = request.getSort();
+        List<String> gearbox = request.getGearbox();
+        List<String> type = request.getType();
+        List<String> information = request.getInformation();
+        List<String> engine = request.getEngine();
+        List<String> mileage = request.getMileage();
+        List<String> make = request.getMake();
+        List<String> location = request.getLocation();
+        String fuelPolicy = request.getFuelPolicy();
+        List<String> rating = request.getRating();
+        List<String> deposit = request.getDeposit();
+        Double latitude = request.getLatitude();
+        Double longitude = request.getLongitude();
+        LocalDate pickupDate = request.getPickupDate();
+        LocalDate dropOffDate = request.getDropOffDate();
+        Double radius = request.getRadius();
 
         // Null-safe
         List<String> gearboxList = safeList(gearbox);
